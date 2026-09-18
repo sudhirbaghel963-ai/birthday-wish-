@@ -1931,11 +1931,23 @@ function goToScene(sceneNum){
       playScene8();
     }
   } else if (sceneNum === 9){
-    console.log('TODO: goToScene(9) — Scene 9 (The Letter) coming soon!');
+    // Hide Scene 8 and activate Scene 9 (The Handwritten Letter)
     if (scene8){
       scene8.classList.remove('is-active');
       scene8.setAttribute('aria-hidden', 'true');
       if (constellationTimeline) { constellationTimeline.kill(); constellationTimeline = null; }
+    }
+    if (scene9){
+      scene9.classList.add('is-active');
+      scene9.setAttribute('aria-hidden', 'false');
+      playScene9();
+    }
+  } else if (sceneNum === 10){
+    console.log('TODO: goToScene(10) — Scene 10 (Fireworks) coming soon!');
+    if (scene9){
+      scene9.classList.remove('is-active');
+      scene9.setAttribute('aria-hidden', 'true');
+      if (letterTimeline) { letterTimeline.kill(); letterTimeline = null; }
     }
   }
 }
@@ -2227,6 +2239,273 @@ if (nextScene8){
   nextScene8.addEventListener('click', () => goToScene(9));
 }
 
+/* ============================================================
+   SCENE 9 — THE HANDWRITTEN LETTER CONTROLLER
+   ============================================================ */
+const scene9         = $('scene9');
+const letterVeil     = $('letterVeil');
+const letterStage    = $('letterStage');
+const letterPrompt   = $('letterPrompt');
+const letterWrap     = $('letterWrap');
+const letterShadow   = $('letterShadow');
+const letterPaper    = $('letterPaper');
+const flapTop        = $('flapTop');
+const flapBot        = $('flapBot');
+const letterContent  = $('letterContent');
+const letterLine1    = $('letterLine1');
+const letterLine2    = $('letterLine2');
+const letterLine3    = $('letterLine3');
+const letterFlourish = $('letterFlourish');
+const flourishPath   = $('flourishPath');
+const nextScene9     = $('nextScene9');
+
+let letterTimeline   = null;
+let isLetterUnfolded = false;
+let letterWords      = [];
+
+// Initialize & wrap words into spans for progressive handwriting animation
+function initLetterWords(){
+  const lines = [letterLine1, letterLine2, letterLine3];
+  letterWords = [];
+  lines.forEach(line => {
+    if (!line) return;
+    const text = line.textContent.trim();
+    const words = text.split(/\s+/);
+    line.innerHTML = words.map(word => `<span class="letter-word">${word}</span>`).join(' ');
+    const spans = Array.from(line.querySelectorAll('.letter-word'));
+    letterWords.push(spans);
+  });
+}
+initLetterWords();
+
+function resetScene9(){
+  if (letterTimeline){
+    letterTimeline.kill();
+    letterTimeline = null;
+  }
+  isLetterUnfolded = false;
+
+  // Reset wrap & paper
+  if (letterWrap){
+    letterWrap.classList.remove('is-unfolded', 'is-breathing');
+    letterWrap.classList.add('is-idle');
+    gsap.set(letterWrap, { clearProps: 'all' });
+  }
+
+  // Reset prompt
+  if (letterPrompt){
+    letterPrompt.classList.remove('is-hidden');
+  }
+
+  // Reset flaps
+  if (flapTop){
+    gsap.set(flapTop, { clearProps: 'all' });
+  }
+  if (flapBot){
+    gsap.set(flapBot, { clearProps: 'all' });
+  }
+
+  // Reset words
+  letterWords.forEach(lineSpans => {
+    lineSpans.forEach(span => {
+      span.classList.remove('is-written');
+      gsap.set(span, { clearProps: 'all' });
+    });
+  });
+
+  // Reset flourish
+  if (flourishPath){
+    flourishPath.classList.remove('is-drawn');
+    const len = flourishPath.getTotalLength ? flourishPath.getTotalLength() : 450;
+    flourishPath.style.strokeDasharray = `${len}`;
+    flourishPath.style.strokeDashoffset = `${len}`;
+  }
+
+  // Reset next button
+  if (nextScene9){
+    nextScene9.classList.remove('is-shown');
+    nextScene9.hidden = true;
+  }
+}
+
+function unfoldLetter(){
+  if (isLetterUnfolded) return;
+  isLetterUnfolded = true;
+
+  if (letterTimeline){
+    letterTimeline.kill();
+    letterTimeline = null;
+  }
+
+  // Hide tap prompt immediately
+  if (letterPrompt){
+    letterPrompt.classList.add('is-hidden');
+  }
+
+  // Stop idle sway
+  if (letterWrap){
+    letterWrap.classList.remove('is-idle');
+  }
+
+  if (reduceMotion){
+    if (letterWrap){
+      letterWrap.classList.add('is-unfolded');
+    }
+    letterWords.forEach(lineSpans => {
+      lineSpans.forEach(span => span.classList.add('is-written'));
+    });
+    if (flourishPath){
+      flourishPath.classList.add('is-drawn');
+      flourishPath.style.strokeDashoffset = '0';
+    }
+    if (nextScene9){
+      nextScene9.hidden = false;
+      nextScene9.classList.add('is-shown');
+    }
+    return;
+  }
+
+  letterTimeline = gsap.timeline();
+
+  // Stage 1: Accordion unfold sequence
+  // Unfold bottom flap downwards
+  if (flapBot){
+    letterTimeline.to(flapBot, {
+      rotateX: -160,
+      duration: 0.45,
+      ease: 'power2.inOut'
+    }, 0);
+  }
+
+  // Unfold top flap upwards
+  if (flapTop){
+    letterTimeline.to(flapTop, {
+      rotateX: 160,
+      duration: 0.5,
+      ease: 'power2.inOut'
+    }, 0.2);
+  }
+
+  // Expand letter wrapper to full stationery dimension
+  letterTimeline.add(() => {
+    if (letterWrap){
+      letterWrap.classList.add('is-unfolded');
+    }
+  }, 0.45);
+
+  // Gentle settling bounce of the unfolded page
+  if (letterPaper){
+    letterTimeline.fromTo(letterPaper,
+      { scale: 0.94 },
+      { scale: 1, duration: 0.65, ease: 'back.out(1.2)' },
+      0.45
+    );
+  }
+
+  // Stage 2: Progressive Handwriting Reveal
+  // Line 1 ("Dear troublemaker,")
+  if (letterWords[0]){
+    letterTimeline.add(() => {}, '+=0.25');
+    letterWords[0].forEach((span, i) => {
+      letterTimeline.add(() => {
+        span.classList.add('is-written');
+      }, `+=${i === 0 ? 0.05 : 0.16}`);
+    });
+  }
+
+  // Brief thinking pause before Line 2
+  letterTimeline.add(() => {}, '+=0.4');
+
+  // Line 2 ("Thank you for every ridiculous memory and the ones we haven't made yet.")
+  if (letterWords[1]){
+    letterWords[1].forEach((span, i) => {
+      letterTimeline.add(() => {
+        span.classList.add('is-written');
+      }, `+=${i === 0 ? 0.05 : 0.13}`);
+    });
+  }
+
+  // Thoughtful pause before Line 3
+  letterTimeline.add(() => {}, '+=0.45');
+
+  // Line 3 ("Happy Birthday. I mean it.")
+  if (letterWords[2]){
+    letterWords[2].forEach((span, i) => {
+      letterTimeline.add(() => {
+        span.classList.add('is-written');
+      }, `+=${i === 0 ? 0.05 : 0.18}`);
+    });
+  }
+
+  // Stage 3: Hand-drawn Calligraphy Signature Flourish
+  letterTimeline.add(() => {}, '+=0.25');
+  if (flourishPath){
+    const len = flourishPath.getTotalLength ? flourishPath.getTotalLength() : 450;
+    flourishPath.style.strokeDasharray = `${len}`;
+    flourishPath.style.strokeDashoffset = `${len}`;
+
+    letterTimeline.to(flourishPath, {
+      strokeDashoffset: 0,
+      duration: 1.25,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        flourishPath.classList.add('is-drawn');
+      }
+    });
+  }
+
+  // Stage 4: Living ambient breathing and reveal Next Pill
+  letterTimeline.add(() => {
+    if (letterWrap){
+      letterWrap.classList.add('is-breathing');
+    }
+    if (nextScene9 && scene9 && scene9.classList.contains('is-active')){
+      nextScene9.hidden = false;
+      requestAnimationFrame(() => nextScene9.classList.add('is-shown'));
+    }
+  }, '+=0.3');
+}
+
+function playScene9(){
+  if (!scene9) return;
+  resetScene9();
+
+  if (reduceMotion){
+    if (letterVeil){
+      gsap.set(letterVeil, { opacity: 0 });
+    }
+    unfoldLetter();
+    return;
+  }
+
+  // Warm parchment dissolve transition from Scene 8
+  if (letterVeil){
+    gsap.fromTo(letterVeil,
+      { opacity: 0.95, scale: 1 },
+      { opacity: 0, scale: 1.05, duration: 1.0, ease: 'power2.out' }
+    );
+  }
+}
+
+// User tap-to-unfold interaction on letter wrapper & prompt
+if (letterWrap){
+  letterWrap.addEventListener('click', unfoldLetter);
+  letterWrap.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      unfoldLetter();
+    }
+  });
+}
+if (letterPrompt){
+  letterPrompt.addEventListener('click', unfoldLetter);
+}
+
+// Wire Scene 9 Next button to Scene 10 placeholder
+if (nextScene9){
+  nextScene9.addEventListener('click', () => goToScene(10));
+}
+
 // Wire up Act 1 Next button to Scene 2
 if (nextScene1){
   nextScene1.addEventListener('click', () => goToScene(2));
@@ -2243,4 +2522,6 @@ window.relightCake   = relightCake;
 window.playScene6    = playScene6;
 window.playScene7    = playScene7;
 window.playScene8    = playScene8;
+window.playScene9    = playScene9;
+window.unfoldLetter  = unfoldLetter;
 window.goToScene     = goToScene;

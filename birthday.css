@@ -63,12 +63,13 @@ body{
    ============================================================ */
 .hero{
   position:absolute; inset:0;
-  z-index:3;
+  z-index:auto;
   overflow:hidden;
 }
 /* the warm field the heart sits on */
 .hero__bg{
   position:absolute; inset:0;
+  z-index:1; pointer-events:none;
   background:
     radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
 }
@@ -80,7 +81,7 @@ body{
 }
 
 /* drifting light motes (JS fills this with a few spans) */
-.hero__motes{ position:absolute; inset:0; pointer-events:none; }
+.hero__motes{ position:absolute; inset:0; pointer-events:none; z-index:1; }
 .mote{
   position:absolute; border-radius:50%;
   background:radial-gradient(circle, rgba(255,236,214,.9), rgba(255,206,180,.15) 55%, transparent 72%);
@@ -97,6 +98,7 @@ body{
   color:#a85069;
   text-shadow:0 1px 10px rgba(255,248,241,.9);
   opacity:0;                          /* GSAP reveals */
+  z-index:4;
 }
 
 /* ---- the target heart (GSAP animates .target on the hit → fall → burst) ---- */
@@ -105,6 +107,7 @@ body{
   display:flex; justify-content:center;
   transform:translateY(-50%);         /* centre at 33% — wrap is NOT animated */
   pointer-events:none;
+  z-index:4;
 }
 .target{
   position:relative;
@@ -145,6 +148,7 @@ body{
   -webkit-tap-highlight-color:transparent;
   touch-action:none;                   /* we own the drag gesture */
   will-change:transform;
+  z-index:4;
 }
 .archery:active{ cursor:grabbing; }
 .archery:focus-visible{ outline:none; }
@@ -191,6 +195,7 @@ body{
   letter-spacing:.16em; text-transform:uppercase;
   color:#b06a7c;
   opacity:0;                          /* GSAP reveals */
+  z-index:4;
 }
 .hero__ring{ display:none; }
 
@@ -202,7 +207,7 @@ body{
   width:140px; height:140px; margin:-70px 0 0 -70px;
   border-radius:50%;
   background:radial-gradient(circle at 40% 34%, var(--rose-lift), var(--rose) 46%, var(--rose-deep) 100%);
-  z-index:5;
+  z-index:1;
   opacity:0; transform:scale(.001);
   will-change:transform, opacity;
   pointer-events:none;
@@ -213,7 +218,7 @@ body{
    ============================================================ */
 .field{
   position:absolute; inset:0;
-  z-index:4;                          /* below the flood; revealed once it covers */
+  z-index:1;                          /* below camera; particles float over background */
   opacity:0;
   /* purely decorative — must never intercept the tap on the heart beneath it.
      An opacity:0 element is still hit-testable, so without this the invisible
@@ -258,6 +263,7 @@ body{
   gap:clamp(4px,1.2vh,12px);
   padding:0 6vw; text-align:center;
   will-change:transform;
+  z-index:4;
 }
 .kEyebrow{
   font-family:"Cormorant Garamond", Georgia, serif;
@@ -473,7 +479,7 @@ body{
    SCENE 2 — THE SURPRISE GIFT BOX
    ============================================================ */
 .scene2{
-  position:absolute; inset:0; z-index:6;
+  position:absolute; inset:0; z-index:auto;
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .8s ease, visibility .8s ease;
   overflow:hidden;
@@ -482,11 +488,16 @@ body{
   opacity:1; visibility:visible; pointer-events:auto;
 }
 
+.scene2__bg{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+}
+
 .gift-stage{
   position:absolute; inset:0;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+  background:transparent;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:1; padding:1.5rem; text-align:center;
+  z-index:4; padding:1.5rem; text-align:center;
 }
 
 .gift-spotlight{
@@ -662,7 +673,7 @@ body{
    SCENE 3 — THE SECRET PIN KEEPSAKE CARD
    ============================================================ */
 .scene3{
-  position:absolute; inset:0; z-index:6;
+  position:absolute; inset:0; z-index:auto;
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .8s ease, visibility .8s ease;
   overflow:hidden;
@@ -671,11 +682,16 @@ body{
   opacity:1; visibility:visible; pointer-events:auto;
 }
 
+.scene3__bg{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+}
+
 .pin-stage{
   position:absolute; inset:0;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+  background:transparent;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:1; padding:1.2rem; text-align:center;
+  z-index:4; padding:1.2rem; text-align:center;
 }
 
 .pin-spotlight{
@@ -911,7 +927,7 @@ body{
    SCENE 4 — THE THEATRICAL VELVET CURTAIN REVEAL
    ============================================================ */
 .scene4{
-  position:absolute; inset:0; z-index:6;
+  position:absolute; inset:0; z-index:auto;
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .8s ease, visibility .8s ease;
   overflow:hidden;
@@ -920,12 +936,17 @@ body{
   opacity:1; visibility:visible; pointer-events:auto;
 }
 
+.scene4__bg{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+}
+
 /* === Revealed Stage / Warm Paper Background === */
 .stage-background{
   position:absolute; inset:0;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+  background:transparent;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:1; padding:1.5rem; text-align:center;
+  z-index:4; padding:1.5rem; text-align:center;
 }
 
 /* Spotlight effect behind content (softer gold glow) */
@@ -1084,7 +1105,7 @@ body{
    SCENE 5 — THE BIRTHDAY CAKE & LIFETIME COUNTDOWN
    ============================================================ */
 .scene5{
-  position:absolute; inset:0; z-index:6;
+  position:absolute; inset:0; z-index:auto;
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .8s ease, visibility .8s ease;
   overflow-y:auto; overflow-x:hidden;
@@ -1093,11 +1114,17 @@ body{
 .scene5.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
 }
+
+.scene5__bg{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+}
+
 .cake-stage{
   position:relative; min-height:100%; width:100%;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+  background:transparent;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:1; padding:clamp(1rem, 3vh, 2rem) 1rem; text-align:center;
+  z-index:4; padding:clamp(1rem, 3vh, 2rem) 1rem; text-align:center;
   box-sizing:border-box;
 }
 .cake-spotlight{
@@ -1404,7 +1431,7 @@ body{
    SCENE 6 — THE MEMORY WALL
    ============================================================ */
 .scene6{
-  position:absolute; inset:0; z-index:6;
+  position:absolute; inset:0; z-index:auto;
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .8s ease, visibility .8s ease;
   overflow-y:auto; overflow-x:hidden;
@@ -1412,6 +1439,11 @@ body{
 }
 .scene6.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
+}
+
+.scene6__bg{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
 }
 
 /* Transition Light Wipe entering Scene 6 */
@@ -1425,9 +1457,9 @@ body{
 /* Memory Stage */
 .memory-stage{
   position:relative; min-height:100%; width:100%;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+  background:transparent;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-  z-index:1; padding:clamp(2rem, 5vh, 3.5rem) 1rem clamp(3rem, 6vh, 4.5rem); text-align:center;
+  z-index:4; padding:clamp(2rem, 5vh, 3.5rem) 1rem clamp(3rem, 6vh, 4.5rem); text-align:center;
   box-sizing:border-box;
 }
 
@@ -1601,13 +1633,18 @@ body{
    SCENE 7 — THE VINTAGE FILM-STRIP
    ============================================================ */
 .scene7{
-  position:absolute; inset:0; z-index:6;
+  position:absolute; inset:0; z-index:auto;
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .8s ease, visibility .8s ease;
   overflow:hidden;
 }
 .scene7.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
+}
+
+.scene7__bg{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 45%, #2a0b17 0%, #17040d 60%, #0c0207 100%);
 }
 
 /* Projector Shutter Flash Transition */
@@ -1619,9 +1656,10 @@ body{
 /* Film Stage */
 .film-stage{
   position:relative; width:100%; height:100%;
-  background:radial-gradient(ellipse at 50% 45%, #2a0b17 0%, #17040d 60%, #0c0207 100%);
+  background:transparent;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   overflow:hidden; box-sizing:border-box; padding:1.5rem 1rem;
+  z-index:4;
 }
 
 /* Sweeping Projector Light Beam */
@@ -1782,7 +1820,7 @@ body{
    SCENE 8 — CONSTELLATION OF US
    ============================================================ */
 .scene8{
-  position:absolute; inset:0; z-index:6;
+  position:absolute; inset:0; z-index:auto;
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .8s ease, visibility .8s ease;
   overflow-y:auto; overflow-x:hidden;
@@ -1790,6 +1828,11 @@ body{
 }
 .scene8.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
+}
+
+.scene8__bg{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 35%, #240a16 0%, #14030c 55%, #080105 100%);
 }
 
 /* Starlight Dissolve Transition Veil */
@@ -1803,10 +1846,11 @@ body{
 /* Sky Stage */
 .sky-stage{
   position:relative; min-height:100%; width:100%;
-  background:radial-gradient(ellipse at 50% 35%, #240a16 0%, #14030c 55%, #080105 100%);
+  background:transparent;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
   overflow-x:hidden; box-sizing:border-box;
   padding:clamp(1.5rem, 3.5vh, 2.5rem) 1rem clamp(2.5rem, 5vh, 4rem);
+  z-index:4;
 }
 
 /* Cosmic Nebula Glow */
@@ -2023,7 +2067,7 @@ body{
    SCENE 9 — ENVELOPE & TYPEWRITER LETTER
    ============================================================ */
 .scene9{
-  position:absolute; inset:0; z-index:6;
+  position:absolute; inset:0; z-index:auto;
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity .8s ease, visibility .8s ease;
   overflow-y:auto; overflow-x:hidden;
@@ -2031,6 +2075,11 @@ body{
 }
 .scene9.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
+}
+
+.scene9__bg{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 25%, #fffdf9 0%, var(--paper-0) 38%, var(--paper-1) 72%, var(--paper-2) 100%);
 }
 
 /* Warm Parchment Dissolve Transition Veil */
@@ -2044,10 +2093,11 @@ body{
 /* Letter Stage (Warm daylight desk setting) */
 .letter-stage{
   position:relative; min-height:100%; width:100%;
-  background:radial-gradient(120% 90% at 50% 25%, #fffdf9 0%, var(--paper-0) 38%, var(--paper-1) 72%, var(--paper-2) 100%);
+  background:transparent;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   overflow-x:hidden; box-sizing:border-box;
   padding:clamp(1.5rem, 3.5vh, 2.5rem) 1rem clamp(2rem, 4vh, 3.5rem);
+  z-index:4;
 }
 
 /* Warm ambient background light pool */
@@ -2304,12 +2354,30 @@ body{
 }
 
 /* ============================================================
+   FUTURE SCENES (Scene 10 & 11)
+   ============================================================ */
+.scene10, .scene11{
+  position:absolute; inset:0; z-index:auto;
+  opacity:0; visibility:hidden; pointer-events:none;
+  background:transparent;
+  transition:opacity 0.8s ease, visibility 0.8s ease;
+  overflow:hidden;
+}
+.scene10.is-active, .scene11.is-active{
+  opacity:1; visibility:visible; pointer-events:auto;
+}
+.scene10__bg, .scene11__bg{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background:#090205;
+}
+
+/* ============================================================
    GLOBAL AMBIENT PARTICLES (Shared across all scenes)
    ============================================================ */
 .global-ambient-particles{
   position:fixed; inset:0;
   pointer-events:none; overflow:hidden;
-  z-index:7;
+  z-index:2;
 }
 
 /* Individual particle base */

@@ -823,73 +823,83 @@
         <!-- Constellation Interactive Sky Box -->
         <div class="constellation-box" id="constellationBox">
           <!-- Dynamic Connecting Lines SVG -->
-          <svg class="constellation-svg" id="constellationSvg" viewBox="0 0 1000 650" preserveAspectRatio="none" aria-hidden="true">
-            <line class="constellation-line" id="constLine0" x1="180" y1="145" x2="480" y2="100"></line>
-            <line class="constellation-line" id="constLine1" x1="480" y1="100" x2="820" y2="165"></line>
-            <line class="constellation-line" id="constLine2" x1="820" y1="165" x2="700" y2="315"></line>
-            <line class="constellation-line" id="constLine3" x1="700" y1="315" x2="320" y2="340"></line>
-            <line class="constellation-line" id="constLine4" x1="320" y1="340" x2="500" y2="230"></line>
+          <svg class="constellation-svg" id="constellationSvg" viewBox="0 0 1000 440" preserveAspectRatio="none" aria-hidden="true">
+            <line class="constellation-line" id="constLine0" x1="160" y1="154" x2="480" y2="70"></line>
+            <line class="constellation-line" id="constLine1" x1="480" y1="70" x2="840" y2="140"></line>
+            <line class="constellation-line" id="constLine2" x1="840" y1="140" x2="740" y2="335"></line>
+            <line class="constellation-line" id="constLine3" x1="740" y1="335" x2="260" y2="335"></line>
+            <line class="constellation-line" id="constLine4" x1="260" y1="335" x2="500" y2="228"></line>
           </svg>
 
-          <!-- 6 Named Star Nodes -->
+          <!-- 6 Named Star Nodes (pure celestial stars without cluttering text labels) -->
           <!-- Star 0 -->
-          <div class="constellation-node" id="starNode0" style="left: 18%; top: 22%;">
+          <div class="constellation-node" id="starNode0" style="left: 16%; top: 35%;" role="button" aria-label="Star 1: the one who remembers my order" tabindex="0">
             <div class="star-halo" aria-hidden="true"></div>
             <div class="star-flare" aria-hidden="true">✦</div>
             <div class="star-core" aria-hidden="true"></div>
-            <div class="star-caption-pill pill-bottom-right">
-              <span class="star-caption-text">the one who remembers my order</span>
-            </div>
           </div>
 
           <!-- Star 1 -->
-          <div class="constellation-node" id="starNode1" style="left: 48%; top: 15%;">
+          <div class="constellation-node" id="starNode1" style="left: 48%; top: 16%;" role="button" aria-label="Star 2: the one who never lets me spiral alone" tabindex="0">
             <div class="star-halo" aria-hidden="true"></div>
             <div class="star-flare" aria-hidden="true">✦</div>
             <div class="star-core" aria-hidden="true"></div>
-            <div class="star-caption-pill pill-top">
-              <span class="star-caption-text">the one who never lets me spiral alone</span>
-            </div>
           </div>
 
           <!-- Star 2 -->
-          <div class="constellation-node" id="starNode2" style="left: 82%; top: 25%;">
+          <div class="constellation-node" id="starNode2" style="left: 84%; top: 32%;" role="button" aria-label="Star 3: the one who shows up" tabindex="0">
             <div class="star-halo" aria-hidden="true"></div>
             <div class="star-flare" aria-hidden="true">✦</div>
             <div class="star-core" aria-hidden="true"></div>
-            <div class="star-caption-pill pill-bottom-left">
-              <span class="star-caption-text">the one who shows up</span>
-            </div>
           </div>
 
           <!-- Star 3 -->
-          <div class="constellation-node" id="starNode3" style="left: 70%; top: 48%;">
+          <div class="constellation-node" id="starNode3" style="left: 74%; top: 76%;" role="button" aria-label="Star 4: the one who laughs before the punchline" tabindex="0">
             <div class="star-halo" aria-hidden="true"></div>
             <div class="star-flare" aria-hidden="true">✦</div>
             <div class="star-core" aria-hidden="true"></div>
-            <div class="star-caption-pill pill-bottom-right">
-              <span class="star-caption-text">the one who laughs before the punchline</span>
-            </div>
           </div>
 
           <!-- Star 4 -->
-          <div class="constellation-node" id="starNode4" style="left: 32%; top: 52%;">
+          <div class="constellation-node" id="starNode4" style="left: 26%; top: 76%;" role="button" aria-label="Star 5: the one who makes every room warmer" tabindex="0">
             <div class="star-halo" aria-hidden="true"></div>
             <div class="star-flare" aria-hidden="true">✦</div>
             <div class="star-core" aria-hidden="true"></div>
-            <div class="star-caption-pill pill-bottom-left">
-              <span class="star-caption-text">the one who makes every room warmer</span>
-            </div>
           </div>
 
-          <!-- Star 5 -->
-          <div class="constellation-node" id="starNode5" style="left: 50%; top: 35%;">
+          <!-- Star 5 (Center Heart Star) -->
+          <div class="constellation-node" id="starNode5" style="left: 50%; top: 52%;" role="button" aria-label="Star 6: the one who feels like home" tabindex="0">
             <div class="star-halo" aria-hidden="true"></div>
             <div class="star-flare star-flare-lg" aria-hidden="true">✦</div>
             <div class="star-core star-core-lg" aria-hidden="true"></div>
-            <div class="star-caption-pill pill-bottom">
-              <span class="star-caption-text">the one who feels like home</span>
-            </div>
+          </div>
+        </div>
+
+        <!-- Vertical Poem Caption List (Stacked centered column forming a short poem) -->
+        <div class="constellation-poem" id="constellationPoem" aria-label="Constellation lines">
+          <div class="poem-line" id="poemLine0" data-star="0">
+            <span class="poem-bullet" aria-hidden="true">✦</span>
+            <span class="poem-text">the one who remembers my order</span>
+          </div>
+          <div class="poem-line" id="poemLine1" data-star="1">
+            <span class="poem-bullet" aria-hidden="true">✦</span>
+            <span class="poem-text">the one who never lets me spiral alone</span>
+          </div>
+          <div class="poem-line" id="poemLine2" data-star="2">
+            <span class="poem-bullet" aria-hidden="true">✦</span>
+            <span class="poem-text">the one who shows up</span>
+          </div>
+          <div class="poem-line" id="poemLine3" data-star="3">
+            <span class="poem-bullet" aria-hidden="true">✦</span>
+            <span class="poem-text">the one who laughs before the punchline</span>
+          </div>
+          <div class="poem-line" id="poemLine4" data-star="4">
+            <span class="poem-bullet" aria-hidden="true">✦</span>
+            <span class="poem-text">the one who makes every room warmer</span>
+          </div>
+          <div class="poem-line" id="poemLine5" data-star="5">
+            <span class="poem-bullet" aria-hidden="true">✦</span>
+            <span class="poem-text">the one who feels like home</span>
           </div>
         </div>
 

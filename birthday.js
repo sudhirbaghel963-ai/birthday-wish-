@@ -2105,6 +2105,15 @@ const constLines = [
   $('constLine4')
 ];
 
+const poemLines = [
+  $('poemLine0'),
+  $('poemLine1'),
+  $('poemLine2'),
+  $('poemLine3'),
+  $('poemLine4'),
+  $('poemLine5')
+];
+
 let constellationTimeline = null;
 
 function getConstellationLineLength(line){
@@ -2130,7 +2139,7 @@ function resetConstellationScene(){
 
   starNodes.forEach(node => {
     if (node){
-      node.classList.remove('is-lit', 'has-caption', 'is-pulsing');
+      node.classList.remove('is-lit', 'is-pulsing');
     }
   });
 
@@ -2141,6 +2150,12 @@ function resetConstellationScene(){
       line.style.strokeDasharray = `${len}`;
       line.style.strokeDashoffset = `${len}`;
       line.style.opacity = '0';
+    }
+  });
+
+  poemLines.forEach(line => {
+    if (line){
+      line.classList.remove('is-revealed', 'is-highlighted');
     }
   });
 
@@ -2165,13 +2180,16 @@ function playScene8(){
 
   if (reduceMotion){
     starNodes.forEach(node => {
-      if (node) node.classList.add('is-lit', 'has-caption');
+      if (node) node.classList.add('is-lit');
     });
     constLines.forEach(line => {
       if (line){
         line.style.strokeDashoffset = '0';
         line.style.opacity = '1';
       }
+    });
+    poemLines.forEach(line => {
+      if (line) line.classList.add('is-revealed');
     });
     if (constellationVeil){
       gsap.set(constellationVeil, { opacity: 0 });
@@ -2196,10 +2214,13 @@ function playScene8(){
     );
   }
 
-  // 2. Light Star 0
+  // 2. Light Star 0 and reveal Poem Line 0
   constellationTimeline.add(() => {
     if (starNodes[0]){
-      starNodes[0].classList.add('is-lit', 'has-caption');
+      starNodes[0].classList.add('is-lit');
+    }
+    if (poemLines[0]){
+      poemLines[0].classList.add('is-revealed');
     }
   }, '+=0.2');
 
@@ -2207,6 +2228,7 @@ function playScene8(){
   for (let i = 0; i < constLines.length; i++){
     const line = constLines[i];
     const nextStar = starNodes[i + 1];
+    const nextPoemLine = poemLines[i + 1];
     const lineLen = getConstellationLineLength(line);
 
     constellationTimeline.add(() => {
@@ -2221,7 +2243,10 @@ function playScene8(){
       ease: 'power2.inOut',
       onComplete: () => {
         if (nextStar){
-          nextStar.classList.add('is-lit', 'has-caption');
+          nextStar.classList.add('is-lit');
+        }
+        if (nextPoemLine){
+          nextPoemLine.classList.add('is-revealed');
         }
       }
     });
@@ -2235,6 +2260,9 @@ function playScene8(){
     constLines.forEach(line => {
       if (line) line.classList.add('is-pulsing');
     });
+    if (poemLines[5]){
+      poemLines[5].classList.add('is-highlighted');
+    }
   }, '+=0.4');
 
   constellationTimeline.add(() => {
@@ -2244,6 +2272,9 @@ function playScene8(){
     constLines.forEach(line => {
       if (line) line.classList.remove('is-pulsing');
     });
+    if (poemLines[5]){
+      poemLines[5].classList.remove('is-highlighted');
+    }
   }, '+=0.75');
 
   // 5. 3D Hinge Reveal of Closing Headline
@@ -2264,24 +2295,57 @@ function playScene8(){
   }, '+=0.3');
 }
 
-// Interactive Star Hover / Tap feedback
-starNodes.forEach(node => {
+// Interactive Star & Poem Line Hover / Tap pairing
+starNodes.forEach((node, idx) => {
   if (!node) return;
-  node.addEventListener('pointerenter', () => {
+  const pairedLine = poemLines[idx];
+
+  const triggerPulse = () => {
     if (!node.classList.contains('is-lit')) return;
     node.classList.remove('is-pulsing');
+    if (pairedLine) pairedLine.classList.remove('is-highlighted');
     void node.offsetWidth;
     node.classList.add('is-pulsing');
-  });
-  node.addEventListener('pointerleave', () => {
+    if (pairedLine) pairedLine.classList.add('is-highlighted');
+  };
+
+  const clearPulse = () => {
     node.classList.remove('is-pulsing');
-  });
+    if (pairedLine) pairedLine.classList.remove('is-highlighted');
+  };
+
+  node.addEventListener('pointerenter', triggerPulse);
+  node.addEventListener('pointerleave', clearPulse);
   node.addEventListener('click', () => {
-    if (!node.classList.contains('is-lit')) return;
-    node.classList.remove('is-pulsing');
-    void node.offsetWidth;
-    node.classList.add('is-pulsing');
-    setTimeout(() => node.classList.remove('is-pulsing'), 650);
+    triggerPulse();
+    setTimeout(clearPulse, 700);
+  });
+});
+
+poemLines.forEach((line, idx) => {
+  if (!line) return;
+  const pairedStar = starNodes[idx];
+
+  const triggerHighlight = () => {
+    if (!line.classList.contains('is-revealed')) return;
+    line.classList.add('is-highlighted');
+    if (pairedStar && pairedStar.classList.contains('is-lit')){
+      pairedStar.classList.remove('is-pulsing');
+      void pairedStar.offsetWidth;
+      pairedStar.classList.add('is-pulsing');
+    }
+  };
+
+  const clearHighlight = () => {
+    line.classList.remove('is-highlighted');
+    if (pairedStar) pairedStar.classList.remove('is-pulsing');
+  };
+
+  line.addEventListener('pointerenter', triggerHighlight);
+  line.addEventListener('pointerleave', clearHighlight);
+  line.addEventListener('click', () => {
+    triggerHighlight();
+    setTimeout(clearHighlight, 700);
   });
 });
 

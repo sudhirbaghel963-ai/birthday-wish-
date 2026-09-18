@@ -2240,85 +2240,62 @@ if (nextScene8){
 }
 
 /* ============================================================
-   SCENE 9 — THE HANDWRITTEN LETTER CONTROLLER
+   SCENE 9 — ENVELOPE & TYPEWRITER LETTER CONTROLLER
    ============================================================ */
-const scene9         = $('scene9');
-const letterVeil     = $('letterVeil');
-const letterStage    = $('letterStage');
-const letterPrompt   = $('letterPrompt');
-const letterWrap     = $('letterWrap');
-const letterShadow   = $('letterShadow');
-const letterPaper    = $('letterPaper');
-const flapTop        = $('flapTop');
-const flapBot        = $('flapBot');
-const letterContent  = $('letterContent');
-const letterLine1    = $('letterLine1');
-const letterLine2    = $('letterLine2');
-const letterLine3    = $('letterLine3');
-const letterFlourish = $('letterFlourish');
-const flourishPath   = $('flourishPath');
-const nextScene9     = $('nextScene9');
+const scene9             = $('scene9');
+const letterVeil         = $('letterVeil');
+const envelopeWrapper    = $('envelopeWrapper');
+const envelope           = $('envelope');
+const envelopeFlap       = $('envelopeFlap');
+const envelopeHeart      = $('envelopeHeart');
+const envelopeHint       = $('envelopeHint');
+const letterContainer    = $('letterContainer');
+const letterCardScroll   = $('letterCardScroll');
+const typewriterText     = $('typewriterText');
+const nextScene9         = $('nextScene9');
 
-let letterTimeline   = null;
-let isLetterUnfolded = false;
-let letterWords      = [];
+const LETTER_TEXT =
+  "Dear troublemaker,\n\nThank you for every ridiculous memory and the ones we haven't made yet.\n\nHappy Birthday. I mean it.";
 
-// Initialize & wrap words into spans for progressive handwriting animation
-function initLetterWords(){
-  const lines = [letterLine1, letterLine2, letterLine3];
-  letterWords = [];
-  lines.forEach(line => {
-    if (!line) return;
-    const text = line.textContent.trim();
-    const words = text.split(/\s+/);
-    line.innerHTML = words.map(word => `<span class="letter-word">${word}</span>`).join(' ');
-    const spans = Array.from(line.querySelectorAll('.letter-word'));
-    letterWords.push(spans);
-  });
-}
-initLetterWords();
+let typeWriterStarted    = false;
+let typeWriterTimeoutId  = null;
 
 function resetScene9(){
-  if (letterTimeline){
-    letterTimeline.kill();
-    letterTimeline = null;
+  if (typeWriterTimeoutId){
+    clearTimeout(typeWriterTimeoutId);
+    typeWriterTimeoutId = null;
   }
-  isLetterUnfolded = false;
+  typeWriterStarted = false;
 
-  // Reset wrap & paper
-  if (letterWrap){
-    letterWrap.classList.remove('is-unfolded', 'is-breathing');
-    letterWrap.classList.add('is-idle');
-    gsap.set(letterWrap, { clearProps: 'all' });
+  // Reset envelope
+  if (envelopeWrapper){
+    envelopeWrapper.classList.remove('is-hidden');
+    gsap.set(envelopeWrapper, { clearProps: 'all' });
   }
-
-  // Reset prompt
-  if (letterPrompt){
-    letterPrompt.classList.remove('is-hidden');
+  if (envelopeFlap){
+    gsap.set(envelopeFlap, { clearProps: 'all' });
   }
-
-  // Reset flaps
-  if (flapTop){
-    gsap.set(flapTop, { clearProps: 'all' });
-  }
-  if (flapBot){
-    gsap.set(flapBot, { clearProps: 'all' });
+  if (envelopeHeart){
+    gsap.set(envelopeHeart, { clearProps: 'all' });
   }
 
-  // Reset words
-  letterWords.forEach(lineSpans => {
-    lineSpans.forEach(span => {
-      span.classList.remove('is-written');
-      gsap.set(span, { clearProps: 'all' });
-    });
-  });
+  // Reset letter card container & text
+  if (letterContainer){
+    letterContainer.classList.add('is-hidden');
+    letterContainer.classList.remove('is-breathing');
+    gsap.set(letterContainer, { clearProps: 'all' });
+  }
+  if (typewriterText){
+    typewriterText.innerHTML = '';
+  }
+  if (letterCardScroll){
+    letterCardScroll.scrollTop = 0;
+  }
 
-  // Reset flourish
-  if (flourishPath){
-    flourishPath.classList.remove('is-drawn');
-    const len = flourishPath.getTotalLength ? flourishPath.getTotalLength() : 450;
-    flourishPath.style.strokeDasharray = `${len}`;
-    flourishPath.style.strokeDashoffset = `${len}`;
+  // Reset cursor if exists
+  const existingCursor = scene9 ? scene9.querySelector('.typewriter-cursor') : null;
+  if (existingCursor){
+    existingCursor.remove();
   }
 
   // Reset next button
@@ -2328,142 +2305,132 @@ function resetScene9(){
   }
 }
 
-function unfoldLetter(){
-  if (isLetterUnfolded) return;
-  isLetterUnfolded = true;
+function startTypewriter(){
+  if (!typewriterText) return;
+  typewriterText.innerHTML = '';
+  const text = LETTER_TEXT;
+  const speed = 36; // ms per character (readable 30-45ms)
+  let i = 0;
 
-  if (letterTimeline){
-    letterTimeline.kill();
-    letterTimeline = null;
+  // Insert blinking cursor
+  const existingCursor = scene9 ? scene9.querySelector('.typewriter-cursor') : null;
+  if (existingCursor) existingCursor.remove();
+
+  const cursor = document.createElement('span');
+  cursor.className = 'typewriter-cursor';
+  typewriterText.parentNode.appendChild(cursor);
+
+  function type(){
+    if (i < text.length){
+      const char = text.charAt(i);
+      if (char === '\n'){
+        typewriterText.innerHTML += '<br>';
+      } else {
+        typewriterText.innerHTML += char;
+      }
+      i++;
+
+      // Auto-scroll the letter container downward so growing text stays in view
+      if (letterCardScroll){
+        letterCardScroll.scrollTop = letterCardScroll.scrollHeight;
+      }
+
+      typeWriterTimeoutId = setTimeout(type, speed);
+    } else {
+      // Typing finished
+      if (cursor && cursor.parentNode){
+        cursor.remove();
+      }
+      typeWriterStarted = false; // unlock interaction
+
+      // Start continuous ambient breathing shadow
+      if (letterContainer){
+        letterContainer.classList.add('is-breathing');
+      }
+
+      // Pop / fade in shared Next pill button
+      if (nextScene9 && scene9 && scene9.classList.contains('is-active')){
+        nextScene9.hidden = false;
+        requestAnimationFrame(() => nextScene9.classList.add('is-shown'));
+      }
+    }
   }
 
-  // Hide tap prompt immediately
-  if (letterPrompt){
-    letterPrompt.classList.add('is-hidden');
-  }
+  typeWriterTimeoutId = setTimeout(type, 200);
+}
 
-  // Stop idle sway
-  if (letterWrap){
-    letterWrap.classList.remove('is-idle');
-  }
+function openEnvelope(){
+  // Guard: while typing or opening transition is in progress, ignore taps
+  if (typeWriterStarted) return;
+  typeWriterStarted = true;
 
   if (reduceMotion){
-    if (letterWrap){
-      letterWrap.classList.add('is-unfolded');
+    if (envelopeWrapper){
+      envelopeWrapper.classList.add('is-hidden');
     }
-    letterWords.forEach(lineSpans => {
-      lineSpans.forEach(span => span.classList.add('is-written'));
-    });
-    if (flourishPath){
-      flourishPath.classList.add('is-drawn');
-      flourishPath.style.strokeDashoffset = '0';
+    if (letterContainer){
+      letterContainer.classList.remove('is-hidden');
+    }
+    if (typewriterText){
+      typewriterText.innerHTML = LETTER_TEXT.replace(/\n/g, '<br>');
     }
     if (nextScene9){
       nextScene9.hidden = false;
       nextScene9.classList.add('is-shown');
     }
+    typeWriterStarted = false;
     return;
   }
 
-  letterTimeline = gsap.timeline();
+  const tl = gsap.timeline();
 
-  // Stage 1: Accordion unfold sequence
-  // Unfold bottom flap downwards
-  if (flapBot){
-    letterTimeline.to(flapBot, {
-      rotateX: -160,
-      duration: 0.45,
+  // 1. Flap opens slightly and heart flares
+  if (envelopeFlap){
+    tl.to(envelopeFlap, {
+      rotateX: 140,
+      duration: 0.35,
       ease: 'power2.inOut'
     }, 0);
   }
+  if (envelopeHeart){
+    tl.to(envelopeHeart, {
+      scale: 1.35,
+      opacity: 0.9,
+      duration: 0.25,
+      ease: 'power2.out'
+    }, 0.05);
+  }
 
-  // Unfold top flap upwards
-  if (flapTop){
-    letterTimeline.to(flapTop, {
-      rotateX: 160,
-      duration: 0.5,
-      ease: 'power2.inOut'
+  // 2. Envelope lifts and dissolves away
+  if (envelopeWrapper){
+    tl.to(envelopeWrapper, {
+      opacity: 0,
+      y: -24,
+      scale: 0.92,
+      duration: 0.45,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        envelopeWrapper.classList.add('is-hidden');
+      }
     }, 0.2);
   }
 
-  // Expand letter wrapper to full stationery dimension
-  letterTimeline.add(() => {
-    if (letterWrap){
-      letterWrap.classList.add('is-unfolded');
-    }
-  }, 0.45);
+  // 3. Letter card glides and fades into view
+  if (letterContainer){
+    tl.add(() => {
+      letterContainer.classList.remove('is-hidden');
+    }, 0.5);
 
-  // Gentle settling bounce of the unfolded page
-  if (letterPaper){
-    letterTimeline.fromTo(letterPaper,
-      { scale: 0.94 },
-      { scale: 1, duration: 0.65, ease: 'back.out(1.2)' },
-      0.45
+    tl.fromTo(letterContainer,
+      { opacity: 0, y: 30, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'power2.out',
+        onComplete: () => {
+          startTypewriter();
+        }
+      },
+      0.5
     );
   }
-
-  // Stage 2: Progressive Handwriting Reveal
-  // Line 1 ("Dear troublemaker,")
-  if (letterWords[0]){
-    letterTimeline.add(() => {}, '+=0.25');
-    letterWords[0].forEach((span, i) => {
-      letterTimeline.add(() => {
-        span.classList.add('is-written');
-      }, `+=${i === 0 ? 0.05 : 0.16}`);
-    });
-  }
-
-  // Brief thinking pause before Line 2
-  letterTimeline.add(() => {}, '+=0.4');
-
-  // Line 2 ("Thank you for every ridiculous memory and the ones we haven't made yet.")
-  if (letterWords[1]){
-    letterWords[1].forEach((span, i) => {
-      letterTimeline.add(() => {
-        span.classList.add('is-written');
-      }, `+=${i === 0 ? 0.05 : 0.13}`);
-    });
-  }
-
-  // Thoughtful pause before Line 3
-  letterTimeline.add(() => {}, '+=0.45');
-
-  // Line 3 ("Happy Birthday. I mean it.")
-  if (letterWords[2]){
-    letterWords[2].forEach((span, i) => {
-      letterTimeline.add(() => {
-        span.classList.add('is-written');
-      }, `+=${i === 0 ? 0.05 : 0.18}`);
-    });
-  }
-
-  // Stage 3: Hand-drawn Calligraphy Signature Flourish
-  letterTimeline.add(() => {}, '+=0.25');
-  if (flourishPath){
-    const len = flourishPath.getTotalLength ? flourishPath.getTotalLength() : 450;
-    flourishPath.style.strokeDasharray = `${len}`;
-    flourishPath.style.strokeDashoffset = `${len}`;
-
-    letterTimeline.to(flourishPath, {
-      strokeDashoffset: 0,
-      duration: 1.25,
-      ease: 'power2.inOut',
-      onComplete: () => {
-        flourishPath.classList.add('is-drawn');
-      }
-    });
-  }
-
-  // Stage 4: Living ambient breathing and reveal Next Pill
-  letterTimeline.add(() => {
-    if (letterWrap){
-      letterWrap.classList.add('is-breathing');
-    }
-    if (nextScene9 && scene9 && scene9.classList.contains('is-active')){
-      nextScene9.hidden = false;
-      requestAnimationFrame(() => nextScene9.classList.add('is-shown'));
-    }
-  }, '+=0.3');
 }
 
 function playScene9(){
@@ -2474,7 +2441,6 @@ function playScene9(){
     if (letterVeil){
       gsap.set(letterVeil, { opacity: 0 });
     }
-    unfoldLetter();
     return;
   }
 
@@ -2482,23 +2448,23 @@ function playScene9(){
   if (letterVeil){
     gsap.fromTo(letterVeil,
       { opacity: 0.95, scale: 1 },
-      { opacity: 0, scale: 1.05, duration: 1.0, ease: 'power2.out' }
+      { opacity: 0, scale: 1.05, duration: 0.95, ease: 'power2.out' }
     );
   }
 }
 
-// User tap-to-unfold interaction on letter wrapper & prompt
-if (letterWrap){
-  letterWrap.addEventListener('click', unfoldLetter);
-  letterWrap.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+// User tap-to-open interaction on envelope
+if (envelope){
+  envelope.addEventListener('click', openEnvelope);
+  envelope.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' '){
       e.preventDefault();
-      unfoldLetter();
+      openEnvelope();
     }
   });
 }
-if (letterPrompt){
-  letterPrompt.addEventListener('click', unfoldLetter);
+if (envelopeHint){
+  envelopeHint.addEventListener('click', openEnvelope);
 }
 
 // Wire Scene 9 Next button to Scene 10 placeholder
@@ -2523,5 +2489,5 @@ window.playScene6    = playScene6;
 window.playScene7    = playScene7;
 window.playScene8    = playScene8;
 window.playScene9    = playScene9;
-window.unfoldLetter  = unfoldLetter;
+window.openEnvelope  = openEnvelope;
 window.goToScene     = goToScene;

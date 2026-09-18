@@ -894,13 +894,13 @@
       </div>
     </section>
 
-    <!-- SCENE 9 — THE HANDWRITTEN LETTER ------------------------------ -->
-    <section class="scene9" id="scene9" aria-label="A handwritten birthday letter: A note for you" aria-hidden="true">
+    <!-- SCENE 9 — ENVELOPE & TYPEWRITER LETTER ------------------------- -->
+    <section class="scene9" id="scene9" aria-label="A birthday letter in an envelope" aria-hidden="true">
       <!-- Warm Parchment Dissolve Transition Veil -->
       <div class="letter-veil" id="letterVeil" aria-hidden="true"></div>
 
       <div class="letter-stage" id="letterStage">
-        <!-- Warm ambient background light & caustic desk glow -->
+        <!-- Warm ambient background light pool -->
         <div class="letter-bg-ambient" aria-hidden="true"></div>
 
         <!-- Ambient Warm Gold Dust Motes -->
@@ -913,62 +913,46 @@
           <span class="l-mote" style="--lx: 68%; --ly: 16%; --ld: 3.6s; --ls: 2.5px;"></span>
         </div>
 
-        <div class="letter-viewport">
-          <!-- "Tap to open" hint prompt -->
-          <div class="letter-prompt" id="letterPrompt" aria-hidden="true">
-            <span class="prompt-icon">💌</span>
-            <span class="prompt-text">tap to open</span>
-          </div>
-
-          <!-- 3D Letter Wrapper -->
-          <div class="letter-wrap" id="letterWrap" role="button" tabindex="0" aria-label="Tap to open the folded birthday letter">
-            <!-- Dynamic Contact Shadow -->
-            <div class="letter-shadow" id="letterShadow" aria-hidden="true"></div>
-
-            <!-- The Paper Sheet -->
-            <div class="letter-paper" id="letterPaper">
-              <!-- Fold Creases Overlay -->
-              <div class="paper-crease paper-crease-top" aria-hidden="true"></div>
-              <div class="paper-crease paper-crease-bot" aria-hidden="true"></div>
-
-              <!-- Paper Texture & Inner Edge Sheen -->
-              <div class="paper-sheen" aria-hidden="true"></div>
-
-              <!-- Top Accordion Flap (visible during folded state) -->
-              <div class="letter-flap flap-top" id="flapTop" aria-hidden="true">
-                <div class="flap-crease-shade"></div>
-                <div class="flap-seal">
-                  <span class="seal-icon">✦</span>
-                </div>
-              </div>
-
-              <!-- Bottom Accordion Flap (visible during folded state) -->
-              <div class="letter-flap flap-bot" id="flapBot" aria-hidden="true">
-                <div class="flap-crease-shade"></div>
-              </div>
-
-              <!-- Handwritten Content Area (unfolds and writes itself) -->
-              <div class="letter-content" id="letterContent">
-                <p class="letter-eyebrow">a note for you</p>
-                <div class="letter-body">
-                  <p class="letter-line letter-line-1" id="letterLine1">Dear troublemaker,</p>
-                  <p class="letter-line letter-line-2" id="letterLine2">Thank you for every ridiculous memory and the ones we haven't made yet.</p>
-                  <p class="letter-line letter-line-3" id="letterLine3">Happy Birthday. I mean it.</p>
-                </div>
-
-                <!-- Hand-drawn signature flourish SVG -->
-                <div class="letter-flourish-wrap" aria-hidden="true">
-                  <svg class="letter-flourish" id="letterFlourish" viewBox="0 0 320 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path class="flourish-path" id="flourishPath" d="M12 28 C 45 38, 90 14, 140 24 C 185 33, 230 18, 275 22 C 295 24, 308 30, 290 34 C 265 39, 215 35, 175 30 C 145 26, 120 32, 95 35" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
+        <div class="letter-scene-content">
+          <!-- 1. Closed Envelope Stage -->
+          <div class="envelope-wrapper" id="envelopeWrapper">
+            <div class="envelope-container" id="envelope" role="button" tabindex="0" aria-label="Tap to open the envelope">
+              <div class="envelope-shadow" aria-hidden="true"></div>
+              <div class="envelope-back" aria-hidden="true"></div>
+              <div class="envelope-flap" id="envelopeFlap" aria-hidden="true"></div>
+              <div class="envelope-body" aria-hidden="true"></div>
+              <div class="envelope-heart" id="envelopeHeart" aria-hidden="true">
+                <svg class="envelope-heart-svg" viewBox="0 0 32 30" aria-hidden="true">
+                  <defs>
+                    <radialGradient id="envHeartGlow" cx="38%" cy="30%" r="80%">
+                      <stop offset="0%" stop-color="#ffd9e4" />
+                      <stop offset="42%" stop-color="#ff6f97" />
+                      <stop offset="82%" stop-color="#d81e57" />
+                      <stop offset="100%" stop-color="#9d0f3e" />
+                    </radialGradient>
+                  </defs>
+                  <path d="M16 28.5 C16 28.5 2 19 2 9.5 C2 4.5 6 1 11 1 C13.8 1 15.2 2.5 16 3.5 C16.8 2.5 18.2 1 21 1 C26 1 30 4.5 30 9.5 C30 19 16 28.5 16 28.5 Z" fill="url(#envHeartGlow)"/>
+                </svg>
+                <span class="heart-pulse-glow" aria-hidden="true"></span>
               </div>
             </div>
+            <p class="envelope-hint pulsing" id="envelopeHint">tap to open</p>
           </div>
 
-          <!-- Next Button to Scene 10 -->
-          <div class="letter-actions">
-            <button class="next-pill letter-next" id="nextScene9" type="button" hidden>Next &rarr;</button>
+          <!-- 2. Lined Paper Letter Card (Appears upon opening envelope) -->
+          <div class="letter-card-container is-hidden" id="letterContainer" aria-live="polite">
+            <div class="letter-card-shadow" id="letterCardShadow" aria-hidden="true"></div>
+            <div class="letter-card" id="letterCard">
+              <div class="letter-card-texture" aria-hidden="true"></div>
+              <p class="letter-eyebrow">a note for you</p>
+              <div class="letter-card-scroll" id="letterCardScroll">
+                <p class="letter-typewriter-text" id="typewriterText"></p>
+              </div>
+            </div>
+            <!-- Shared Next Pill Button -->
+            <div class="letter-card-actions">
+              <button class="next-pill" id="nextScene9" type="button" hidden>Next &rarr;</button>
+            </div>
           </div>
         </div>
       </div>

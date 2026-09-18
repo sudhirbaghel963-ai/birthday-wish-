@@ -2020,7 +2020,7 @@ body{
 }
 
 /* ============================================================
-   SCENE 9 — THE HANDWRITTEN LETTER
+   SCENE 9 — ENVELOPE & TYPEWRITER LETTER
    ============================================================ */
 .scene9{
   position:absolute; inset:0; z-index:6;
@@ -2081,230 +2081,223 @@ body{
   100%{ transform:translateY(-24px) translateX(12px); opacity:0.3; }
 }
 
-/* 3D Viewport framing the letter */
-.letter-viewport{
+/* Content wrapper centering both envelope and letter card */
+.letter-scene-content{
   position:relative; z-index:5; width:100%;
-  max-width:min(92vw, 480px);
-  display:flex; flex-direction:column; align-items:center;
-  perspective:1200px; -webkit-perspective:1200px;
+  max-width:min(92vw, 460px);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
 
-/* "Tap to open" Hint Prompt */
-.letter-prompt{
-  display:inline-flex; align-items:center; gap:8px;
-  padding:6px 18px; border-radius:999px;
-  background:rgba(255, 252, 248, 0.88);
-  border:1px solid rgba(175, 120, 135, 0.28);
-  box-shadow:0 4px 16px rgba(120, 30, 60, 0.12);
-  margin-bottom:clamp(14px, 2.5vh, 22px);
-  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-  transition:opacity 0.45s ease, transform 0.45s var(--ease-out);
-  animation:promptBounce 2.5s ease-in-out infinite;
-  cursor:pointer; user-select:none;
+/* ---- 1. Closed Envelope ---- */
+.envelope-wrapper{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  width:100%; perspective:800px;
+  transition:opacity 0.5s ease, transform 0.5s var(--ease-out);
 }
-@keyframes promptBounce{
-  0%, 100%{ transform:translateY(0); }
-  50%{ transform:translateY(-4px); }
+.envelope-wrapper.is-hidden{
+  display:none !important;
 }
-.prompt-icon{ font-size:15px; }
-.prompt-text{
-  font-family:"Cormorant Garamond", Georgia, serif;
-  font-style:italic; font-weight:600; font-size:14.5px;
-  letter-spacing:0.04em; color:var(--ink);
+
+.envelope-container{
+  position:relative;
+  width:clamp(240px, 62vw, 290px);
+  height:clamp(160px, 42vw, 195px);
+  cursor:pointer; outline:none; user-select:none;
+  transform-style:preserve-3d;
+  transition:transform 0.4s var(--ease-out);
 }
-.letter-prompt.is-hidden{
-  opacity:0; transform:translateY(-8px) scale(0.95);
+.envelope-container:hover{
+  transform:translateY(-3px) scale(1.02);
+}
+.envelope-container:active .envelope-flap{
+  transform:rotateX(24deg);
+}
+
+/* Dynamic Envelope Drop Shadow */
+.envelope-shadow{
+  position:absolute; inset:12px 14px -14px 14px;
+  background:radial-gradient(ellipse at 50% 60%, rgba(110, 25, 55, 0.28) 0%, rgba(130, 45, 70, 0.14) 50%, transparent 75%);
+  filter:blur(14px); border-radius:14px;
+  pointer-events:none; z-index:1;
+  transition:transform 0.4s ease, filter 0.4s ease;
+}
+.envelope-container:hover .envelope-shadow{
+  filter:blur(18px); transform:translateY(2px);
+}
+
+/* Envelope Back Panel */
+.envelope-back{
+  position:absolute; inset:0;
+  background:linear-gradient(135deg, #e8d0c4 0%, #d8beb2 100%);
+  border:1px solid rgba(190, 150, 140, 0.5);
+  border-radius:12px;
+  box-shadow:inset 0 0 20px rgba(160, 110, 100, 0.15);
+  z-index:2;
+}
+
+/* Envelope Front Body with pocket cutout */
+.envelope-body{
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, #fffcf8 0%, #faeee6 100%);
+  clip-path:polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
+  border-radius:0 0 12px 12px;
+  border-bottom:1px solid rgba(210, 170, 160, 0.5);
+  box-shadow:inset 0 -4px 14px rgba(170, 110, 100, 0.12);
+  z-index:4;
+}
+
+/* Envelope Top Triangular Flap */
+.envelope-flap{
+  position:absolute; top:0; left:0; width:100%; height:62%;
+  background:linear-gradient(180deg, #f7dfd3 0%, #ecd0c2 100%);
+  clip-path:polygon(0 0, 100% 0, 50% 100%);
+  z-index:5; transform-origin:top center;
+  filter:drop-shadow(0 3px 6px rgba(130, 55, 70, 0.18));
+  transition:transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  border-top-left-radius:12px; border-top-right-radius:12px;
+}
+
+/* Glowing Pulsing Heart Emblem */
+.envelope-heart{
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%, -50%);
+  width:38px; height:36px;
+  z-index:6; display:flex; align-items:center; justify-content:center;
   pointer-events:none;
 }
-
-/* 3D Interactive Letter Wrapper */
-.letter-wrap{
-  position:relative; width:100%;
-  max-width:330px; height:138px;
-  display:flex; justify-content:center; align-items:center;
-  cursor:pointer; outline:none;
-  transform-style:preserve-3d;
-  transition:max-width 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+.envelope-heart-svg{
+  width:100%; height:100%;
+  filter:drop-shadow(0 2px 8px rgba(180, 20, 65, 0.45));
+  animation:heartPulse 1.8s ease-in-out infinite;
 }
-.letter-wrap.is-idle{
-  animation:letterIdleSway 4.5s ease-in-out infinite alternate;
+.heart-pulse-glow{
+  position:absolute; inset:-6px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255, 111, 151, 0.4) 0%, transparent 70%);
+  animation:heartPulseGlow 1.8s ease-in-out infinite;
+  pointer-events:none;
 }
-@keyframes letterIdleSway{
-  0%{ transform:rotate(-1.2deg) translateY(0); }
-  50%{ transform:rotate(0.8deg) translateY(-4px); }
-  100%{ transform:rotate(-0.8deg) translateY(2px); }
+@keyframes heartPulse{
+  0%, 100%{ transform:scale(1); filter:drop-shadow(0 2px 6px rgba(180, 20, 65, 0.4)); }
+  50%{ transform:scale(1.14); filter:drop-shadow(0 3px 14px rgba(255, 111, 151, 0.7)); }
 }
-.letter-wrap.is-unfolded{
-  max-width:min(92vw, 460px);
-  height:auto; min-height:460px;
-  cursor:default; animation:none;
+@keyframes heartPulseGlow{
+  0%, 100%{ opacity:0.3; transform:scale(0.85); }
+  50%{ opacity:0.85; transform:scale(1.25); }
 }
 
-/* Dynamic Paper Contact Shadow */
-.letter-shadow{
-  position:absolute; inset:8px 12px -10px 12px;
-  background:radial-gradient(ellipse at 50% 60%, rgba(95, 25, 50, 0.32) 0%, rgba(130, 45, 70, 0.15) 50%, transparent 75%);
-  filter:blur(14px); border-radius:16px;
-  pointer-events:none; z-index:1;
-  transition:all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  transform:translateZ(-10px);
-}
-.letter-wrap.is-unfolded .letter-shadow{
-  inset:16px 20px -20px 20px;
-  filter:blur(22px);
-  background:radial-gradient(ellipse at 50% 50%, rgba(95, 25, 50, 0.26) 0%, rgba(130, 45, 70, 0.13) 55%, transparent 80%);
-}
-.letter-wrap.is-unfolded.is-breathing .letter-shadow{
-  animation:letterShadowBreathe 5s ease-in-out infinite alternate;
-}
-@keyframes letterShadowBreathe{
-  0%{ transform:translateZ(-10px) scale(0.98); opacity:0.85; filter:blur(20px); }
-  100%{ transform:translateZ(-10px) scale(1.02); opacity:1; filter:blur(26px); }
-}
-
-/* The Paper Stationery Sheet */
-.letter-paper{
-  position:relative; width:100%; height:100%;
-  background:#fffbf6;
-  border:1px solid rgba(220, 185, 170, 0.65);
-  border-radius:6px;
-  box-shadow:inset 0 0 35px rgba(245, 220, 205, 0.45), 0 2px 8px rgba(100, 25, 45, 0.08);
-  overflow:hidden; z-index:2;
-  transform-style:preserve-3d;
-  box-sizing:border-box;
-  padding:clamp(22px, 4vh, 36px) clamp(22px, 5vw, 36px);
-  display:flex; flex-direction:column;
-}
-
-/* Subtle Fold Creases across the page */
-.paper-crease{
-  position:absolute; left:0; right:0; height:1px;
-  background:linear-gradient(90deg, rgba(200, 160, 140, 0) 0%, rgba(180, 130, 110, 0.24) 18%, rgba(180, 130, 110, 0.24) 82%, rgba(200, 160, 140, 0) 100%);
-  box-shadow:0 1px 1px rgba(255, 255, 255, 0.7);
-  pointer-events:none; z-index:3; opacity:0;
-  transition:opacity 0.6s ease;
-}
-.paper-crease-top{ top:33.3%; }
-.paper-crease-bot{ bottom:33.3%; }
-.letter-wrap.is-unfolded .paper-crease{ opacity:1; }
-
-/* Subtle Paper Texture Sheen */
-.paper-sheen{
-  position:absolute; inset:0;
-  background:radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
-  pointer-events:none; z-index:2;
-}
-
-/* Folded Accordion Flaps */
-.letter-flap{
-  position:absolute; left:0; right:0; height:50%;
-  background:linear-gradient(180deg, #fffcf8 0%, #fdf5ec 100%);
-  border:1px solid rgba(220, 185, 170, 0.6);
-  box-shadow:0 4px 12px rgba(120, 40, 60, 0.12);
-  z-index:10; pointer-events:none;
-  backface-visibility:hidden; -webkit-backface-visibility:hidden;
-  transition:transform 0.65s cubic-bezier(0.34, 1.3, 0.64, 1), opacity 0.5s ease;
-}
-.flap-top{
-  top:0; border-radius:6px 6px 0 0;
-  transform-origin:top center;
-}
-.flap-bot{
-  bottom:0; border-radius:0 0 6px 6px;
-  transform-origin:bottom center;
-  background:linear-gradient(0deg, #fffcf8 0%, #fdf5ec 100%);
-}
-.flap-seal{
-  position:absolute; bottom:-13px; left:50%; transform:translateX(-50%);
-  width:26px; height:26px; border-radius:50%;
-  background:radial-gradient(circle at 40% 35%, #a80f43 0%, #700a2e 100%);
-  border:1.5px solid var(--gold-1);
-  box-shadow:0 2px 8px rgba(110, 10, 49, 0.35);
-  display:flex; align-items:center; justify-content:center;
-  color:var(--gold-1); font-size:11px;
-}
-.flap-crease-shade{
-  position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(160, 100, 80, 0.08) 0%, transparent 40%, rgba(130, 60, 80, 0.12) 100%);
-}
-.letter-wrap.is-unfolded .letter-flap{
-  opacity:0; pointer-events:none; visibility:hidden;
-}
-
-/* Handwritten Content Area */
-.letter-content{
-  position:relative; z-index:4;
-  display:flex; flex-direction:column;
-  opacity:0; transform:translateY(10px);
-  transition:opacity 0.6s ease, transform 0.6s var(--ease-out);
-  width:100%;
-}
-.letter-wrap.is-unfolded .letter-content{
-  opacity:1; transform:translateY(0);
-}
-.letter-eyebrow{
+/* Envelope Hint ("tap to open") */
+.envelope-hint{
   font-family:"Cormorant Garamond", Georgia, serif;
-  font-style:italic; font-weight:600; font-size:clamp(14px, 2.8vw, 16.5px);
+  font-style:italic; font-weight:600; font-size:clamp(14.5px, 3.4vw, 17px);
   letter-spacing:0.08em; text-transform:lowercase;
-  color:var(--ink-soft); margin:0 0 clamp(16px, 3vh, 24px);
+  color:var(--ink-soft); margin:clamp(20px, 3.5vh, 28px) 0 0;
+  text-align:center; user-select:none;
+}
+.envelope-hint.pulsing{
+  animation:hintSoftPulse 2.2s ease-in-out infinite;
+}
+@keyframes hintSoftPulse{
+  0%, 100%{ opacity:0.55; transform:translateY(0); }
+  50%{ opacity:1; transform:translateY(-2px); }
+}
+
+/* ---- 2. Lined Paper Letter Card ---- */
+.letter-card-container{
+  position:relative; width:100%;
+  display:flex; flex-direction:column; align-items:center;
+  transition:opacity 0.6s ease, transform 0.6s var(--ease-out);
+}
+.letter-card-container.is-hidden{
+  display:none !important;
+}
+
+.letter-card-shadow{
+  position:absolute; inset:14px 18px -18px 18px;
+  background:radial-gradient(ellipse at 50% 55%, rgba(100, 25, 50, 0.24) 0%, rgba(120, 40, 65, 0.12) 55%, transparent 78%);
+  filter:blur(20px); border-radius:16px;
+  pointer-events:none; z-index:1;
+  transition:all 0.8s ease;
+}
+.letter-card-container.is-breathing .letter-card-shadow{
+  animation:letterCardBreathe 5s ease-in-out infinite alternate;
+}
+@keyframes letterCardBreathe{
+  0%{ transform:scale(0.98); opacity:0.85; filter:blur(18px); }
+  100%{ transform:scale(1.02); opacity:1; filter:blur(24px); }
+}
+
+.letter-card{
+  position:relative; width:100%;
+  background-color:#fffdf9;
+  border:1px solid rgba(220, 185, 170, 0.55);
+  border-radius:12px;
+  box-shadow:inset 0 0 35px rgba(245, 225, 215, 0.4), 0 4px 16px rgba(100, 25, 45, 0.08);
+  box-sizing:border-box;
+  padding:clamp(26px, 4.5vh, 38px) clamp(22px, 5vw, 36px) clamp(24px, 4vh, 32px);
+  z-index:2; overflow:hidden;
+  /* Repeating Lined-Paper Rule Texture matching 36px line height */
+  background-image:repeating-linear-gradient(
+    transparent,
+    transparent 35px,
+    rgba(215, 180, 165, 0.38) 35px,
+    rgba(215, 180, 165, 0.38) 36px
+  );
+  background-position:0 1.2rem;
+}
+
+.letter-card-texture{
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse at 25% 15%, rgba(255, 255, 255, 0.6) 0%, transparent 65%);
+  pointer-events:none; z-index:1;
+}
+
+.letter-card .letter-eyebrow{
+  position:relative; z-index:2;
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-style:italic; font-weight:600; font-size:clamp(13.5px, 2.8vw, 15.5px);
+  letter-spacing:0.08em; text-transform:lowercase;
+  color:var(--ink-soft); margin:0 0 16px;
   text-align:left; opacity:0.85;
 }
-.letter-body{
-  display:flex; flex-direction:column;
-  gap:clamp(16px, 3vh, 24px);
+
+/* Scrollable typewriter body */
+.letter-card-scroll{
+  position:relative; z-index:2;
+  max-height:clamp(280px, 52vh, 420px);
+  overflow-y:auto; overflow-x:hidden;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  padding-right:4px;
 }
-.letter-line{
+/* Subtle custom scrollbar */
+.letter-card-scroll::-webkit-scrollbar{ width:4px; }
+.letter-card-scroll::-webkit-scrollbar-track{ background:transparent; }
+.letter-card-scroll::-webkit-scrollbar-thumb{ background:rgba(210, 170, 160, 0.4); border-radius:4px; }
+
+.letter-typewriter-text{
   font-family:"Great Vibes", cursive;
-  font-size:clamp(26px, 5.8vw, 36px);
-  line-height:1.45; letter-spacing:0.02em;
-  color:#50182b;
-  text-shadow:0 0 1px rgba(80, 24, 43, 0.35);
+  font-size:clamp(25px, 5.8vw, 34px);
+  line-height:36px;
+  color:#4a1526;
+  text-shadow:0 0 1px rgba(74, 21, 38, 0.35);
   margin:0; text-align:left;
-  word-spacing:0.12em;
-}
-.letter-line-1{
-  font-size:clamp(28px, 6.2vw, 38px);
-}
-.letter-line-3{
-  color:#6e0a31;
+  min-height:190px;
+  word-spacing:0.08em;
 }
 
-/* Progressive Word Handwriting Reveal */
-.letter-word{
-  display:inline-block;
-  opacity:0; transform:translateY(3px) scale(0.96);
-  filter:blur(2.5px);
-  transition:opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), filter 0.28s ease;
-  will-change:opacity, transform, filter;
+/* Typewriter blinking cursor */
+.typewriter-cursor{
+  display:inline-block; width:2px; height:1.1em;
+  background:#a80f43; margin-left:2px; vertical-align:text-bottom;
+  animation:typewriterBlink 0.8s infinite;
 }
-.letter-word.is-written{
-  opacity:1; transform:translateY(0) scale(1);
-  filter:blur(0);
+@keyframes typewriterBlink{
+  0%, 100%{ opacity:1; }
+  50%{ opacity:0; }
 }
 
-/* Hand-drawn Calligraphy Signature Flourish */
-.letter-flourish-wrap{
-  position:relative; width:100%; max-width:240px;
-  margin-top:clamp(12px, 2.2vh, 18px);
-  display:flex; justify-content:flex-start;
-}
-.letter-flourish{
-  width:100%; height:auto;
-  color:#7a1d3d;
-  filter:drop-shadow(0 1px 2px rgba(80, 24, 43, 0.2));
-}
-.flourish-path{
-  stroke-dasharray:450;
-  stroke-dashoffset:450;
-  transition:stroke-dashoffset 1.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.flourish-path.is-drawn{
-  stroke-dashoffset:0;
-}
-
-/* Scene 9 Next Button Placement */
-.letter-actions{
+/* Action Area for Next Pill Button */
+.letter-card-actions{
   margin-top:clamp(1.6rem, 3.5vh, 2.5rem);
   display:flex; justify-content:center;
   z-index:6;
@@ -2367,13 +2360,11 @@ body{
   .constellation-closing-inner{ opacity:1 !important; transform:none !important; }
   .sky-nebula{ animation:none !important; }
   .bg-star{ animation:none !important; opacity:0.6 !important; }
-  .letter-wrap{ animation:none !important; }
-  .letter-wrap.is-unfolded{ transition:none !important; }
-  .letter-flap{ display:none !important; }
-  .letter-prompt{ display:none !important; }
-  .letter-content{ opacity:1 !important; transform:none !important; transition:none !important; }
-  .letter-word{ opacity:1 !important; transform:none !important; filter:none !important; transition:none !important; }
-  .flourish-path{ stroke-dashoffset:0 !important; transition:none !important; }
-  .letter-shadow{ animation:none !important; }
-  .l-mote{ animation:none !important; }
+  .envelope-heart-svg{ animation:none !important; }
+  .heart-pulse-glow{ animation:none !important; }
+  .envelope-hint{ animation:none !important; opacity:0.8 !important; }
+  .letter-card-shadow{ animation:none !important; }
+  .typewriter-cursor{ display:none !important; }
+  .letter-card-container{ transition:none !important; }
+  .envelope-wrapper{ transition:none !important; }
 }

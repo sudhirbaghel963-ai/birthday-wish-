@@ -2105,13 +2105,13 @@ const constLines = [
   $('constLine4')
 ];
 
-const poemLines = [
-  $('poemLine0'),
-  $('poemLine1'),
-  $('poemLine2'),
-  $('poemLine3'),
-  $('poemLine4'),
-  $('poemLine5')
+const timelineItems = [
+  $('timelineItem0'),
+  $('timelineItem1'),
+  $('timelineItem2'),
+  $('timelineItem3'),
+  $('timelineItem4'),
+  $('timelineItem5')
 ];
 
 let constellationTimeline = null;
@@ -2153,9 +2153,9 @@ function resetConstellationScene(){
     }
   });
 
-  poemLines.forEach(line => {
-    if (line){
-      line.classList.remove('is-revealed', 'is-highlighted');
+  timelineItems.forEach(item => {
+    if (item){
+      item.classList.remove('is-revealed', 'is-highlighted');
     }
   });
 
@@ -2188,8 +2188,8 @@ function playScene8(){
         line.style.opacity = '1';
       }
     });
-    poemLines.forEach(line => {
-      if (line) line.classList.add('is-revealed');
+    timelineItems.forEach(item => {
+      if (item) item.classList.add('is-revealed');
     });
     if (constellationVeil){
       gsap.set(constellationVeil, { opacity: 0 });
@@ -2214,13 +2214,13 @@ function playScene8(){
     );
   }
 
-  // 2. Light Star 0 and reveal Poem Line 0
+  // 2. Light Star 0 and reveal Timeline Item 0 (1st pill, right side)
   constellationTimeline.add(() => {
     if (starNodes[0]){
       starNodes[0].classList.add('is-lit');
     }
-    if (poemLines[0]){
-      poemLines[0].classList.add('is-revealed');
+    if (timelineItems[0]){
+      timelineItems[0].classList.add('is-revealed');
     }
   }, '+=0.2');
 
@@ -2228,7 +2228,7 @@ function playScene8(){
   for (let i = 0; i < constLines.length; i++){
     const line = constLines[i];
     const nextStar = starNodes[i + 1];
-    const nextPoemLine = poemLines[i + 1];
+    const nextItem = timelineItems[i + 1];
     const lineLen = getConstellationLineLength(line);
 
     constellationTimeline.add(() => {
@@ -2245,8 +2245,8 @@ function playScene8(){
         if (nextStar){
           nextStar.classList.add('is-lit');
         }
-        if (nextPoemLine){
-          nextPoemLine.classList.add('is-revealed');
+        if (nextItem){
+          nextItem.classList.add('is-revealed');
         }
       }
     });
@@ -2260,8 +2260,8 @@ function playScene8(){
     constLines.forEach(line => {
       if (line) line.classList.add('is-pulsing');
     });
-    if (poemLines[5]){
-      poemLines[5].classList.add('is-highlighted');
+    if (timelineItems[5]){
+      timelineItems[5].classList.add('is-highlighted');
     }
   }, '+=0.4');
 
@@ -2272,8 +2272,8 @@ function playScene8(){
     constLines.forEach(line => {
       if (line) line.classList.remove('is-pulsing');
     });
-    if (poemLines[5]){
-      poemLines[5].classList.remove('is-highlighted');
+    if (timelineItems[5]){
+      timelineItems[5].classList.remove('is-highlighted');
     }
   }, '+=0.75');
 
@@ -2295,23 +2295,23 @@ function playScene8(){
   }, '+=0.3');
 }
 
-// Interactive Star & Poem Line Hover / Tap pairing
+// Interactive Star & Timeline Item Hover / Tap pairing
 starNodes.forEach((node, idx) => {
   if (!node) return;
-  const pairedLine = poemLines[idx];
+  const pairedItem = timelineItems[idx];
 
   const triggerPulse = () => {
     if (!node.classList.contains('is-lit')) return;
     node.classList.remove('is-pulsing');
-    if (pairedLine) pairedLine.classList.remove('is-highlighted');
+    if (pairedItem) pairedItem.classList.remove('is-highlighted');
     void node.offsetWidth;
     node.classList.add('is-pulsing');
-    if (pairedLine) pairedLine.classList.add('is-highlighted');
+    if (pairedItem) pairedItem.classList.add('is-highlighted');
   };
 
   const clearPulse = () => {
     node.classList.remove('is-pulsing');
-    if (pairedLine) pairedLine.classList.remove('is-highlighted');
+    if (pairedItem) pairedItem.classList.remove('is-highlighted');
   };
 
   node.addEventListener('pointerenter', triggerPulse);
@@ -2322,13 +2322,13 @@ starNodes.forEach((node, idx) => {
   });
 });
 
-poemLines.forEach((line, idx) => {
-  if (!line) return;
+timelineItems.forEach((item, idx) => {
+  if (!item) return;
   const pairedStar = starNodes[idx];
 
   const triggerHighlight = () => {
-    if (!line.classList.contains('is-revealed')) return;
-    line.classList.add('is-highlighted');
+    if (!item.classList.contains('is-revealed')) return;
+    item.classList.add('is-highlighted');
     if (pairedStar && pairedStar.classList.contains('is-lit')){
       pairedStar.classList.remove('is-pulsing');
       void pairedStar.offsetWidth;
@@ -2337,13 +2337,13 @@ poemLines.forEach((line, idx) => {
   };
 
   const clearHighlight = () => {
-    line.classList.remove('is-highlighted');
+    item.classList.remove('is-highlighted');
     if (pairedStar) pairedStar.classList.remove('is-pulsing');
   };
 
-  line.addEventListener('pointerenter', triggerHighlight);
-  line.addEventListener('pointerleave', clearHighlight);
-  line.addEventListener('click', () => {
+  item.addEventListener('pointerenter', triggerHighlight);
+  item.addEventListener('pointerleave', clearHighlight);
+  item.addEventListener('click', () => {
     triggerHighlight();
     setTimeout(clearHighlight, 700);
   });

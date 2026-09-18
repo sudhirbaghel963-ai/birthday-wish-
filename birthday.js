@@ -2083,27 +2083,8 @@ if (nextScene7){
    ============================================================ */
 const scene8               = $('scene8');
 const constellationVeil    = $('constellationVeil');
-const constellationBox     = $('constellationBox');
-const constellationSvg     = $('constellationSvg');
 const constellationClosing = $('constellationClosing');
 const nextScene8           = $('nextScene8');
-
-const starNodes = [
-  $('starNode0'),
-  $('starNode1'),
-  $('starNode2'),
-  $('starNode3'),
-  $('starNode4'),
-  $('starNode5')
-];
-
-const constLines = [
-  $('constLine0'),
-  $('constLine1'),
-  $('constLine2'),
-  $('constLine3'),
-  $('constLine4')
-];
 
 const timelineItems = [
   $('timelineItem0'),
@@ -2116,46 +2097,15 @@ const timelineItems = [
 
 let constellationTimeline = null;
 
-function getConstellationLineLength(line){
-  if (line && line.getTotalLength){
-    try {
-      const len = line.getTotalLength();
-      if (len > 0) return len;
-    } catch (e){}
-  }
-  if (!line) return 350;
-  const x1 = parseFloat(line.getAttribute('x1')) || 0;
-  const y1 = parseFloat(line.getAttribute('y1')) || 0;
-  const x2 = parseFloat(line.getAttribute('x2')) || 0;
-  const y2 = parseFloat(line.getAttribute('y2')) || 0;
-  return Math.hypot(x2 - x1, y2 - y1) || 350;
-}
-
 function resetConstellationScene(){
   if (constellationTimeline){
     constellationTimeline.kill();
     constellationTimeline = null;
   }
 
-  starNodes.forEach(node => {
-    if (node){
-      node.classList.remove('is-lit', 'is-pulsing');
-    }
-  });
-
-  constLines.forEach(line => {
-    if (line){
-      const len = getConstellationLineLength(line);
-      line.classList.remove('is-pulsing');
-      line.style.strokeDasharray = `${len}`;
-      line.style.strokeDashoffset = `${len}`;
-      line.style.opacity = '0';
-    }
-  });
-
   timelineItems.forEach(item => {
     if (item){
-      item.classList.remove('is-revealed', 'is-highlighted');
+      item.classList.remove('is-revealed', 'is-highlighted', 'is-pulsing');
     }
   });
 
@@ -2179,15 +2129,6 @@ function playScene8(){
   const closingInner = constellationClosing ? constellationClosing.querySelector('.constellation-closing-inner') : null;
 
   if (reduceMotion){
-    starNodes.forEach(node => {
-      if (node) node.classList.add('is-lit');
-    });
-    constLines.forEach(line => {
-      if (line){
-        line.style.strokeDashoffset = '0';
-        line.style.opacity = '1';
-      }
-    });
     timelineItems.forEach(item => {
       if (item) item.classList.add('is-revealed');
     });
@@ -2214,131 +2155,64 @@ function playScene8(){
     );
   }
 
-  // 2. Light Star 0 and reveal Timeline Item 0 (1st pill, right side)
-  constellationTimeline.add(() => {
-    if (starNodes[0]){
-      starNodes[0].classList.add('is-lit');
-    }
-    if (timelineItems[0]){
-      timelineItems[0].classList.add('is-revealed');
-    }
-  }, '+=0.2');
-
-  // 3. Sequential connection from Star 0 to Star 5
-  for (let i = 0; i < constLines.length; i++){
-    const line = constLines[i];
-    const nextStar = starNodes[i + 1];
-    const nextItem = timelineItems[i + 1];
-    const lineLen = getConstellationLineLength(line);
-
+  // 2. Progressive sequential reveal: 6 timeline items appear step-by-step down the central spine
+  timelineItems.forEach((item, idx) => {
+    const delay = idx === 0 ? '+=0.2' : '+=0.7';
     constellationTimeline.add(() => {
-      if (line){
-        line.style.opacity = '1';
+      if (item){
+        item.classList.add('is-revealed');
       }
-    }, '+=0.3');
+    }, delay);
+  });
 
-    constellationTimeline.to(line, {
-      strokeDashoffset: 0,
-      duration: 0.65,
-      ease: 'power2.inOut',
-      onComplete: () => {
-        if (nextStar){
-          nextStar.classList.add('is-lit');
-        }
-        if (nextItem){
-          nextItem.classList.add('is-revealed');
-        }
-      }
-    });
-  }
-
-  // 4. Unison Constellation Pulse
+  // 3. Unison Constellation Pulse across all star dots
   constellationTimeline.add(() => {
-    starNodes.forEach(node => {
-      if (node) node.classList.add('is-pulsing');
-    });
-    constLines.forEach(line => {
-      if (line) line.classList.add('is-pulsing');
+    timelineItems.forEach(item => {
+      if (item) item.classList.add('is-pulsing');
     });
     if (timelineItems[5]){
       timelineItems[5].classList.add('is-highlighted');
     }
-  }, '+=0.4');
+  }, '+=0.5');
 
   constellationTimeline.add(() => {
-    starNodes.forEach(node => {
-      if (node) node.classList.remove('is-pulsing');
-    });
-    constLines.forEach(line => {
-      if (line) line.classList.remove('is-pulsing');
+    timelineItems.forEach(item => {
+      if (item) item.classList.remove('is-pulsing');
     });
     if (timelineItems[5]){
       timelineItems[5].classList.remove('is-highlighted');
     }
-  }, '+=0.75');
+  }, '+=0.8');
 
-  // 5. 3D Hinge Reveal of Closing Headline
+  // 4. 3D Hinge Reveal of Closing Headline
   if (closingInner){
     constellationTimeline.fromTo(closingInner,
       { opacity: 0, rotateX: -80, y: 20 },
       { opacity: 1, rotateX: 0, y: 0, duration: 1.0, ease: 'back.out(1.3)' },
-      '+=0.15'
+      '+=0.2'
     );
   }
 
-  // 6. Reveal Next Pill Button
+  // 5. Reveal Next Pill Button
   constellationTimeline.add(() => {
     if (nextScene8 && scene8 && scene8.classList.contains('is-active')){
       nextScene8.hidden = false;
       requestAnimationFrame(() => nextScene8.classList.add('is-shown'));
     }
-  }, '+=0.3');
+  }, '+=0.35');
 }
 
-// Interactive Star & Timeline Item Hover / Tap pairing
-starNodes.forEach((node, idx) => {
-  if (!node) return;
-  const pairedItem = timelineItems[idx];
-
-  const triggerPulse = () => {
-    if (!node.classList.contains('is-lit')) return;
-    node.classList.remove('is-pulsing');
-    if (pairedItem) pairedItem.classList.remove('is-highlighted');
-    void node.offsetWidth;
-    node.classList.add('is-pulsing');
-    if (pairedItem) pairedItem.classList.add('is-highlighted');
-  };
-
-  const clearPulse = () => {
-    node.classList.remove('is-pulsing');
-    if (pairedItem) pairedItem.classList.remove('is-highlighted');
-  };
-
-  node.addEventListener('pointerenter', triggerPulse);
-  node.addEventListener('pointerleave', clearPulse);
-  node.addEventListener('click', () => {
-    triggerPulse();
-    setTimeout(clearPulse, 700);
-  });
-});
-
-timelineItems.forEach((item, idx) => {
+// Interactive Timeline Item Hover / Tap feedback
+timelineItems.forEach(item => {
   if (!item) return;
-  const pairedStar = starNodes[idx];
 
   const triggerHighlight = () => {
     if (!item.classList.contains('is-revealed')) return;
     item.classList.add('is-highlighted');
-    if (pairedStar && pairedStar.classList.contains('is-lit')){
-      pairedStar.classList.remove('is-pulsing');
-      void pairedStar.offsetWidth;
-      pairedStar.classList.add('is-pulsing');
-    }
   };
 
   const clearHighlight = () => {
     item.classList.remove('is-highlighted');
-    if (pairedStar) pairedStar.classList.remove('is-pulsing');
   };
 
   item.addEventListener('pointerenter', triggerHighlight);

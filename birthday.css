@@ -1840,91 +1840,26 @@ body{
   100%{ opacity:0.25; transform:scale(0.8); }
 }
 
-/* Constellation Box */
-.constellation-box{
-  position:relative; width:min(92vw, 480px); height:clamp(160px, 22vh, 210px);
-  margin:clamp(0.2rem, 1vh, 0.6rem) auto 0; z-index:3;
-}
-
-/* Connecting Lines SVG */
-.constellation-svg{
-  position:absolute; inset:0; width:100%; height:100%;
-  pointer-events:none; z-index:4; overflow:visible;
-}
-.constellation-line{
-  stroke:var(--gold-1); stroke-width:2.2; stroke-linecap:round;
-  filter:drop-shadow(0 0 6px rgba(255, 207, 106, 0.75));
-  opacity:0; stroke-dasharray:400; stroke-dashoffset:400;
-  transition:filter 0.5s ease;
-}
-.constellation-line.is-pulsing{
-  filter:drop-shadow(0 0 14px rgba(255, 255, 255, 1)) drop-shadow(0 0 24px rgba(255, 207, 106, 0.9)) !important;
-  stroke:#fff !important;
-}
-
-/* Named Star Nodes */
-.constellation-node{
-  position:absolute; transform:translate(-50%, -50%); z-index:6;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; will-change:transform, opacity; outline:none;
-}
-.constellation-node:focus-visible{
-  outline:2px solid var(--gold-1);
-  outline-offset:4px;
-  border-radius:50%;
-}
-.star-halo{
-  position:absolute; width:44px; height:44px; border-radius:50%;
-  background:radial-gradient(circle, rgba(255, 207, 106, 0.5) 0%, rgba(212, 35, 92, 0.25) 45%, transparent 70%);
-  filter:blur(6px); opacity:0; transform:scale(0.4);
-  transition:all 0.6s cubic-bezier(0.16, 1, 0.3, 1); pointer-events:none;
-}
-.star-flare{
-  position:absolute; font-size:22px; color:var(--gold-1); line-height:1;
-  opacity:0; transform:scale(0) rotate(-25deg);
-  text-shadow:0 0 10px rgba(255, 223, 112, 0.9), 0 0 20px rgba(255, 180, 80, 0.6);
-  transition:all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events:none;
-}
-.star-flare-lg{
-  font-size:28px; color:#fff;
-}
-.star-core{
-  position:relative; width:9px; height:9px; border-radius:50%;
-  background:#ffffff; box-shadow:0 0 10px #ffdf70, 0 0 20px #e8a23d;
-  opacity:0; transform:scale(0);
-  transition:all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.star-core-lg{
-  width:12px; height:12px;
-  box-shadow:0 0 14px #ffffff, 0 0 28px #ffcf6a;
-}
-.constellation-node.is-lit .star-halo{ opacity:0.95; transform:scale(1); }
-.constellation-node.is-lit .star-flare{ opacity:1; transform:scale(1) rotate(0deg); }
-.constellation-node.is-lit .star-core{ opacity:1; transform:scale(1); }
-
-.constellation-node.is-pulsing .star-halo{ opacity:1; transform:scale(1.6); filter:blur(8px); }
-.constellation-node.is-pulsing .star-flare{ transform:scale(1.4) rotate(15deg); filter:drop-shadow(0 0 16px rgba(255, 255, 255, 1)); }
-
 /* ============================================================
-   SCENE 8 — ALTERNATING VERTICAL TIMELINE
+   SCENE 8 — ALTERNATING VERTICAL TIMELINE (ENLARGED CENTERPIECE)
    ============================================================ */
 .constellation-timeline{
   position:relative;
-  width:100%; max-width:min(94vw, 540px);
-  margin:clamp(0.6rem, 1.8vh, 1.2rem) auto 0;
+  width:100%; max-width:min(94vw, 680px);
+  margin:clamp(1rem, 2.5vh, 2rem) auto 0;
   display:flex; flex-direction:column;
-  gap:clamp(12px, 2.2vh, 18px);
+  gap:clamp(18px, 3.2vh, 28px);
   box-sizing:border-box;
-  padding:4px 0;
+  padding:8px 0;
   z-index:5;
 }
 
 /* Center Vertical Gold Hairline Spine */
 .timeline-spine{
-  position:absolute; top:10px; bottom:10px; left:50%;
-  width:1.5px; transform:translateX(-50%);
-  background:linear-gradient(180deg, rgba(232, 162, 61, 0) 0%, var(--gold-1) 12%, var(--gold-2) 88%, rgba(232, 162, 61, 0) 100%);
-  box-shadow:0 0 8px rgba(255, 207, 106, 0.45);
+  position:absolute; top:12px; bottom:12px; left:50%;
+  width:2px; transform:translateX(-50%);
+  background:linear-gradient(180deg, rgba(232, 162, 61, 0) 0%, var(--gold-1) 10%, var(--gold-2) 90%, rgba(232, 162, 61, 0) 100%);
+  box-shadow:0 0 10px rgba(255, 207, 106, 0.55);
   pointer-events:none; z-index:1;
 }
 
@@ -1935,14 +1870,14 @@ body{
   box-sizing:border-box; z-index:2;
 }
 
-/* Central Dot Marker */
+/* Central Dot Marker (Enlarged Starlight Marker) */
 .timeline-dot{
   position:absolute; left:50%; top:50%;
   transform:translate(-50%, -50%) scale(0.7);
-  width:8px; height:8px; border-radius:50%;
-  background:#4a1228;
-  border:1.5px solid rgba(255, 207, 106, 0.35);
-  box-shadow:0 0 4px rgba(0, 0, 0, 0.8);
+  width:13px; height:13px; border-radius:50%;
+  background:#360c20;
+  border:2px solid rgba(255, 207, 106, 0.4);
+  box-shadow:0 0 6px rgba(0, 0, 0, 0.8);
   opacity:0.4;
   transition:all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index:4; pointer-events:none;
@@ -1951,22 +1886,24 @@ body{
   opacity:1; transform:translate(-50%, -50%) scale(1);
   background:#ffffff;
   border-color:var(--gold-1);
-  box-shadow:0 0 8px rgba(255, 223, 112, 0.95), 0 0 16px rgba(255, 207, 106, 0.7);
+  box-shadow:0 0 12px rgba(255, 255, 255, 1), 0 0 22px rgba(255, 207, 106, 0.9), 0 0 35px rgba(232, 162, 61, 0.5);
 }
 
-/* Horizontal Hairline Branch Connector */
+/* Horizontal Hairline Branch Connector (Extended Length) */
 .timeline-branch{
-  position:absolute; top:50%; height:1px;
+  position:absolute; top:50%; height:1.5px;
   opacity:0; pointer-events:none; z-index:2;
   transition:opacity 0.5s ease;
 }
 .item-right .timeline-branch{
-  left:50%; width:clamp(12px, 3vw, 22px);
-  background:linear-gradient(90deg, var(--gold-1) 0%, rgba(255, 207, 106, 0.35) 100%);
+  left:50%; width:clamp(20px, 4.5vw, 42px);
+  background:linear-gradient(90deg, var(--gold-1) 0%, rgba(255, 207, 106, 0.45) 100%);
+  box-shadow:0 0 6px rgba(255, 207, 106, 0.5);
 }
 .item-left .timeline-branch{
-  right:50%; width:clamp(12px, 3vw, 22px);
-  background:linear-gradient(270deg, var(--gold-1) 0%, rgba(255, 207, 106, 0.35) 100%);
+  right:50%; width:clamp(20px, 4.5vw, 42px);
+  background:linear-gradient(270deg, var(--gold-1) 0%, rgba(255, 207, 106, 0.45) 100%);
+  box-shadow:0 0 6px rgba(255, 207, 106, 0.5);
 }
 .timeline-item.is-revealed .timeline-branch{
   opacity:1;
@@ -1975,23 +1912,23 @@ body{
 /* Item Left / Right Positioning */
 .item-right{
   justify-content:flex-start;
-  padding-left:calc(50% + clamp(12px, 3vw, 22px));
+  padding-left:calc(50% + clamp(20px, 4.5vw, 42px));
 }
 .item-left{
   justify-content:flex-end;
-  padding-right:calc(50% + clamp(12px, 3vw, 22px));
+  padding-right:calc(50% + clamp(20px, 4.5vw, 42px));
 }
 
-/* Caption Pill */
+/* Caption Pill (Enlarged & Prominent) */
 .timeline-pill{
   display:inline-flex; align-items:center;
-  padding:5px clamp(10px, 2.4vw, 14px);
+  padding:clamp(7px, 1.4vh, 10px) clamp(15px, 3.2vw, 22px);
   border-radius:9999px;
-  background:rgba(22, 6, 16, 0.75);
-  border:1px solid rgba(255, 207, 106, 0.32);
-  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-  box-shadow:0 4px 14px rgba(0, 0, 0, 0.5), 0 0 10px rgba(212, 35, 92, 0.2);
-  max-width:min(44vw, 240px);
+  background:rgba(22, 6, 16, 0.78);
+  border:1.5px solid rgba(255, 207, 106, 0.35);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 6px 18px rgba(0, 0, 0, 0.55), 0 0 12px rgba(212, 35, 92, 0.2);
+  max-width:min(44vw, 290px);
   box-sizing:border-box;
   cursor:pointer;
   will-change:transform, opacity;
@@ -2004,23 +1941,23 @@ body{
 
 /* Sliding entrance from alternating sides */
 .item-right .timeline-pill{
-  opacity:0; transform:translateX(24px);
+  opacity:0; transform:translateX(28px);
 }
 .item-left .timeline-pill{
-  opacity:0; transform:translateX(-24px);
+  opacity:0; transform:translateX(-28px);
 }
 .timeline-item.is-revealed .timeline-pill{
   opacity:1; transform:translateX(0);
 }
 
-/* Pill Typography */
+/* Pill Typography (Enlarged Proportions) */
 .timeline-pill-text{
   font-family:"Cormorant Garamond", Georgia, serif;
   font-style:italic; font-weight:600;
-  font-size:clamp(12px, 2.6vw, 14.5px);
-  letter-spacing:0.025em; color:#fff8f2;
-  text-shadow:0 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(255, 207, 106, 0.5);
-  line-height:1.25;
+  font-size:clamp(14px, 3vw, 17.5px);
+  letter-spacing:0.03em; color:#fff8f2;
+  text-shadow:0 1px 3px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 207, 106, 0.55);
+  line-height:1.3;
   text-align:center;
   transition:color 0.35s ease, text-shadow 0.35s ease;
 }
@@ -2028,32 +1965,34 @@ body{
 /* Interactive Hover / Highlight States */
 .timeline-item.is-highlighted .timeline-pill,
 .timeline-pill:hover{
-  border-color:rgba(255, 223, 112, 0.85);
-  background:rgba(38, 12, 28, 0.85);
-  box-shadow:0 0 20px rgba(255, 207, 106, 0.55), 0 4px 16px rgba(0, 0, 0, 0.6);
+  border-color:rgba(255, 223, 112, 0.9);
+  background:rgba(38, 12, 28, 0.88);
+  box-shadow:0 0 24px rgba(255, 207, 106, 0.6), 0 6px 20px rgba(0, 0, 0, 0.65);
   transform:scale(1.04);
 }
-.timeline-item.is-highlighted .timeline-dot{
-  transform:translate(-50%, -50%) scale(1.5);
-  box-shadow:0 0 14px #ffffff, 0 0 24px rgba(255, 207, 106, 1);
+.timeline-item.is-highlighted .timeline-dot,
+.timeline-item.is-pulsing .timeline-dot{
+  transform:translate(-50%, -50%) scale(1.6);
+  box-shadow:0 0 18px #ffffff, 0 0 30px rgba(255, 207, 106, 1), 0 0 45px rgba(232, 162, 61, 0.7);
 }
 .timeline-item.is-highlighted .timeline-pill-text,
 .timeline-pill:hover .timeline-pill-text{
   color:#ffffff;
-  text-shadow:0 0 12px rgba(255, 235, 185, 1), 0 0 20px rgba(255, 207, 106, 0.85);
+  text-shadow:0 0 14px rgba(255, 235, 185, 1), 0 0 24px rgba(255, 207, 106, 0.9);
 }
 
 /* Climax Hero Item (6th Star) */
 .item-hero .timeline-pill-text{
   color:#fed7aa;
+  font-size:clamp(15px, 3.2vw, 18.5px);
 }
 .item-hero .timeline-dot{
-  width:10px; height:10px;
+  width:15px; height:15px;
 }
 
 /* Closing Headline Block */
 .constellation-closing{
-  position:relative; z-index:8; margin-top:clamp(1rem, 2.4vh, 1.8rem);
+  position:relative; z-index:8; margin-top:clamp(1.6rem, 3.5vh, 2.6rem);
   display:flex; flex-direction:column; align-items:center; perspective:800px;
 }
 .constellation-closing-inner{
@@ -2131,10 +2070,6 @@ body{
   .film-climax-headline{ opacity:1 !important; transform:none !important; }
   .projector-beam{ animation:none !important; }
   .p-mote{ animation:none !important; }
-  .constellation-node .star-halo,
-  .constellation-node .star-flare,
-  .constellation-node .star-core{ opacity:1 !important; transform:none !important; }
-  .constellation-line{ opacity:1 !important; stroke-dashoffset:0 !important; }
   .timeline-pill{ opacity:1 !important; transform:none !important; transition:none !important; }
   .timeline-dot{ opacity:1 !important; transform:translate(-50%, -50%) !important; transition:none !important; }
   .timeline-branch{ opacity:1 !important; transition:none !important; }

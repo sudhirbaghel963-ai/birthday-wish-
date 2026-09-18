@@ -2482,12 +2482,162 @@ window.openGiftBox   = openGiftBox;
 window.playScene3    = playScene3;
 window.openCurtains  = openCurtains;
 window.closeCurtains = closeCurtains;
-window.playScene5    = playScene5;
-window.blowCandles   = blowCandles;
-window.relightCake   = relightCake;
-window.playScene6    = playScene6;
-window.playScene7    = playScene7;
-window.playScene8    = playScene8;
-window.playScene9    = playScene9;
-window.openEnvelope  = openEnvelope;
-window.goToScene     = goToScene;
+/* ============================================================
+   GLOBAL AMBIENT PARTICLES (Shared across all scenes)
+   ============================================================ */
+const ambientContainer = $('ambientParticles');
+
+const GLYPH_SVG_TEMPLATES = [
+  // 1. Heart
+  '<svg class="particle-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>',
+  // 2. Sparkle
+  '<svg class="particle-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="currentColor"/></svg>',
+  // 3. Blossom Petal
+  '<svg class="particle-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 C7 7, 5 13, 12 22 C19 13, 17 7, 12 2 Z" fill="currentColor"/></svg>'
+];
+
+const GLYPH_COLORS = [
+  'var(--rose-lift)',
+  'var(--gold-1)',
+  'var(--gold-2)',
+  'var(--rose)'
+];
+
+const DOT_COLORS = [
+  'var(--gold-1)',
+  'var(--gold-2)'
+];
+
+function startAmbientParticles(){
+  if (!ambientContainer || reduceMotion) return;
+
+  const TOTAL_PARTICLES = 20; // 15-25 subtle density
+
+  function spawnParticle(isInitial){
+    if (!ambientContainer) return;
+    const el = document.createElement('div');
+    el.className = 'g-particle';
+
+    const isGlyph = Math.random() < 0.52; // roughly 50/50 split
+
+    if (isGlyph){
+      el.classList.add('g-particle--glyph');
+      const tmpl = GLYPH_SVG_TEMPLATES[Math.floor(Math.random() * GLYPH_SVG_TEMPLATES.length)];
+      el.innerHTML = tmpl;
+      el.style.color = GLYPH_COLORS[Math.floor(Math.random() * GLYPH_COLORS.length)];
+      const size = 11 + Math.random() * 6; // 11px - 17px
+      el.style.width = `${size}px`;
+      el.style.height = `${size}px`;
+    } else {
+      el.classList.add('g-particle--dot');
+      el.style.color = DOT_COLORS[Math.floor(Math.random() * DOT_COLORS.length)];
+      const size = 3 + Math.random() * 3.5; // 3px - 6.5px
+      el.style.width = `${size}px`;
+      el.style.height = `${size}px`;
+    }
+
+    ambientContainer.appendChild(el);
+
+    const winW = window.innerWidth || 360;
+    const winH = window.innerHeight || 640;
+    const startX = Math.random() * winW;
+    // If initial spawn, distribute across viewport height so it's active immediately
+    const startY = isInitial
+      ? Math.random() * winH
+      : winH + 15 + Math.random() * 35;
+
+    const duration = 12 + Math.random() * 10; // 12s - 22s slow drift
+    const swayAmount = 25 + Math.random() * 40;
+    const swayDuration = 3 + Math.random() * 3;
+    const maxOpacity = isGlyph ? 0.45 + Math.random() * 0.35 : 0.6 + Math.random() * 0.35;
+    const rotation = (180 + Math.random() * 360) * (Math.random() < 0.5 ? 1 : -1);
+
+    // Initial positioning
+    gsap.set(el, {
+      x: startX,
+      y: startY,
+      opacity: 0,
+      scale: isGlyph ? 0.6 : 0,
+      rotation: 0
+    });
+
+    const lifeDuration = isInitial ? duration * (startY / winH) : duration;
+
+    // Animate lifecycle
+    const tl = gsap.timeline({
+      onComplete: () => {
+        el.remove();
+        if (!reduceMotion && ambientContainer){
+          spawnParticle(false);
+        }
+      }
+    });
+
+    // Vertical drift
+    tl.to(el, {
+      y: -50,
+      duration: lifeDuration,
+      ease: 'none'
+    }, 0);
+
+    // Horizontal sinusoidal sway
+    tl.to(el, {
+      x: `+=${(Math.random() < 0.5 ? 1 : -1) * swayAmount}`,
+      duration: swayDuration,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1
+    }, 0);
+
+    // Rotation (for glyphs)
+    if (isGlyph){
+      tl.to(el, {
+        rotation: rotation,
+        duration: lifeDuration,
+        ease: 'none'
+      }, 0);
+    }
+
+    // Fade / Scale in and out
+    const fadeInTime = Math.min(2.5, Math.max(0.6, lifeDuration * 0.2));
+    const fadeOutTime = Math.min(3.0, Math.max(0.8, lifeDuration * 0.25));
+
+    tl.to(el, {
+      opacity: maxOpacity,
+      scale: 1,
+      duration: fadeInTime,
+      ease: 'power1.out'
+    }, 0);
+
+    tl.to(el, {
+      opacity: 0,
+      scale: isGlyph ? 0.8 : 0,
+      duration: fadeOutTime,
+      ease: 'power1.in'
+    }, Math.max(fadeInTime, lifeDuration - fadeOutTime));
+  }
+
+  // Pre-seed particles across viewport
+  for (let i = 0; i < TOTAL_PARTICLES; i++){
+    spawnParticle(true);
+  }
+}
+
+// Start once on script load
+startAmbientParticles();
+
+// Global exposure for testing or debugging
+window.openGiftBox            = openGiftBox;
+window.playScene3             = playScene3;
+window.openCurtains           = openCurtains;
+window.closeCurtains          = closeCurtains;
+window.playScene5             = playScene5;
+window.blowCandles            = blowCandles;
+window.relightCake            = relightCake;
+window.playScene6             = playScene6;
+window.playScene7             = playScene7;
+window.playScene8             = playScene8;
+window.playScene9             = playScene9;
+window.openEnvelope           = openEnvelope;
+window.startAmbientParticles  = startAmbientParticles;
+window.goToScene              = goToScene;

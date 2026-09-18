@@ -2304,6 +2304,40 @@ body{
 }
 
 /* ============================================================
+   GLOBAL AMBIENT PARTICLES (Shared across all scenes)
+   ============================================================ */
+.global-ambient-particles{
+  position:fixed; inset:0;
+  pointer-events:none; overflow:hidden;
+  z-index:7;
+}
+
+/* Individual particle base */
+.g-particle{
+  position:absolute; top:0; left:0;
+  pointer-events:none; user-select:none;
+  will-change:transform, opacity;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* Type 1 — Glyphs (Heart, Sparkle, Blossom Petal) */
+.g-particle--glyph{
+  width:clamp(11px, 2.2vw, 17px);
+  height:clamp(11px, 2.2vw, 17px);
+}
+.g-particle--glyph .particle-svg{
+  width:100%; height:100%;
+  filter:drop-shadow(0 0 5px currentColor);
+}
+
+/* Type 2 — Soft Glowing Dots (Ambient embers / dust) */
+.g-particle--dot{
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 6px currentColor, 0 0 14px currentColor;
+}
+
+/* ============================================================
    THE LENS — grain + vignette over every act
    ============================================================ */
 .grade{ position:absolute; inset:0; z-index:9; pointer-events:none; }
@@ -2367,4 +2401,5 @@ body{
   .typewriter-cursor{ display:none !important; }
   .letter-card-container{ transition:none !important; }
   .envelope-wrapper{ transition:none !important; }
+  .global-ambient-particles{ display:none !important; }
 }

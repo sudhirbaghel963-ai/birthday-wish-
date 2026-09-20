@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Sign In — Velvet & Keepsake</title>
-  <meta name="description" content="Sign in to your Velvet & Keepsake account using a passwordless magic link." />
+  <title>Sign In — Velvet &amp; Keepsake</title>
+  <meta name="description" content="Sign in to your Velvet & Keepsake account using Google, Email + Password, or Magic Link." />
   <link rel="icon" type="image/png" href="./favicon.png" />
 
   <!-- Google Fonts: Cormorant Garamond, Fraunces, Plus Jakarta Sans -->
@@ -99,9 +99,9 @@
       <!-- Top Decorative Accent -->
       <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-gold-400 via-rose-500 to-velvet-900"></div>
 
-      <!-- State 1: Email Input Form -->
+      <!-- State 1: Primary Login Form -->
       <div id="loginFormState" class="space-y-6">
-        <div class="text-center space-y-2">
+        <div class="text-center space-y-1.5">
           <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 mb-1 border border-rose-200/60 shadow-sm">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -112,11 +112,40 @@
             Sign in to Your Gifts
           </h1>
           <p class="text-xs sm:text-sm text-ink-500">
-            Enter your email below. We'll send you a passwordless magic link to access your drafts and purchased films.
+            Access your personalized films, saved drafts, and orders.
           </p>
         </div>
 
-        <form id="magicLinkForm" class="space-y-4" onsubmit="return false;">
+        <!-- 1. Continue with Google (Top Priority) -->
+        <div>
+          <button 
+            type="button" 
+            id="btnGoogleSignIn" 
+            class="w-full py-3 px-4 rounded-xl border border-parchment-300 bg-white hover:bg-parchment-50 text-ink-800 font-medium text-sm transition-all shadow-sm flex items-center justify-center gap-3 hover:border-parchment-400 group focus:outline-none focus:ring-2 focus:ring-rose-200"
+          >
+            <!-- Google Official "G" SVG Icon -->
+            <svg viewBox="0 0 24 24" width="20" height="20" class="shrink-0" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span class="font-medium text-ink-800 group-hover:text-ink-950">Continue with Google</span>
+          </button>
+        </div>
+
+        <!-- Visual Divider ("or") -->
+        <div class="relative flex items-center justify-center">
+          <div class="flex-grow border-t border-parchment-200"></div>
+          <span class="flex-shrink mx-3 text-[11px] font-semibold uppercase tracking-wider text-ink-400 bg-white px-1">
+            or continue with email
+          </span>
+          <div class="flex-grow border-t border-parchment-200"></div>
+        </div>
+
+        <!-- Form: Email + Mode Switch -->
+        <form id="authForm" class="space-y-4" onsubmit="return false;">
+          <!-- Email Input (Always visible) -->
           <div>
             <label for="customerEmail" class="block text-xs font-bold uppercase tracking-wider text-ink-700 mb-1.5">
               Email Address
@@ -131,27 +160,132 @@
             />
           </div>
 
+          <!-- Method Tabs: Magic Link vs Password -->
+          <div class="grid grid-cols-2 p-1 bg-parchment-100 rounded-xl border border-parchment-200 text-xs font-semibold text-ink-600">
+            <button 
+              type="button" 
+              id="tabMagicLink" 
+              class="py-2 px-3 rounded-lg text-center transition-all bg-white text-ink-900 shadow-sm font-bold"
+            >
+              <span>🪄 Magic Link</span>
+            </button>
+            <button 
+              type="button" 
+              id="tabPassword" 
+              class="py-2 px-3 rounded-lg text-center transition-all text-ink-500 hover:text-ink-900 font-medium"
+            >
+              <span>🔑 Password</span>
+            </button>
+          </div>
+
+          <!-- Error Alert Box -->
           <div id="authErrorMsg" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium leading-relaxed"></div>
 
-          <button 
-            type="submit" 
-            id="btnSendMagicLink" 
-            class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/20 transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
-          >
-            <span>Send Magic Link</span>
-            <span class="text-gold-300">✦</span>
-          </button>
+          <!-- SECTION A: Magic Link Flow -->
+          <div id="magicLinkSection" class="space-y-4">
+            <p class="text-xs text-ink-500 leading-relaxed">
+              We'll send a passwordless link to your email to securely sign in with one tap.
+            </p>
+
+            <button 
+              type="button" 
+              id="btnSendMagicLink" 
+              class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/20 transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+            >
+              <span>Send Magic Link</span>
+              <span class="text-gold-300">✦</span>
+            </button>
+          </div>
+
+          <!-- SECTION B: Password Flow (Sign In or Sign Up) -->
+          <div id="passwordSection" class="hidden space-y-4">
+            <!-- Password Input with Show/Hide toggle -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="customerPassword" class="block text-xs font-bold uppercase tracking-wider text-ink-700">
+                  Password
+                </label>
+                <button 
+                  type="button" 
+                  id="btnForgotPasswordLink" 
+                  class="text-xs text-rose-600 hover:text-rose-700 underline font-medium"
+                >
+                  Forgot password?
+                </button>
+              </div>
+              <div class="relative">
+                <input 
+                  type="password" 
+                  id="customerPassword" 
+                  autocomplete="current-password"
+                  placeholder="Enter your password" 
+                  class="w-full pl-4 pr-11 py-3 rounded-xl border border-parchment-300 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition-all placeholder:text-ink-300"
+                />
+                <button 
+                  type="button" 
+                  id="btnTogglePasswordVisibility" 
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-700 p-1 focus:outline-none"
+                  title="Show/Hide password"
+                >
+                  <svg id="eyeIconOpen" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg id="eyeIconClosed" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Optional Confirm Password (for Sign Up mode only) -->
+            <div id="confirmPasswordGroup" class="hidden space-y-1">
+              <label for="customerConfirmPassword" class="block text-xs font-bold uppercase tracking-wider text-ink-700 mb-1.5">
+                Confirm Password
+              </label>
+              <input 
+                type="password" 
+                id="customerConfirmPassword" 
+                autocomplete="new-password"
+                placeholder="Repeat password" 
+                class="w-full px-4 py-3 rounded-xl border border-parchment-300 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition-all placeholder:text-ink-300"
+              />
+              <p class="text-[11px] text-ink-400">Must be at least 8 characters.</p>
+            </div>
+
+            <button 
+              type="button" 
+              id="btnPasswordSubmit" 
+              class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/20 transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+            >
+              <span id="btnPasswordSubmitText">Sign In</span>
+              <span class="text-gold-300">✦</span>
+            </button>
+
+            <!-- Mode Switcher (Sign In vs Sign Up) -->
+            <div class="pt-2 text-center text-xs text-ink-500">
+              <span id="passwordModePrompt">Don't have a password yet?</span>
+              <button 
+                type="button" 
+                id="btnTogglePasswordMode" 
+                class="text-rose-600 hover:text-rose-700 font-semibold underline ml-1 focus:outline-none"
+              >
+                Create an account
+              </button>
+            </div>
+          </div>
         </form>
 
-        <div class="pt-4 border-t border-parchment-200 text-center">
+        <div class="pt-2 border-t border-parchment-200 text-center">
           <p class="text-[11px] text-ink-400">
-            No passwords to remember. Clicking the link in your inbox securely signs you in instantly.
+            Protected by Supabase authentication &amp; Row-Level Security.
           </p>
         </div>
       </div>
 
 
-      <!-- State 2: Check Email Confirmation (Shown after link is sent) -->
+      <!-- State 2: Check Email Confirmation (Shown after Magic Link is sent) -->
       <div id="checkEmailState" class="hidden space-y-6 text-center py-2">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 shadow-sm animate-bounce">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -165,17 +299,17 @@
             Check your email
           </h2>
           <p class="text-xs sm:text-sm text-ink-600 leading-relaxed">
-            We sent a sign-in link to <strong id="sentEmailDisplay" class="text-ink-900 font-semibold"></strong>.
+            We sent a sign-in magic link to <strong id="sentEmailDisplay" class="text-ink-900 font-semibold"></strong>.
           </p>
           <p class="text-xs text-ink-400">
-            Click the link in the email to open your "My Gifts" dashboard.
+            Click the link in the email to sign in instantly.
           </p>
         </div>
 
         <div class="p-4 rounded-2xl bg-parchment-50 border border-parchment-200 text-xs text-ink-600 space-y-2 text-left">
           <div class="flex items-start gap-2">
             <span class="text-gold-500 font-bold">💡</span>
-            <span>Didn't receive it? Check your spam/junk folder or request a new link in a minute.</span>
+            <span>Didn't receive it? Check your spam/junk folder or request a new link in a moment.</span>
           </div>
         </div>
 
@@ -184,18 +318,156 @@
             Resend email
           </button>
           <span class="text-parchment-300">•</span>
-          <button type="button" id="btnChangeEmail" class="text-ink-600 hover:text-ink-900 underline">
-            Use different email
+          <button type="button" id="btnBackToLoginFromMagic" class="text-ink-600 hover:text-ink-900 underline">
+            Back to sign in
           </button>
         </div>
       </div>
 
 
-      <!-- State 3: Verifying Session Loader -->
+      <!-- State 3: Check Sign-Up Confirmation Email (Shown after Password Sign-Up) -->
+      <div id="checkSignupEmailState" class="hidden space-y-6 text-center py-2">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-50 text-rose-600 border border-rose-200 shadow-sm">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+
+        <div class="space-y-2">
+          <h2 class="font-serif text-2xl font-bold text-ink-900">
+            Confirm your email
+          </h2>
+          <p class="text-xs sm:text-sm text-ink-600 leading-relaxed">
+            We sent an account confirmation email to <strong id="signupEmailDisplay" class="text-ink-900 font-semibold"></strong>.
+          </p>
+          <p class="text-xs text-ink-400">
+            Please click the confirmation link in that email to activate your account before signing in.
+          </p>
+        </div>
+
+        <div class="pt-2 flex items-center justify-center gap-4 text-xs font-semibold">
+          <button type="button" id="btnBackToLoginFromSignup" class="text-rose-600 hover:text-rose-700 underline">
+            Return to sign in
+          </button>
+        </div>
+      </div>
+
+
+      <!-- State 4: Forgot Password Request Form -->
+      <div id="forgotPasswordState" class="hidden space-y-6 py-1">
+        <div class="text-center space-y-2">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gold-50 text-gold-600 mb-1 border border-gold-200/60 shadow-sm">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h2 class="font-serif text-2xl font-bold tracking-tight text-ink-900">
+            Reset Password
+          </h2>
+          <p class="text-xs sm:text-sm text-ink-500">
+            Enter your account email and we'll send you a link to reset your password.
+          </p>
+        </div>
+
+        <form id="forgotPasswordForm" class="space-y-4" onsubmit="return false;">
+          <div>
+            <label for="resetEmail" class="block text-xs font-bold uppercase tracking-wider text-ink-700 mb-1.5">
+              Account Email
+            </label>
+            <input 
+              type="email" 
+              id="resetEmail" 
+              required 
+              placeholder="you@example.com" 
+              class="w-full px-4 py-3 rounded-xl border border-parchment-300 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition-all placeholder:text-ink-300"
+            />
+          </div>
+
+          <div id="forgotErrorMsg" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium leading-relaxed"></div>
+          <div id="forgotSuccessMsg" class="hidden p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-700 font-medium leading-relaxed"></div>
+
+          <button 
+            type="button" 
+            id="btnSendResetLink" 
+            class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/20 transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+          >
+            <span>Send Reset Link</span>
+            <span class="text-gold-300">✦</span>
+          </button>
+        </form>
+
+        <div class="pt-2 text-center">
+          <button type="button" id="btnBackToLoginFromForgot" class="text-xs font-semibold text-ink-600 hover:text-ink-900 underline">
+            ← Back to sign in
+          </button>
+        </div>
+      </div>
+
+
+      <!-- State 5: Set New Password Form (Arriving from Password Recovery link) -->
+      <div id="setNewPasswordState" class="hidden space-y-6 py-1">
+        <div class="text-center space-y-2">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 mb-1 border border-rose-200/60 shadow-sm">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h2 class="font-serif text-2xl font-bold tracking-tight text-ink-900">
+            Set New Password
+          </h2>
+          <p class="text-xs sm:text-sm text-ink-500">
+            Choose a strong password with at least 8 characters.
+          </p>
+        </div>
+
+        <form id="setNewPasswordForm" class="space-y-4" onsubmit="return false;">
+          <div>
+            <label for="newPassword" class="block text-xs font-bold uppercase tracking-wider text-ink-700 mb-1.5">
+              New Password
+            </label>
+            <input 
+              type="password" 
+              id="newPassword" 
+              required 
+              placeholder="Minimum 8 characters" 
+              class="w-full px-4 py-3 rounded-xl border border-parchment-300 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition-all placeholder:text-ink-300"
+            />
+          </div>
+
+          <div>
+            <label for="confirmNewPassword" class="block text-xs font-bold uppercase tracking-wider text-ink-700 mb-1.5">
+              Confirm New Password
+            </label>
+            <input 
+              type="password" 
+              id="confirmNewPassword" 
+              required 
+              placeholder="Repeat new password" 
+              class="w-full px-4 py-3 rounded-xl border border-parchment-300 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition-all placeholder:text-ink-300"
+            />
+          </div>
+
+          <div id="newPasswordErrorMsg" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium leading-relaxed"></div>
+
+          <button 
+            type="button" 
+            id="btnSaveNewPassword" 
+            class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/20 transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+          >
+            <span>Save Password &amp; Continue</span>
+            <span class="text-gold-300">✦</span>
+          </button>
+        </form>
+      </div>
+
+
+      <!-- State 6: Verifying / Redirecting Loader -->
       <div id="verifyingState" class="hidden space-y-4 text-center py-6">
         <div class="inline-block w-8 h-8 border-3 border-rose-600 border-t-transparent rounded-full animate-spin"></div>
         <p class="font-serif text-lg font-bold text-ink-900">Signing you in...</p>
-        <p class="text-xs text-ink-400">Verifying your secure magic link session.</p>
+        <p class="text-xs text-ink-400">Verifying your secure session.</p>
       </div>
 
     </div>
@@ -206,7 +478,7 @@
     <p>&copy; 2026 Velvet &amp; Keepsake. All rights reserved.</p>
   </footer>
 
-  <!-- Script: Supabase Magic Link Auth Logic -->
+  <!-- Script: Multi-Auth Controller (Google OAuth, Magic Link, Email + Password) -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
@@ -257,30 +529,178 @@
     const urlParams = new URLSearchParams(window.location.search);
     const redirectTarget = urlParams.get('redirect') || './create.html';
 
-    const formState = document.getElementById('loginFormState');
+    // State views
+    const loginFormState = document.getElementById('loginFormState');
     const checkEmailState = document.getElementById('checkEmailState');
+    const checkSignupEmailState = document.getElementById('checkSignupEmailState');
+    const forgotPasswordState = document.getElementById('forgotPasswordState');
+    const setNewPasswordState = document.getElementById('setNewPasswordState');
     const verifyingState = document.getElementById('verifyingState');
+
+    // Form controls
+    const customerEmailInput = document.getElementById('customerEmail');
+    const customerPasswordInput = document.getElementById('customerPassword');
+    const customerConfirmPasswordInput = document.getElementById('customerConfirmPassword');
+    const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+
+    const tabMagicLink = document.getElementById('tabMagicLink');
+    const tabPassword = document.getElementById('tabPassword');
+    const magicLinkSection = document.getElementById('magicLinkSection');
+    const passwordSection = document.getElementById('passwordSection');
+
+    const btnGoogleSignIn = document.getElementById('btnGoogleSignIn');
+    const btnSendMagicLink = document.getElementById('btnSendMagicLink');
+    const btnPasswordSubmit = document.getElementById('btnPasswordSubmit');
+    const btnPasswordSubmitText = document.getElementById('btnPasswordSubmitText');
+    const passwordModePrompt = document.getElementById('passwordModePrompt');
+    const btnTogglePasswordMode = document.getElementById('btnTogglePasswordMode');
+    const btnForgotPasswordLink = document.getElementById('btnForgotPasswordLink');
+
+    const btnTogglePasswordVisibility = document.getElementById('btnTogglePasswordVisibility');
+    const eyeIconOpen = document.getElementById('eyeIconOpen');
+    const eyeIconClosed = document.getElementById('eyeIconClosed');
+
     const authErrorMsg = document.getElementById('authErrorMsg');
-    const btnSend = document.getElementById('btnSendMagicLink');
     const sentEmailDisplay = document.getElementById('sentEmailDisplay');
+    const signupEmailDisplay = document.getElementById('signupEmailDisplay');
+
+    // Forgot password elements
+    const resetEmailInput = document.getElementById('resetEmail');
+    const forgotErrorMsg = document.getElementById('forgotErrorMsg');
+    const forgotSuccessMsg = document.getElementById('forgotSuccessMsg');
+    const btnSendResetLink = document.getElementById('btnSendResetLink');
+
+    // Set new password elements
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+    const newPasswordErrorMsg = document.getElementById('newPasswordErrorMsg');
+    const btnSaveNewPassword = document.getElementById('btnSaveNewPassword');
+
+    // Active Tab & Mode: 'magic' | 'password'; passwordMode: 'signin' | 'signup'
+    let activeAuthTab = 'magic';
+    let passwordMode = 'signin';
+    let isPasswordVisible = false;
+
+    // Helper: Show view helper
+    function showState(targetState) {
+      [loginFormState, checkEmailState, checkSignupEmailState, forgotPasswordState, setNewPasswordState, verifyingState].forEach(el => {
+        if (el) el.classList.add('hidden');
+      });
+      if (targetState) targetState.classList.remove('hidden');
+    }
 
     function showError(msg) {
-      authErrorMsg.textContent = msg;
-      authErrorMsg.classList.remove('hidden');
+      if (authErrorMsg) {
+        authErrorMsg.textContent = msg;
+        authErrorMsg.classList.remove('hidden');
+      }
     }
 
     function hideError() {
-      authErrorMsg.classList.add('hidden');
-      authErrorMsg.textContent = '';
+      if (authErrorMsg) {
+        authErrorMsg.classList.add('hidden');
+        authErrorMsg.textContent = '';
+      }
     }
 
-    // Retroactively claim any unclaimed local drafts created on this machine
+    // Friendly error mapper for Supabase Auth responses
+    function getFriendlyErrorMessage(err) {
+      if (!err) return 'An unexpected error occurred. Please try again.';
+      const msg = (typeof err === 'string' ? err : err.message || '').toLowerCase();
+
+      if (msg.includes('invalid login credentials') || msg.includes('invalid username or password')) {
+        return 'Incorrect email or password. If you haven\'t set a password yet, try "Create an account" or "Send Magic Link".';
+      }
+      if (msg.includes('email not confirmed')) {
+        return 'Please check your inbox to confirm your email before signing in.';
+      }
+      if (msg.includes('user already registered') || msg.includes('already exists')) {
+        return 'This email is already registered. Please sign in with your password, Google, or Magic Link.';
+      }
+      if (msg.includes('identity is already linked') || msg.includes('provider') || msg.includes('multiple accounts')) {
+        return 'This email is registered with another sign-in method (e.g. Google). Please use that method to sign in.';
+      }
+      if (msg.includes('at least 6 characters') || msg.includes('at least 8 characters') || msg.includes('password should be')) {
+        return 'Password must be at least 8 characters long.';
+      }
+      if (msg.includes('rate limit') || msg.includes('too many requests')) {
+        return 'Too many attempts. Please wait a few moments before trying again, or try signing in with your password.';
+      }
+      if (msg.includes('failed to fetch')) {
+        return 'Unable to reach the server. Please check your internet connection or verify your Supabase settings.';
+      }
+      return (typeof err === 'string' ? err : err.message) || 'Authentication request failed. Please try again.';
+    }
+
+    // Tab Switching
+    function setAuthTab(tab) {
+      activeAuthTab = tab;
+      hideError();
+      if (tab === 'magic') {
+        tabMagicLink.classList.add('bg-white', 'text-ink-900', 'shadow-sm', 'font-bold');
+        tabMagicLink.classList.remove('text-ink-500', 'font-medium');
+        tabPassword.classList.remove('bg-white', 'text-ink-900', 'shadow-sm', 'font-bold');
+        tabPassword.classList.add('text-ink-500', 'font-medium');
+        magicLinkSection.classList.remove('hidden');
+        passwordSection.classList.add('hidden');
+      } else {
+        tabPassword.classList.add('bg-white', 'text-ink-900', 'shadow-sm', 'font-bold');
+        tabPassword.classList.remove('text-ink-500', 'font-medium');
+        tabMagicLink.classList.remove('bg-white', 'text-ink-900', 'shadow-sm', 'font-bold');
+        tabMagicLink.classList.add('text-ink-500', 'font-medium');
+        passwordSection.classList.remove('hidden');
+        magicLinkSection.classList.add('hidden');
+      }
+    }
+
+    tabMagicLink?.addEventListener('click', () => setAuthTab('magic'));
+    tabPassword?.addEventListener('click', () => setAuthTab('password'));
+
+    // Toggle Password Visibility (Eye Icon)
+    btnTogglePasswordVisibility?.addEventListener('click', () => {
+      isPasswordVisible = !isPasswordVisible;
+      customerPasswordInput.type = isPasswordVisible ? 'text' : 'password';
+      if (customerConfirmPasswordInput) {
+        customerConfirmPasswordInput.type = isPasswordVisible ? 'text' : 'password';
+      }
+      if (isPasswordVisible) {
+        eyeIconOpen.classList.add('hidden');
+        eyeIconClosed.classList.remove('hidden');
+      } else {
+        eyeIconOpen.classList.remove('hidden');
+        eyeIconClosed.classList.add('hidden');
+      }
+    });
+
+    // Toggle Password Mode (Sign In vs Sign Up)
+    function setPasswordMode(mode) {
+      passwordMode = mode;
+      hideError();
+      if (mode === 'signup') {
+        confirmPasswordGroup.classList.remove('hidden');
+        btnPasswordSubmitText.textContent = 'Create Account';
+        passwordModePrompt.textContent = 'Already have a password?';
+        btnTogglePasswordMode.textContent = 'Sign in here';
+        btnForgotPasswordLink.classList.add('hidden');
+      } else {
+        confirmPasswordGroup.classList.add('hidden');
+        btnPasswordSubmitText.textContent = 'Sign In';
+        passwordModePrompt.textContent = "Don't have a password yet?";
+        btnTogglePasswordMode.textContent = 'Create an account';
+        btnForgotPasswordLink.classList.remove('hidden');
+      }
+    }
+
+    btnTogglePasswordMode?.addEventListener('click', () => {
+      setPasswordMode(passwordMode === 'signin' ? 'signup' : 'signin');
+    });
+
+    // Retroactively claim any unclaimed local drafts created on this browser
     async function claimLocalDrafts(userId) {
-      if (!userId) return;
+      if (!userId || !supabase) return;
       try {
-        const localDraftId = localStorage.getItem('gift_draft_id');
+        const localDraftId = localStorage.getItem('gift_draft_id') || localStorage.getItem('vk_current_draft_id');
         if (localDraftId) {
-          // Attempt to claim this draft if owner_id is null
           await supabase
             .from('gifts')
             .update({ owner_id: userId })
@@ -292,43 +712,50 @@
       }
     }
 
-    // Handle Active Session Check or Hash Callback
-    async function checkAuthSession() {
-      // Check if URL has hash tokens or code
-      if (window.location.hash.includes('access_token=') || window.location.search.includes('code=')) {
-        formState.classList.add('hidden');
-        checkEmailState.classList.add('hidden');
-        verifyingState.classList.remove('hidden');
-      }
+    // 1. Google OAuth Flow
+    async function handleGoogleSignIn() {
+      hideError();
+      btnGoogleSignIn.disabled = true;
+      btnGoogleSignIn.classList.add('opacity-75', 'cursor-wait');
 
-      const { data: { session }, error } = await supabase.auth.getSession();
+      try {
+        const callbackUrl = window.location.origin + window.location.pathname + (redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : '');
+        
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: callbackUrl
+          }
+        });
 
-      if (session && session.user) {
-        await claimLocalDrafts(session.user.id);
-        window.location.replace(redirectTarget);
+        if (error) {
+          showError(getFriendlyErrorMessage(error));
+          btnGoogleSignIn.disabled = false;
+          btnGoogleSignIn.classList.remove('opacity-75', 'cursor-wait');
+        }
+      } catch (err) {
+        console.error('Google sign-in error:', err);
+        showError(getFriendlyErrorMessage(err));
+        btnGoogleSignIn.disabled = false;
+        btnGoogleSignIn.classList.remove('opacity-75', 'cursor-wait');
       }
     }
 
-    // Listen for auth state change
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session && session.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
-        await claimLocalDrafts(session.user.id);
-        window.location.replace(redirectTarget);
-      }
-    });
+    btnGoogleSignIn?.addEventListener('click', handleGoogleSignIn);
 
-    // Send Magic Link
+    // 2. Magic Link Flow
     async function handleSendMagicLink() {
       hideError();
-      const email = document.getElementById('customerEmail').value.trim();
+      const email = customerEmailInput.value.trim();
 
       if (!email || !email.includes('@')) {
         showError('Please enter a valid email address.');
+        customerEmailInput.focus();
         return;
       }
 
-      btnSend.disabled = true;
-      btnSend.innerHTML = `
+      btnSendMagicLink.disabled = true;
+      btnSendMagicLink.innerHTML = `
         <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
         <span>Sending link...</span>
       `;
@@ -344,38 +771,289 @@
         });
 
         if (error) {
-          showError(error.message || 'Failed to send magic link. Please try again.');
-          btnSend.disabled = false;
-          btnSend.innerHTML = `<span>Send Magic Link</span><span class="text-gold-300">✦</span>`;
+          showError(getFriendlyErrorMessage(error));
+          btnSendMagicLink.disabled = false;
+          btnSendMagicLink.innerHTML = `<span>Send Magic Link</span><span class="text-gold-300">✦</span>`;
           return;
         }
 
         sentEmailDisplay.textContent = email;
-        formState.classList.add('hidden');
-        checkEmailState.classList.remove('hidden');
+        showState(checkEmailState);
 
       } catch (err) {
         console.error('Magic link dispatch error:', err);
-        const detail = (err && err.message) ? err.message : String(err);
-        showError(`Authentication request error: ${detail}. Please check connection or Supabase settings.`);
-        btnSend.disabled = false;
-        btnSend.innerHTML = `<span>Send Magic Link</span><span class="text-gold-300">✦</span>`;
+        showError(getFriendlyErrorMessage(err));
+      } finally {
+        btnSendMagicLink.disabled = false;
+        btnSendMagicLink.innerHTML = `<span>Send Magic Link</span><span class="text-gold-300">✦</span>`;
       }
     }
 
-    document.getElementById('magicLinkForm')?.addEventListener('submit', handleSendMagicLink);
-    document.getElementById('btnSendMagicLink')?.addEventListener('click', handleSendMagicLink);
+    btnSendMagicLink?.addEventListener('click', handleSendMagicLink);
 
-    document.getElementById('btnChangeEmail')?.addEventListener('click', () => {
-      checkEmailState.classList.add('hidden');
-      formState.classList.remove('hidden');
-      btnSend.disabled = false;
-      btnSend.innerHTML = `<span>Send Magic Link</span><span class="text-gold-300">✦</span>`;
+    // 3. Email + Password Flow (Sign In & Sign Up)
+    async function handlePasswordSubmit() {
+      hideError();
+      const email = customerEmailInput.value.trim();
+      const password = customerPasswordInput.value;
+
+      if (!email || !email.includes('@')) {
+        showError('Please enter a valid email address.');
+        customerEmailInput.focus();
+        return;
+      }
+
+      if (!password || password.length < 8) {
+        showError('Password must be at least 8 characters long.');
+        customerPasswordInput.focus();
+        return;
+      }
+
+      if (passwordMode === 'signup') {
+        const confirmPassword = customerConfirmPasswordInput.value;
+        if (password !== confirmPassword) {
+          showError('Passwords do not match. Please re-enter.');
+          customerConfirmPasswordInput.focus();
+          return;
+        }
+      }
+
+      btnPasswordSubmit.disabled = true;
+      const originalText = btnPasswordSubmitText.textContent;
+      btnPasswordSubmit.innerHTML = `
+        <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        <span>${passwordMode === 'signup' ? 'Creating Account...' : 'Signing In...'}</span>
+      `;
+
+      try {
+        if (passwordMode === 'signup') {
+          // Sign Up
+          const callbackUrl = window.location.origin + window.location.pathname + (redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : '');
+          const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+              emailRedirectTo: callbackUrl
+            }
+          });
+
+          if (error) {
+            showError(getFriendlyErrorMessage(error));
+            btnPasswordSubmit.disabled = false;
+            btnPasswordSubmit.innerHTML = `<span>${originalText}</span><span class="text-gold-300">✦</span>`;
+            return;
+          }
+
+          // If email confirmation is required and session is null
+          if (data.user && !data.session) {
+            signupEmailDisplay.textContent = email;
+            showState(checkSignupEmailState);
+            return;
+          }
+
+          // If session is already created (auto-confirmed)
+          if (data.session && data.session.user) {
+            await claimLocalDrafts(data.session.user.id);
+            showState(verifyingState);
+            window.location.replace(redirectTarget);
+            return;
+          }
+
+        } else {
+          // Sign In with existing password
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+
+          if (error) {
+            showError(getFriendlyErrorMessage(error));
+            btnPasswordSubmit.disabled = false;
+            btnPasswordSubmit.innerHTML = `<span>${originalText}</span><span class="text-gold-300">✦</span>`;
+            return;
+          }
+
+          if (data.session && data.session.user) {
+            await claimLocalDrafts(data.session.user.id);
+            showState(verifyingState);
+            window.location.replace(redirectTarget);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Password auth error:', err);
+        showError(getFriendlyErrorMessage(err));
+      } finally {
+        btnPasswordSubmit.disabled = false;
+        btnPasswordSubmit.innerHTML = `<span id="btnPasswordSubmitText">${originalText}</span><span class="text-gold-300">✦</span>`;
+      }
+    }
+
+    btnPasswordSubmit?.addEventListener('click', handlePasswordSubmit);
+
+    // 4. Forgot Password Flow
+    btnForgotPasswordLink?.addEventListener('click', () => {
+      resetEmailInput.value = customerEmailInput.value.trim();
+      forgotErrorMsg.classList.add('hidden');
+      forgotSuccessMsg.classList.add('hidden');
+      showState(forgotPasswordState);
+    });
+
+    document.getElementById('btnBackToLoginFromForgot')?.addEventListener('click', () => {
+      showState(loginFormState);
+    });
+
+    document.getElementById('btnBackToLoginFromSignup')?.addEventListener('click', () => {
+      setPasswordMode('signin');
+      setAuthTab('password');
+      showState(loginFormState);
+    });
+
+    document.getElementById('btnBackToLoginFromMagic')?.addEventListener('click', () => {
+      showState(loginFormState);
     });
 
     document.getElementById('btnResendLink')?.addEventListener('click', handleSendMagicLink);
 
-    // Initial check on load
+    async function handleSendResetPassword() {
+      forgotErrorMsg.classList.add('hidden');
+      forgotSuccessMsg.classList.add('hidden');
+      const email = resetEmailInput.value.trim();
+
+      if (!email || !email.includes('@')) {
+        forgotErrorMsg.textContent = 'Please enter a valid email address.';
+        forgotErrorMsg.classList.remove('hidden');
+        resetEmailInput.focus();
+        return;
+      }
+
+      btnSendResetLink.disabled = true;
+      btnSendResetLink.innerHTML = `
+        <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        <span>Sending Reset Link...</span>
+      `;
+
+      try {
+        const callbackUrl = window.location.origin + window.location.pathname + (redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : '');
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: callbackUrl
+        });
+
+        if (error) {
+          forgotErrorMsg.textContent = getFriendlyErrorMessage(error);
+          forgotErrorMsg.classList.remove('hidden');
+          return;
+        }
+
+        forgotSuccessMsg.textContent = `Password reset email sent to ${email}. Check your inbox and click the reset link.`;
+        forgotSuccessMsg.classList.remove('hidden');
+
+      } catch (err) {
+        forgotErrorMsg.textContent = getFriendlyErrorMessage(err);
+        forgotErrorMsg.classList.remove('hidden');
+      } finally {
+        btnSendResetLink.disabled = false;
+        btnSendResetLink.innerHTML = `<span>Send Reset Link</span><span class="text-gold-300">✦</span>`;
+      }
+    }
+
+    btnSendResetLink?.addEventListener('click', handleSendResetPassword);
+
+    // 5. Update Password Flow (When arriving with recovery token)
+    async function handleSaveNewPassword() {
+      newPasswordErrorMsg.classList.add('hidden');
+      const pass = newPasswordInput.value;
+      const confirmPass = confirmNewPasswordInput.value;
+
+      if (!pass || pass.length < 8) {
+        newPasswordErrorMsg.textContent = 'Password must be at least 8 characters.';
+        newPasswordErrorMsg.classList.remove('hidden');
+        newPasswordInput.focus();
+        return;
+      }
+
+      if (pass !== confirmPass) {
+        newPasswordErrorMsg.textContent = 'Passwords do not match.';
+        newPasswordErrorMsg.classList.remove('hidden');
+        confirmNewPasswordInput.focus();
+        return;
+      }
+
+      btnSaveNewPassword.disabled = true;
+      btnSaveNewPassword.innerHTML = `
+        <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        <span>Saving Password...</span>
+      `;
+
+      try {
+        const { data, error } = await supabase.auth.updateUser({
+          password: pass
+        });
+
+        if (error) {
+          newPasswordErrorMsg.textContent = getFriendlyErrorMessage(error);
+          newPasswordErrorMsg.classList.remove('hidden');
+          btnSaveNewPassword.disabled = false;
+          btnSaveNewPassword.innerHTML = `<span>Save Password &amp; Continue</span><span class="text-gold-300">✦</span>`;
+          return;
+        }
+
+        if (data.user) {
+          await claimLocalDrafts(data.user.id);
+          showState(verifyingState);
+          window.location.replace(redirectTarget);
+        }
+      } catch (err) {
+        newPasswordErrorMsg.textContent = getFriendlyErrorMessage(err);
+        newPasswordErrorMsg.classList.remove('hidden');
+        btnSaveNewPassword.disabled = false;
+        btnSaveNewPassword.innerHTML = `<span>Save Password &amp; Continue</span><span class="text-gold-300">✦</span>`;
+      }
+    }
+
+    btnSaveNewPassword?.addEventListener('click', handleSaveNewPassword);
+
+    // 6. Active Session & URL Callback Check
+    let isPasswordRecovery = false;
+
+    async function checkAuthSession() {
+      // Check if arriving via Password Reset Recovery Link
+      const hashStr = window.location.hash || '';
+      const searchStr = window.location.search || '';
+
+      if (hashStr.includes('type=recovery') || searchStr.includes('type=recovery')) {
+        isPasswordRecovery = true;
+        showState(setNewPasswordState);
+        return;
+      }
+
+      if (hashStr.includes('access_token=') || searchStr.includes('code=')) {
+        showState(verifyingState);
+      }
+
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (session && session.user && !isPasswordRecovery) {
+        await claimLocalDrafts(session.user.id);
+        window.location.replace(redirectTarget);
+      }
+    }
+
+    // Listen for auth state changes
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        isPasswordRecovery = true;
+        showState(setNewPasswordState);
+        return;
+      }
+
+      if (session && session.user && !isPasswordRecovery && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+        await claimLocalDrafts(session.user.id);
+        window.location.replace(redirectTarget);
+      }
+    });
+
+    // Trigger initial check
     checkAuthSession();
   </script>
 </body>

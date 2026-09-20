@@ -797,15 +797,20 @@
       }
 
       try {
-        // Query Supabase for paid gift matching unique slug
-        const { data: gift, error } = await supabase
-          .from('gifts')
-          .select('*')
-          .eq('slug', slug)
+        // Query Supabase for paid gift matching unique slug or id
+        let query = supabase.from('gifts').select('*');
+        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)) {
+          query = query.or(`slug.eq.${slug},id.eq.${slug}`);
+        } else {
+          query = query.eq('slug', slug);
+        }
+
+        const { data: gift, error } = await query
           .eq('status', 'paid')
-          .single();
+          .maybeSingle();
 
         if (error || !gift) {
+          if (error) console.warn('Supabase gift fetch warning:', error);
           // If no paid gift found, show on-brand invalid gift card
           loadingScreen?.classList.add('hidden');
           invalidScreen?.classList.remove('hidden');

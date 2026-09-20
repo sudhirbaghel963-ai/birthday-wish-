@@ -2111,7 +2111,6 @@ Happy Birthday. I mean it.</textarea>
               experience_id: expParam || 'birthday-film',
               theme_id: editorState.themeId || 'paper',
               content: editorState,
-              data: editorState, // fallback compatibility
               photo_urls: editorState.scenes?.scene6_wallOfUs?.photos || [],
               clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
               status: 'draft',
@@ -2122,7 +2121,7 @@ Happy Birthday. I mean it.</textarea>
               payload.owner_id = currentUser.id;
             }
 
-            await supabase.from('gifts').upsert(payload);
+            await supabase.from('gifts').upsert(payload, { onConflict: 'id' });
           } catch (e) {
             console.warn('Supabase autosave error:', e);
           }
@@ -2541,12 +2540,12 @@ Happy Birthday. I mean it.</textarea>
 
           if (supabase) {
             const payload = {
+              id: draftId,
               status: 'paid',
               slug: slug,
               experience_id: expParam || 'birthday-film',
               theme_id: editorState.themeId || 'paper',
               content: editorState,
-              data: editorState,
               photo_urls: editorState.scenes?.scene6_wallOfUs?.photos || [],
               clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
               updated_at: new Date().toISOString()
@@ -2556,20 +2555,22 @@ Happy Birthday. I mean it.</textarea>
               payload.owner_id = currentUser.id;
             }
 
-            const { error } = await supabase
+            const { data: upsertData, error: upsertError } = await supabase
               .from('gifts')
-              .update(payload)
-              .eq('id', draftId);
+              .upsert(payload, { onConflict: 'id' })
+              .select();
 
-            if (error) {
-              console.warn('Supabase update warning, trying upsert:', error);
-              payload.id = draftId;
-              await supabase.from('gifts').upsert(payload);
+            if (upsertError) {
+              console.error('Supabase publish update error:', upsertError);
+              throw new Error(upsertError.message || 'Database update failed');
             }
           }
 
-          // Build public URL
-          const shareUrl = `${window.location.origin}/gift.html?slug=${slug}`;
+          // Build public URL cleanly
+          const origin = window.location.origin;
+          const currentPath = window.location.pathname;
+          const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+          const shareUrl = `${origin}${basePath}gift.html?slug=${slug}`;
 
           // Populate Ready Modal
           const shareInput = document.getElementById('readyShareUrlInput');

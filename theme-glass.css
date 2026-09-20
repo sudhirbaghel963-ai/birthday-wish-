@@ -726,3 +726,68 @@ body.theme-glass {
   color: #ffffff !important;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.6), 0 0 16px rgba(243, 183, 73, 0.4) !important;
 }
+
+/* ============================================================
+   SCENE 8 — BALLOON POP (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene8,
+.theme-glass .scene8 {
+  background: radial-gradient(130% 95% at 50% 25%, #2a0e3d 0%, #170724 45%, #0d0417 80%, #06020c 100%) !important;
+}
+
+[data-theme="glass"] .balloon-ambient-glow,
+.theme-glass .balloon-ambient-glow {
+  background: radial-gradient(circle, rgba(255, 207, 106, 0.15) 0%, rgba(212, 35, 92, 0.12) 50%, transparent 75%) !important;
+}
+
+[data-theme="glass"] .balloon-title,
+.theme-glass .balloon-title {
+  color: var(--gold-1) !important;
+  text-shadow: 0 0 20px rgba(255, 207, 106, 0.4) !important;
+}
+
+[data-theme="glass"] .balloon-subtitle,
+.theme-glass .balloon-subtitle {
+  color: #fed7aa !important;
+}
+
+[data-theme="glass"] .balloon-toast-msg,
+.theme-glass .balloon-toast-msg {
+  background: rgba(22, 6, 16, 0.9) !important;
+  border: 1.5px solid rgba(255, 207, 106, 0.45) !important;
+  color: #fff8f2 !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 207, 106, 0.25) !important;
+}
+
+[data-theme="glass"] .balloon-counter-badge,
+.theme-glass .balloon-counter-badge {
+  background: rgba(22, 6, 16, 0.8) !important;
+  border: 1px solid rgba(255, 207, 106, 0.3) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="glass"] .balloon-counter-text,
+.theme-glass .balloon-counter-text {
+  color: #fed7aa !important;
+}
+
+[data-theme="glass"] .balloon-closing-text,
+.theme-glass .balloon-closing-text {
+  color: var(--gold-1) !important;
+  text-shadow: 0 0 15px rgba(255, 207, 106, 0.5) !important;
+}
+
+[data-theme="glass"] .balloon-reset-btn,
+.theme-glass .balloon-reset-btn {
+  color: rgba(254, 215, 170, 0.7) !important;
+}
+
+[data-theme="glass"] .balloon-reset-btn:hover,
+.theme-glass .balloon-reset-btn:hover {
+  color: #fff8f2 !important;
+}
+
+[data-theme="glass"] .balloon-string,
+.theme-glass .balloon-string {
+  background: rgba(255, 255, 255, 0.35) !important;
+}

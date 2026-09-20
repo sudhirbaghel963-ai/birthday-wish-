@@ -2738,7 +2738,7 @@ function goToScene(sceneNum, force = false){
 
   // Toggle night-mode on music button
   if (musicToggleBtn){
-    const nightScenes = [7, 8, 10];
+    const nightScenes = [7, 10];
     musicToggleBtn.classList.toggle('night-mode', nightScenes.includes(sceneNum));
   }
 
@@ -3272,10 +3272,11 @@ function playScene8() {
   renderBalloons();
 }
 
-// Event Listeners for Scene 8 Action buttons
-document.addEventListener('DOMContentLoaded', () => {
+// Event Listeners for Scene 8 Action buttons and Tap-Anywhere to Continue
+function attachScene8Listeners() {
   const resetBtn = $('balloonResetBtn');
-  if (resetBtn) {
+  if (resetBtn && !resetBtn._hasScene8Listener) {
+    resetBtn._hasScene8Listener = true;
     resetBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       renderBalloons();
@@ -3283,29 +3284,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const btnNext = $('nextScene8') || $('btnNextToScene9');
-  if (btnNext) {
+  if (btnNext && !btnNext._hasScene8Listener) {
+    btnNext._hasScene8Listener = true;
     btnNext.addEventListener('click', (e) => {
       e.stopPropagation();
       goToScene(9);
     });
   }
-});
 
-// Also attach immediately in case DOM is already ready
-const resetBtnNow = $('balloonResetBtn');
-if (resetBtnNow) {
-  resetBtnNow.addEventListener('click', (e) => {
-    e.stopPropagation();
-    renderBalloons();
-  });
+  const s8 = $('scene8');
+  if (s8 && !s8._hasScene8TapListener) {
+    s8._hasScene8TapListener = true;
+    s8.addEventListener('click', (e) => {
+      // Do not advance if user clicked the reset button, an active balloon, or its slot
+      if (e && e.target && e.target.closest && e.target.closest('#balloonResetBtn, .balloon, .balloon-slot')) {
+        return;
+      }
+      const closingBlock = $('balloonClosingBlock');
+      if (closingBlock && !closingBlock.hidden) {
+        goToScene(9);
+      }
+    });
+  }
 }
-const btnNextNow = $('nextScene8') || $('btnNextToScene9');
-if (btnNextNow) {
-  btnNextNow.addEventListener('click', (e) => {
-    e.stopPropagation();
-    goToScene(9);
-  });
-}
+
+document.addEventListener('DOMContentLoaded', attachScene8Listeners);
+attachScene8Listeners();
 
 /* ============================================================
    SCENE 9 — ENVELOPE & TYPEWRITER LETTER CONTROLLER

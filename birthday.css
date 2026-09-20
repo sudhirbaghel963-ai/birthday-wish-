@@ -1719,7 +1719,7 @@ body{
   transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
   overflow-y:auto; overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
-  background:radial-gradient(ellipse at 50% 35%, #240a16 0%, #14030c 55%, #080105 100%);
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
 }
 .scene8.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
@@ -1730,7 +1730,7 @@ body{
   position:absolute; top:45%; left:50%;
   transform:translate(-50%, -50%);
   width:min(92vw, 600px); height:min(92vw, 600px);
-  background:radial-gradient(circle, rgba(255, 207, 106, 0.12) 0%, rgba(212, 35, 92, 0.08) 50%, transparent 75%);
+  background:radial-gradient(circle, rgba(255, 207, 106, 0.28) 0%, rgba(212, 35, 92, 0.1) 45%, transparent 72%);
   border-radius:50%; pointer-events:none; z-index:1;
 }
 
@@ -1741,16 +1741,16 @@ body{
   pointer-events:none; z-index:90; padding:0 1.2rem;
 }
 .balloon-toast-msg{
-  background:rgba(22, 6, 16, 0.9);
-  border:1.5px solid rgba(255, 207, 106, 0.45);
-  color:#fff8f2;
+  background:rgba(255, 253, 250, 0.95);
+  border:1.5px solid rgba(212, 35, 92, 0.35);
+  color:var(--wine, #6e0a31);
   padding:0.75rem 1.8rem;
   border-radius:9999px;
   font-family:"Cormorant Garamond", Georgia, serif;
   font-style:italic;
   font-size:clamp(1rem, 2.8vw, 1.25rem);
   font-weight:600;
-  box-shadow:0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 207, 106, 0.25);
+  box-shadow:0 12px 35px rgba(110, 10, 49, 0.2), 0 0 16px rgba(255, 207, 106, 0.3);
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   transform:translateY(-24px) scale(0.92);
   opacity:0;
@@ -1779,15 +1779,15 @@ body{
   font-family:"Fraunces", Georgia, serif;
   font-size:clamp(2rem, 5.5vw, 2.8rem);
   font-weight:900;
-  color:var(--gold-1, #ffdf70);
-  text-shadow:0 0 20px rgba(255, 207, 106, 0.4);
+  color:var(--wine, #6e0a31);
+  text-shadow:0 1px 2px rgba(255, 248, 241, 0.9);
   margin-bottom:0.35rem;
   line-height:1.15;
 }
 .balloon-subtitle{
   font-family:"Cormorant Garamond", Georgia, serif;
   font-style:italic;
-  color:#fed7aa;
+  color:var(--ink-soft, #a9808a);
   font-size:clamp(0.95rem, 2.5vw, 1.15rem);
   font-weight:600;
   letter-spacing:0.03em;
@@ -1811,7 +1811,7 @@ body{
   position:absolute; inset:0;
   cursor:pointer;
   border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
-  box-shadow:inset -10px -10px 18px rgba(0, 0, 0, 0.45), inset 6px 6px 12px rgba(255, 255, 255, 0.35), 0 10px 22px rgba(0, 0, 0, 0.55);
+  box-shadow:inset -8px -8px 16px rgba(0, 0, 0, 0.35), inset 6px 6px 12px rgba(255, 255, 255, 0.45), 0 10px 22px rgba(110, 10, 49, 0.25);
   transform-origin:bottom center;
   animation:floatBalloon 3.2s ease-in-out infinite alternate;
   transition:transform 0.18s ease;
@@ -1828,7 +1828,7 @@ body{
   position:absolute; top:8px; left:8px;
   width:13px; height:26px;
   border-radius:50%;
-  background:rgba(255, 255, 255, 0.55);
+  background:rgba(255, 255, 255, 0.65);
   transform:rotate(35deg);
   filter:blur(1px);
   pointer-events:none;
@@ -1848,7 +1848,7 @@ body{
 .balloon-string{
   position:absolute; bottom:-44px; left:50%;
   width:1px; height:42px;
-  background:rgba(255, 255, 255, 0.3);
+  background:rgba(110, 10, 49, 0.35);
   transform-origin:top center;
   pointer-events:none;
 }
@@ -1884,16 +1884,16 @@ body{
 
 /* Progress Counter Badge */
 .balloon-counter-badge{
-  background:rgba(22, 6, 16, 0.8);
-  border:1px solid rgba(255, 207, 106, 0.3);
+  background:rgba(255, 253, 250, 0.9);
+  border:1px solid rgba(212, 35, 92, 0.25);
   border-radius:9999px;
   padding:8px 24px;
   margin-bottom:1.5rem;
-  box-shadow:0 4px 18px rgba(0, 0, 0, 0.4);
+  box-shadow:0 4px 18px rgba(110, 10, 49, 0.12);
   backdrop-filter:blur(8px);
 }
 .balloon-counter-text{
-  color:#fed7aa;
+  color:var(--wine, #6e0a31);
   font-size:0.82rem;
   font-weight:700;
   letter-spacing:0.12em;
@@ -1913,8 +1913,8 @@ body{
   font-family:"Cormorant Garamond", Georgia, serif;
   font-style:italic; font-weight:600;
   font-size:clamp(1.2rem, 3.2vw, 1.5rem);
-  color:var(--gold-1, #ffdf70);
-  text-shadow:0 0 15px rgba(255, 207, 106, 0.5);
+  color:var(--rose-deep, #a80f43);
+  text-shadow:0 1px 2px rgba(255, 248, 241, 0.9);
   margin-bottom:1rem;
 }
 .balloon-btn-group{
@@ -1922,13 +1922,13 @@ body{
 }
 .balloon-reset-btn{
   background:none; border:none;
-  color:rgba(254, 215, 170, 0.7);
+  color:var(--ink-soft, #a9808a);
   font-size:0.8rem; letter-spacing:0.05em;
   cursor:pointer; padding:4px 12px;
   transition:color 0.2s ease;
 }
 .balloon-reset-btn:hover{
-  color:#fff8f2; text-decoration:underline;
+  color:var(--wine, #6e0a31); text-decoration:underline;
 }
 
 /* ============================================================

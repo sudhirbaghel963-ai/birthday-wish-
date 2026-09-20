@@ -57,21 +57,27 @@ body{
   display:block;
   z-index:1;
 }
+.tree.is-hidden,
+.tree[hidden]{
+  display:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
 
 /* ============================================================
    ACT 1 — THE INVITATION
    ============================================================ */
 .hero{
   position:absolute; inset:0;
-  z-index:auto;
+  z-index:3;
   overflow:hidden;
 }
 /* the warm field the heart sits on */
 .hero__bg{
   position:absolute; inset:0;
-  z-index:1; pointer-events:none;
   background:
-    radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
+    radial-gradient(120% 88% at 50% 24%, var(--paper-0) 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
 }
 .hero__bg::after{               /* a soft warm pool of light behind the heart */
   content:""; position:absolute; left:50%; top:44%;
@@ -81,11 +87,10 @@ body{
 }
 
 /* drifting light motes (JS fills this with a few spans) */
-.hero__motes{ position:absolute; inset:0; pointer-events:none; z-index:1; }
+.hero__motes{ position:absolute; inset:0; pointer-events:none; }
 .mote{
   position:absolute; border-radius:50%;
   background:radial-gradient(circle, rgba(255,236,214,.9), rgba(255,206,180,.15) 55%, transparent 72%);
-  will-change:transform, opacity;
 }
 
 .hero__eyebrow{
@@ -98,7 +103,6 @@ body{
   color:#a85069;
   text-shadow:0 1px 10px rgba(255,248,241,.9);
   opacity:0;                          /* GSAP reveals */
-  z-index:4;
 }
 
 /* ---- the target heart (GSAP animates .target on the hit → fall → burst) ---- */
@@ -107,7 +111,6 @@ body{
   display:flex; justify-content:center;
   transform:translateY(-50%);         /* centre at 33% — wrap is NOT animated */
   pointer-events:none;
-  z-index:4;
 }
 .target{
   position:relative;
@@ -148,7 +151,6 @@ body{
   -webkit-tap-highlight-color:transparent;
   touch-action:none;                   /* we own the drag gesture */
   will-change:transform;
-  z-index:4;
 }
 .archery:active{ cursor:grabbing; }
 .archery:focus-visible{ outline:none; }
@@ -195,7 +197,6 @@ body{
   letter-spacing:.16em; text-transform:uppercase;
   color:#b06a7c;
   opacity:0;                          /* GSAP reveals */
-  z-index:4;
 }
 .hero__ring{ display:none; }
 
@@ -207,7 +208,7 @@ body{
   width:140px; height:140px; margin:-70px 0 0 -70px;
   border-radius:50%;
   background:radial-gradient(circle at 40% 34%, var(--rose-lift), var(--rose) 46%, var(--rose-deep) 100%);
-  z-index:1;
+  z-index:5;
   opacity:0; transform:scale(.001);
   will-change:transform, opacity;
   pointer-events:none;
@@ -218,7 +219,7 @@ body{
    ============================================================ */
 .field{
   position:absolute; inset:0;
-  z-index:1;                          /* below camera; particles float over background */
+  z-index:4;                          /* below the flood; revealed once it covers */
   opacity:0;
   /* purely decorative — must never intercept the tap on the heart beneath it.
      An opacity:0 element is still hit-testable, so without this the invisible
@@ -263,7 +264,6 @@ body{
   gap:clamp(4px,1.2vh,12px);
   padding:0 6vw; text-align:center;
   will-change:transform;
-  z-index:4;
 }
 .kEyebrow{
   font-family:"Cormorant Garamond", Georgia, serif;
@@ -430,81 +430,88 @@ body{
    REPLAY
    ============================================================ */
 .replay{
-  position:absolute; right:20px; bottom:18px; z-index:7;
-  display:inline-flex; align-items:center; gap:7px;
-  padding:9px 15px 9px 12px; border-radius:999px;
-  font:600 12.5px/1 "Cormorant Garamond", Georgia, serif; letter-spacing:.12em; text-transform:uppercase;
-  color:#8a4a5a; background:rgba(255,248,242,.72);
-  border:1px solid rgba(150,60,80,.18);
-  box-shadow:0 6px 20px -8px rgba(120,20,50,.4);
-  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-  cursor:pointer; opacity:0; transform:translateY(8px);
-  transition:opacity .5s ease, transform .5s var(--ease-out), background .3s ease;
+  display:none !important;
 }
-.replay.is-shown{ opacity:1; transform:translateY(0); }
-.replay:hover{ background:rgba(255,252,248,.92); }
-.replay svg{ opacity:.8; }
-.replay.has-next{ right:125px; }
 
 /* ============================================================
-   SHARED PILL BUTTON (.next-pill)
+   TAP ANYWHERE TO NEXT HINT (.tap-next-hint)
+   Replaces all "Next ->" buttons with an ambient tap indicator
    ============================================================ */
 .next-pill{
-  display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  padding:10px 22px; border-radius:999px;
-  font:600 13px/1 "Cormorant Garamond", Georgia, serif; letter-spacing:.14em; text-transform:uppercase;
-  color:#8a4a5a; background:rgba(255,248,242,.78);
-  border:1px solid rgba(150,60,80,.22);
-  box-shadow:0 6px 20px -8px rgba(120,20,50,.35);
-  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-  cursor:pointer; opacity:0; transform:translateY(8px);
-  transition:opacity .5s ease, transform .5s var(--ease-out), background .3s ease, border-color .3s ease;
-  user-select:none;
+  display:none !important;
 }
-.next-pill.is-shown{ opacity:1; transform:translateY(0); }
-.next-pill:hover{
-  background:rgba(255,252,248,.95);
-  border-color:rgba(150,60,80,.38);
-  transform:translateY(-2px);
-  box-shadow:0 8px 24px -6px rgba(120,20,50,.45);
-}
-.next-pill:active{ transform:translateY(0); }
 
-/* Scene 1 placement for the next button */
-.scene1-next{
-  position:absolute; right:20px; bottom:18px; z-index:7;
+.tap-next-hint{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-style:italic; font-weight:600;
+  font-size:clamp(14px, 3.2vw, 17px);
+  letter-spacing:0.08em;
+  color:var(--ink-sub, #9c405a);
+  opacity:0; visibility:hidden; pointer-events:none;
+  transform:translateY(6px);
+  transition:opacity .7s ease, transform .7s var(--ease-out), visibility .7s ease;
+  user-select:none;
+  text-shadow:0 1px 4px rgba(255,255,255,.8);
+  margin-top:clamp(0.8rem, 2vh, 1.4rem);
+}
+.tap-next-hint.is-shown{
+  opacity:0.85; visibility:visible;
+  transform:translateY(0);
+  animation:gentleHintPulse 2.8s ease-in-out infinite;
+}
+.tap-next-hint .hint-arrow{
+  display:inline-block;
+  transition:transform .3s ease;
+}
+@keyframes gentleHintPulse{
+  0%, 100%{ opacity:0.85; transform:translateY(0); }
+  50%{ opacity:0.42; transform:translateY(2px); }
+}
+
+/* Scene 1 placement for the tap hint */
+.scene1-next.tap-next-hint{
+  position:absolute; right:24px; bottom:22px; z-index:7;
+  margin-top:0;
+}
+
+/* Night scenes theme adjustments */
+.scene7 .tap-next-hint{
+  color:rgba(255,248,240,.85);
+  text-shadow:0 0 10px rgba(255,255,255,.3);
+}
+.scene8 .tap-next-hint,
+.scene10 .tap-next-hint{
+  color:var(--gold-1, #ffd074);
+  text-shadow:0 0 12px rgba(255,208,116,.45);
 }
 
 /* ============================================================
    SCENE 2 — THE SURPRISE GIFT BOX
    ============================================================ */
 .scene2{
-  position:absolute; inset:0; z-index:auto;
+  position:absolute; inset:0; z-index:6;
   opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity .8s ease, visibility .8s ease;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
   overflow:hidden;
 }
 .scene2.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
 }
 
-.scene2__bg{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
-}
-
 .gift-stage{
   position:absolute; inset:0;
-  background:transparent;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:4; padding:1.5rem; text-align:center;
+  z-index:1; padding:1.5rem; text-align:center;
 }
 
 .gift-spotlight{
-  position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+  position:absolute; top:50%; left:50%; transform:translate3d(-50%, -50%, 0);
   width:min(90vw, 520px); height:min(90vw, 520px);
   background:radial-gradient(circle, rgba(255,207,106,.45) 0%, rgba(255,190,150,.2) 44%, transparent 70%);
   border-radius:50%; filter:blur(32px); pointer-events:none;
+  contain:paint;
 }
 
 .gift-header{
@@ -623,7 +630,7 @@ body{
   transform:translate(-50%, -50%) translateY(40px) scale(0.85);
   opacity:0; pointer-events:none;
   width:min(90vw, 440px);
-  transition:all .9s cubic-bezier(.16, 1, .3, 1);
+  transition:transform .9s cubic-bezier(.16, 1, .3, 1), opacity .9s cubic-bezier(.16, 1, .3, 1);
 }
 
 .scene2.gift-open .gift-reveal-card{
@@ -673,32 +680,28 @@ body{
    SCENE 3 — THE SECRET PIN KEEPSAKE CARD
    ============================================================ */
 .scene3{
-  position:absolute; inset:0; z-index:auto;
+  position:absolute; inset:0; z-index:6;
   opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity .8s ease, visibility .8s ease;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
   overflow:hidden;
 }
 .scene3.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
 }
 
-.scene3__bg{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
-}
-
 .pin-stage{
   position:absolute; inset:0;
-  background:transparent;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:4; padding:1.2rem; text-align:center;
+  z-index:1; padding:1.2rem; text-align:center;
 }
 
 .pin-spotlight{
-  position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+  position:absolute; top:50%; left:50%; transform:translate3d(-50%, -50%, 0);
   width:min(90vw, 540px); height:min(90vw, 540px);
   background:radial-gradient(circle, rgba(255,207,106,.42) 0%, rgba(255,190,150,.18) 42%, transparent 70%);
   border-radius:50%; filter:blur(36px); pointer-events:none;
+  contain:paint;
 }
 
 .pin-card{
@@ -781,7 +784,7 @@ body{
   font-family:"Cormorant Garamond", Georgia, serif;
   font-style:italic; font-weight:600; font-size:clamp(12px, 2.6vw, 14.5px);
   letter-spacing:0.04em;
-  transition:all 0.3s ease;
+  transition:background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 .pin-status-pill.pin-hint{
   background:rgba(255, 243, 234, 0.9);
@@ -804,7 +807,7 @@ body{
   width:14px; height:14px; border-radius:50%;
   border:2px solid rgba(150, 60, 80, 0.35);
   background:transparent;
-  transition:all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 .pin-dot.is-filled{
   background:linear-gradient(135deg, var(--rose-lift), var(--rose));
@@ -816,8 +819,9 @@ body{
   animation:pinShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 .pin-dots.is-error .pin-dot.is-filled{
-  background:var(--rose-deep);
-  border-color:#6e0a31;
+  background:#ef4444;
+  border-color:#b91c1c;
+  box-shadow:0 0 10px rgba(239, 68, 68, 0.5);
 }
 
 @keyframes pinShake{
@@ -827,20 +831,23 @@ body{
   40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
+.pin-card.is-unlocked .pin-dot.is-filled{
+  background:linear-gradient(135deg, #ffd074, #e8a23d);
+  border-color:#d49020;
+  box-shadow:0 0 14px rgba(232, 162, 61, 0.7);
+  transform:scale(1.25);
+}
+
 /* 5. Keypad */
 .pin-input-area{
   width:100%; display:flex; flex-direction:column; align-items:center;
   transition:opacity 0.4s ease, transform 0.4s ease;
 }
-.pin-card.is-unlocked .pin-input-area{
-  display:none;
-}
 .pin-keypad{
   display:grid;
   grid-template-columns:repeat(3, 1fr);
-  gap:clamp(10px, 2.4vw, 14px);
+  gap:clamp(10px, 2.5vw, 16px);
   width:min(100%, 280px);
-  margin:0 auto;
 }
 .keypad-btn{
   aspect-ratio:1;
@@ -853,8 +860,7 @@ body{
   color:var(--ink);
   cursor:pointer;
   display:flex; align-items:center; justify-content:center;
-  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-  transition:all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   -webkit-tap-highlight-color:transparent;
   outline:none;
 }
@@ -878,146 +884,49 @@ body{
   display:block;
 }
 
-/* 6. Success State Content */
-.pin-success-content{
-  display:flex; flex-direction:column; align-items:center;
-  text-align:center; padding:1.2rem 0.5rem 0.5rem;
-  animation:pinSuccessIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes pinSuccessIn{
-  from{ opacity:0; transform:translateY(16px) scale(0.92); }
-  to{ opacity:1; transform:translateY(0) scale(1); }
-}
-.pin-success-title{
-  font-family:"Great Vibes", cursive;
-  font-weight:400; font-size:clamp(44px, 10vw, 68px); line-height:1;
-  background:linear-gradient(180deg, #e85a83 0%, #c41f52 50%, #9c0f42 100%);
-  -webkit-background-clip:text; background-clip:text; color:transparent;
-  filter:drop-shadow(0 1px 1px rgba(255,252,248,.98)) drop-shadow(0 2px 4px rgba(130,18,55,.4));
-  margin:0 0 0.2rem;
-}
-.pin-success-rule{
-  display:block; width:clamp(50px, 12vw, 90px); height:2px;
-  margin:0.2em auto 0.8em;
-  background:linear-gradient(90deg, rgba(232,162,61,0), var(--gold-2) 50%, rgba(232,162,61,0));
-}
-.pin-success-sub{
-  font-family:"Cormorant Garamond", Georgia, serif;
-  font-style:italic; font-weight:600;
-  font-size:clamp(15px, 3.4vw, 19px); line-height:1.4;
-  color:var(--ink-soft); margin-bottom:1.6rem;
-}
-.pin-success-actions{
-  display:flex; flex-direction:column; align-items:center; gap:0.8rem;
-}
-.pin-relock-link{
-  background:none; border:none; padding:4px 8px;
-  font-family:"Cormorant Garamond", Georgia, serif;
-  font-style:italic; font-weight:600; font-size:13.5px;
-  letter-spacing:0.04em; color:var(--ink-soft);
-  text-decoration:underline; text-underline-offset:3px;
-  cursor:pointer; opacity:0.75;
-  transition:opacity 0.2s ease, color 0.2s ease;
-}
-.pin-relock-link:hover{
-  opacity:1; color:var(--rose);
-}
-
 /* ============================================================
    SCENE 4 — THE THEATRICAL VELVET CURTAIN REVEAL
    ============================================================ */
 .scene4{
-  position:absolute; inset:0; z-index:auto;
+  position:absolute; inset:0; z-index:6;
   opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity .8s ease, visibility .8s ease;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
   overflow:hidden;
 }
 .scene4.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
 }
 
-.scene4__bg{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
-}
-
 /* === Revealed Stage / Warm Paper Background === */
 .stage-background{
   position:absolute; inset:0;
-  background:transparent;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:4; padding:1.5rem; text-align:center;
+  z-index:1; padding:1.5rem; text-align:center;
 }
 
 /* Spotlight effect behind content (softer gold glow) */
 .spotlight{
-  position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+  position:absolute; top:50%; left:50%; transform:translate3d(-50%, -50%, 0);
   width:min(90vw, 550px); height:min(90vw, 550px);
   background:radial-gradient(circle, rgba(255,207,106,.42) 0%, rgba(255,190,150,.18) 42%, transparent 70%);
   border-radius:50%; filter:blur(32px); pointer-events:none;
+  contain:paint;
 }
 
-/* Revealed Content Card */
-.revealed-content{
-  position:relative; z-index:2; text-align:center;
-  opacity:0; transform:scale(0.88) translateY(20px);
-  transition:all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
-  max-width:90vw;
-}
-
-.scene4.curtains-open .revealed-content{
-  opacity:1; transform:scale(1) translateY(0);
-}
-
-.revealed-badge{
-  display:inline-block; padding:6px 18px; border-radius:9999px;
-  background:rgba(255,243,234,.85);
-  border:1px solid rgba(150,60,80,.2);
-  color:var(--ink);
-  font-family:"Cormorant Garamond", Georgia, serif;
-  font-style:italic; font-weight:600; font-size:clamp(13px, 3vw, 17px);
-  letter-spacing:0.12em; text-transform:uppercase;
-  box-shadow:0 2px 10px rgba(120,20,50,.08);
-  margin-bottom:0.8rem;
-}
-
-.revealed-title{
-  font-family:"Great Vibes", cursive; font-weight:400;
-  font-size:clamp(44px, 11vw, 92px); line-height:1.05;
-  margin:0 0 0.2rem;
-  background:linear-gradient(180deg, #e85a83 0%, #c41f52 50%, #9c0f42 100%);
-  -webkit-background-clip:text; background-clip:text; color:transparent;
-  filter:drop-shadow(0 1px 1px rgba(255,252,248,.98)) drop-shadow(0 2px 6px rgba(130,18,55,.45));
-}
-
-.revealed-rule{
-  display:block; width:clamp(54px, 14vw, 120px); height:2px;
-  margin:0.2em auto 1.2em;
-  background:linear-gradient(90deg, rgba(232,162,61,0), var(--gold-2) 50%, rgba(232,162,61,0));
-  box-shadow:0 0 8px rgba(255,247,240,.9);
-}
-
-.revealed-desc{
-  font-family:"Cormorant Garamond", Georgia, serif;
-  font-style:italic; font-weight:600;
-  font-size:clamp(16px, 3.8vw, 24px); line-height:1.4;
-  letter-spacing:0.03em; color:var(--ink-soft);
-  max-width:520px; margin:0 auto 1.8rem;
-  text-shadow:0 1px 2px #fff8f1, 0 0 8px rgba(255,248,241,.98);
-}
 
 /* === Velvet Theatre Curtains === */
 .curtain{
   position:absolute; top:0; bottom:0; width:50%; z-index:4;
-  background-color:var(--wine);
+  background-color:var(--curtain-color-wine, var(--wine));
   background-image:repeating-linear-gradient(
     to right,
     rgba(0, 0, 0, 0.65) 0px,
-    var(--wine) 4px,
-    var(--rose-deep) 8px,
+    var(--curtain-color-wine, var(--wine)) 4px,
+    var(--curtain-color-deep, var(--rose-deep)) 8px,
     rgba(255, 255, 255, 0.12) 12px,
-    var(--rose-deep) 16px,
-    var(--wine) 20px,
+    var(--curtain-color-deep, var(--rose-deep)) 16px,
+    var(--curtain-color-wine, var(--wine)) 20px,
     rgba(0, 0, 0, 0.65) 24px
   );
   transition:transform 1.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1046,13 +955,13 @@ body{
 /* Top Valance (pelmet) */
 .curtain-top-valance{
   position:absolute; top:0; left:0; right:0; height:48px;
-  background-color:var(--rose);
+  background-color:var(--curtain-color, var(--rose));
   background-image:repeating-linear-gradient(
     to right,
     rgba(0,0,0,0.45) 0px,
-    var(--rose-deep) 6px,
+    var(--curtain-color-deep, var(--rose-deep)) 6px,
     rgba(255,255,255,0.15) 12px,
-    var(--rose-deep) 18px,
+    var(--curtain-color-deep, var(--rose-deep)) 18px,
     rgba(0,0,0,0.45) 24px
   );
   box-shadow:0 8px 20px rgba(60,4,24,.7);
@@ -1083,7 +992,7 @@ body{
   border-radius:9999px; cursor:pointer;
   backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
   box-shadow:0 12px 30px rgba(60,4,24,.45), 0 0 16px rgba(255,207,106,.25);
-  transition:all .35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:transform .35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .35s ease, background-color .35s ease, border-color .35s ease;
 }
 
 .open-btn:hover{
@@ -1105,34 +1014,29 @@ body{
    SCENE 5 — THE BIRTHDAY CAKE & LIFETIME COUNTDOWN
    ============================================================ */
 .scene5{
-  position:absolute; inset:0; z-index:auto;
+  position:absolute; inset:0; z-index:6;
   opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity .8s ease, visibility .8s ease;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
   overflow-y:auto; overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
 }
 .scene5.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
 }
-
-.scene5__bg{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
-}
-
 .cake-stage{
   position:relative; min-height:100%; width:100%;
-  background:transparent;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:4; padding:clamp(1rem, 3vh, 2rem) 1rem; text-align:center;
+  z-index:1; padding:clamp(1rem, 3vh, 2rem) 1rem; text-align:center;
   box-sizing:border-box;
 }
 .cake-spotlight{
   position:absolute; top:50%; left:50%;
-  transform:translate(-50%, -50%);
+  transform:translate3d(-50%, -50%, 0);
   width:min(94vw, 560px); height:min(94vw, 560px);
   background:radial-gradient(circle, rgba(255, 207, 106, 0.45) 0%, rgba(255, 140, 170, 0.2) 42%, transparent 70%);
   border-radius:50%; filter:blur(40px); pointer-events:none;
+  contain:paint;
 }
 .cake-confetti-container{
   position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:8;
@@ -1193,7 +1097,6 @@ body{
   border:1px solid rgba(150, 60, 80, 0.16);
   border-radius:16px; padding:clamp(8px, 2vw, 12px) 6px;
   box-shadow:0 3px 10px rgba(110, 10, 49, 0.05);
-  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
 }
 .cake-stat-val{
   display:block; font-family:"Fraunces", Georgia, serif; font-weight:700;
@@ -1294,7 +1197,7 @@ body{
 }
 .cake-tier-top{
   width:68%; height:38px; border-radius:12px 12px 0 0;
-  background:linear-gradient(180deg, #f9a4c5 0%, #e85987 60%, #cf2e65 100%);
+  background:linear-gradient(180deg, var(--cake-top-0, #f9a4c5) 0%, var(--cake-top-1, #e85987) 60%, var(--cake-top-2, #cf2e65) 100%);
   position:relative; z-index:2;
   box-shadow:inset 0 2px 6px rgba(255, 255, 255, 0.6), 0 3px 8px rgba(110, 10, 49, 0.15);
   border-bottom:2px solid rgba(140, 15, 55, 0.4);
@@ -1304,7 +1207,7 @@ body{
   display:flex; justify-content:space-around; pointer-events:none;
 }
 .cake-drip{
-  display:block; background:#f9a4c5; border-radius:50%;
+  display:block; background:var(--cake-drip, #f9a4c5); border-radius:50%;
   box-shadow:0 2px 4px rgba(140, 15, 55, 0.15);
 }
 .cake-drip:nth-child(1){ width:10px; height:12px; margin-top:-2px; }
@@ -1315,7 +1218,7 @@ body{
 
 .cake-tier-bottom{
   width:100%; height:56px; border-radius:16px;
-  background:linear-gradient(180deg, #e44f80 0%, #b81b51 55%, #8c0c3a 100%);
+  background:linear-gradient(180deg, var(--cake-bot-0, #e44f80) 0%, var(--cake-bot-1, #b81b51) 55%, var(--cake-bot-2, #8c0c3a) 100%);
   position:relative; z-index:1;
   box-shadow:inset 0 2px 8px rgba(255, 255, 255, 0.4), 0 8px 18px rgba(110, 10, 49, 0.3);
   display:flex; align-items:center; justify-content:space-around;
@@ -1365,9 +1268,9 @@ body{
   background:rgba(255, 244, 236, 0.82); border:1px solid rgba(150, 60, 80, 0.2);
   font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600;
   font-size:clamp(12px, 2.5vw, 14px); letter-spacing:.04em; color:var(--ink);
-  cursor:pointer; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  cursor:pointer;
   box-shadow:0 2px 8px rgba(110, 10, 49, 0.08);
-  transition:all .25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:transform .25s cubic-bezier(0.16, 1, 0.3, 1), background-color .25s ease, border-color .25s ease, box-shadow .25s ease;
   -webkit-tap-highlight-color:transparent;
 }
 .cake-mic-btn:hover{
@@ -1409,7 +1312,8 @@ body{
   background:rgba(255, 240, 230, 0.7); border:1px solid rgba(150, 60, 80, 0.18);
   font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600;
   font-size:12.5px; letter-spacing:.04em; color:var(--ink);
-  cursor:pointer; margin-bottom:8px; transition:all .2s ease;
+  cursor:pointer; margin-bottom:8px;
+  transition:background-color .2s ease, color .2s ease;
   -webkit-tap-highlight-color:transparent;
 }
 .cake-relight-btn:hover{
@@ -1431,19 +1335,14 @@ body{
    SCENE 6 — THE MEMORY WALL
    ============================================================ */
 .scene6{
-  position:absolute; inset:0; z-index:auto;
+  position:absolute; inset:0; z-index:6;
   opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity .8s ease, visibility .8s ease;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
   overflow-y:auto; overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
 }
 .scene6.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
-}
-
-.scene6__bg{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
 }
 
 /* Transition Light Wipe entering Scene 6 */
@@ -1457,24 +1356,25 @@ body{
 /* Memory Stage */
 .memory-stage{
   position:relative; min-height:100%; width:100%;
-  background:transparent;
+  background:radial-gradient(120% 88% at 50% 24%, #fff8f1 0%, var(--paper-0) 38%, var(--paper-1) 74%, var(--paper-2) 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-  z-index:4; padding:clamp(2rem, 5vh, 3.5rem) 1rem clamp(3rem, 6vh, 4.5rem); text-align:center;
+  z-index:1; padding:clamp(2rem, 5vh, 3.5rem) 1rem clamp(3rem, 6vh, 4.5rem); text-align:center;
   box-sizing:border-box;
 }
 
 /* Ambient Warm Spotlight & Glow */
 .memory-spotlight{
   position:absolute; top:45%; left:50%;
-  transform:translate(-50%, -50%);
+  transform:translate3d(-50%, -50%, 0);
   width:min(96vw, 680px); height:min(96vw, 680px);
   background:radial-gradient(circle, rgba(255, 207, 106, 0.35) 0%, rgba(255, 140, 170, 0.16) 42%, transparent 70%);
   border-radius:50%; filter:blur(50px); pointer-events:none;
+  contain:paint;
   animation:memoryGlowBreath 6s ease-in-out infinite alternate;
 }
 @keyframes memoryGlowBreath{
-  0%{ opacity:0.7; transform:translate(-50%, -50%) scale(0.95); }
-  100%{ opacity:1; transform:translate(-50%, -50%) scale(1.08); }
+  0%{ opacity:0.7; transform:translate3d(-50%, -50%, 0) scale(0.95); }
+  100%{ opacity:1; transform:translate3d(-50%, -50%, 0) scale(1.08); }
 }
 
 /* Dust Motes */
@@ -1487,7 +1387,7 @@ body{
   background:radial-gradient(circle, rgba(255, 223, 112, 0.85), rgba(255, 180, 100, 0.2) 65%, transparent 75%);
   filter:blur(0.5px);
   animation:memoryMoteDrift 7s ease-in-out infinite alternate;
-  animation-delay:var(--md); will-change:transform, opacity;
+  animation-delay:var(--md);
 }
 @keyframes memoryMoteDrift{
   0%{ transform:translateY(0) translateX(0); opacity:0.3; }
@@ -1633,18 +1533,13 @@ body{
    SCENE 7 — THE VINTAGE FILM-STRIP
    ============================================================ */
 .scene7{
-  position:absolute; inset:0; z-index:auto;
+  position:absolute; inset:0; z-index:6;
   opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity .8s ease, visibility .8s ease;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
   overflow:hidden;
 }
 .scene7.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
-}
-
-.scene7__bg{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(ellipse at 50% 45%, #2a0b17 0%, #17040d 60%, #0c0207 100%);
 }
 
 /* Projector Shutter Flash Transition */
@@ -1656,10 +1551,9 @@ body{
 /* Film Stage */
 .film-stage{
   position:relative; width:100%; height:100%;
-  background:transparent;
+  background:radial-gradient(ellipse at 50% 45%, #2a0b17 0%, #17040d 60%, #0c0207 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   overflow:hidden; box-sizing:border-box; padding:1.5rem 1rem;
-  z-index:4;
 }
 
 /* Sweeping Projector Light Beam */
@@ -1817,269 +1711,238 @@ body{
 }
 
 /* ============================================================
-   SCENE 8 — CONSTELLATION OF US
+   SCENE 8 — BALLOON POP (POP THE WISHES)
    ============================================================ */
 .scene8{
-  position:absolute; inset:0; z-index:auto;
+  position:absolute; inset:0; z-index:6;
   opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity .8s ease, visibility .8s ease;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
   overflow-y:auto; overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
+  background:radial-gradient(ellipse at 50% 35%, #240a16 0%, #14030c 55%, #080105 100%);
 }
 .scene8.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
 }
 
-.scene8__bg{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(ellipse at 50% 35%, #240a16 0%, #14030c 55%, #080105 100%);
+/* Ambient Warm Glow */
+.balloon-ambient-glow{
+  position:absolute; top:45%; left:50%;
+  transform:translate(-50%, -50%);
+  width:min(92vw, 600px); height:min(92vw, 600px);
+  background:radial-gradient(circle, rgba(255, 207, 106, 0.12) 0%, rgba(212, 35, 92, 0.08) 50%, transparent 75%);
+  border-radius:50%; pointer-events:none; z-index:1;
 }
 
-/* Starlight Dissolve Transition Veil */
-.constellation-veil{
-  position:absolute; inset:0;
-  background:radial-gradient(circle at center, rgba(255, 240, 200, 0.9) 0%, rgba(36, 10, 22, 0.95) 50%, rgba(8, 1, 5, 0.98) 100%);
-  z-index:25; pointer-events:none; opacity:0; transform:scale(1.08);
-  will-change:opacity, transform;
+/* Top Floating Toast Message */
+.balloon-toast-container{
+  position:fixed; top:2.2rem; left:0; right:0;
+  display:flex; justify-content:center;
+  pointer-events:none; z-index:90; padding:0 1.2rem;
 }
-
-/* Sky Stage */
-.sky-stage{
-  position:relative; min-height:100%; width:100%;
-  background:transparent;
-  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-  overflow-x:hidden; box-sizing:border-box;
-  padding:clamp(1.5rem, 3.5vh, 2.5rem) 1rem clamp(2.5rem, 5vh, 4rem);
-  z-index:4;
+.balloon-toast-msg{
+  background:rgba(22, 6, 16, 0.9);
+  border:1.5px solid rgba(255, 207, 106, 0.45);
+  color:#fff8f2;
+  padding:0.75rem 1.8rem;
+  border-radius:9999px;
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-style:italic;
+  font-size:clamp(1rem, 2.8vw, 1.25rem);
+  font-weight:600;
+  box-shadow:0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 207, 106, 0.25);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  transform:translateY(-24px) scale(0.92);
+  opacity:0;
+  transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-
-/* Cosmic Nebula Glow */
-.sky-nebula{
-  position:absolute; top:32%; left:50%; transform:translate(-50%, -50%);
-  width:min(96vw, 750px); height:min(96vw, 550px);
-  background:radial-gradient(ellipse, rgba(212, 35, 92, 0.22) 0%, rgba(255, 207, 106, 0.14) 35%, transparent 70%);
-  filter:blur(55px); pointer-events:none; z-index:1;
-  animation:nebulaBreath 8s ease-in-out infinite alternate;
-}
-@keyframes nebulaBreath{
-  0%{ opacity:0.65; transform:translate(-50%, -50%) scale(0.94); }
-  100%{ opacity:1; transform:translate(-50%, -50%) scale(1.06); }
-}
-
-/* Ambient Twinkling Stars */
-.sky-bg-stars{
-  position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:2;
-}
-.bg-star{
-  position:absolute; left:var(--sx); top:var(--sy); width:var(--ss); height:var(--ss);
-  border-radius:50%;
-  background:radial-gradient(circle, #ffffff 0%, rgba(255, 235, 185, 0.85) 60%, transparent 100%);
-  box-shadow:0 0 4px rgba(255, 240, 200, 0.7);
-  animation:starTwinkle 3.5s ease-in-out infinite alternate;
-  animation-delay:var(--sd); will-change:opacity, transform;
-}
-@keyframes starTwinkle{
-  0%{ opacity:0.15; transform:scale(0.7); }
-  50%{ opacity:0.95; transform:scale(1.2); }
-  100%{ opacity:0.25; transform:scale(0.8); }
-}
-
-/* ============================================================
-   SCENE 8 — ALTERNATING VERTICAL TIMELINE (ENLARGED CENTERPIECE)
-   ============================================================ */
-.constellation-timeline{
-  position:relative;
-  width:100%; max-width:min(94vw, 680px);
-  margin:clamp(1rem, 2.5vh, 2rem) auto 0;
-  display:flex; flex-direction:column;
-  gap:clamp(18px, 3.2vh, 28px);
-  box-sizing:border-box;
-  padding:8px 0;
-  z-index:5;
-}
-
-/* Center Vertical Gold Hairline Spine */
-.timeline-spine{
-  position:absolute; top:12px; bottom:12px; left:50%;
-  width:2px; transform:translateX(-50%);
-  background:linear-gradient(180deg, rgba(232, 162, 61, 0) 0%, var(--gold-1) 10%, var(--gold-2) 90%, rgba(232, 162, 61, 0) 100%);
-  box-shadow:0 0 10px rgba(255, 207, 106, 0.55);
-  pointer-events:none; z-index:1;
-}
-
-/* Timeline Item (One row per caption) */
-.timeline-item{
-  position:relative; width:100%;
-  display:flex; align-items:center;
-  box-sizing:border-box; z-index:2;
-}
-
-/* Central Dot Marker (Enlarged Starlight Marker) */
-.timeline-dot{
-  position:absolute; left:50%; top:50%;
-  transform:translate(-50%, -50%) scale(0.7);
-  width:13px; height:13px; border-radius:50%;
-  background:#360c20;
-  border:2px solid rgba(255, 207, 106, 0.4);
-  box-shadow:0 0 6px rgba(0, 0, 0, 0.8);
-  opacity:0.4;
-  transition:all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index:4; pointer-events:none;
-}
-.timeline-item.is-revealed .timeline-dot{
-  opacity:1; transform:translate(-50%, -50%) scale(1);
-  background:#ffffff;
-  border-color:var(--gold-1);
-  box-shadow:0 0 12px rgba(255, 255, 255, 1), 0 0 22px rgba(255, 207, 106, 0.9), 0 0 35px rgba(232, 162, 61, 0.5);
-}
-
-/* Horizontal Hairline Branch Connector (Extended Length) */
-.timeline-branch{
-  position:absolute; top:50%; height:1.5px;
-  opacity:0; pointer-events:none; z-index:2;
-  transition:opacity 0.5s ease;
-}
-.item-right .timeline-branch{
-  left:50%; width:clamp(20px, 4.5vw, 42px);
-  background:linear-gradient(90deg, var(--gold-1) 0%, rgba(255, 207, 106, 0.45) 100%);
-  box-shadow:0 0 6px rgba(255, 207, 106, 0.5);
-}
-.item-left .timeline-branch{
-  right:50%; width:clamp(20px, 4.5vw, 42px);
-  background:linear-gradient(270deg, var(--gold-1) 0%, rgba(255, 207, 106, 0.45) 100%);
-  box-shadow:0 0 6px rgba(255, 207, 106, 0.5);
-}
-.timeline-item.is-revealed .timeline-branch{
+.balloon-toast-msg.show{
+  transform:translateY(0) scale(1);
   opacity:1;
 }
 
-/* Item Left / Right Positioning */
-.item-right{
-  justify-content:flex-start;
-  padding-left:calc(50% + clamp(20px, 4.5vw, 42px));
-}
-.item-left{
-  justify-content:flex-end;
-  padding-right:calc(50% + clamp(20px, 4.5vw, 42px));
-}
-
-/* Caption Pill (Enlarged & Prominent) */
-.timeline-pill{
-  display:inline-flex; align-items:center;
-  padding:clamp(7px, 1.4vh, 10px) clamp(15px, 3.2vw, 22px);
-  border-radius:9999px;
-  background:rgba(22, 6, 16, 0.78);
-  border:1.5px solid rgba(255, 207, 106, 0.35);
-  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
-  box-shadow:0 6px 18px rgba(0, 0, 0, 0.55), 0 0 12px rgba(212, 35, 92, 0.2);
-  max-width:min(44vw, 290px);
+/* Main Container */
+.balloon-scene-content{
+  position:relative; z-index:10;
+  min-height:100%; width:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center;
+  padding:clamp(1.5rem, 3.5vh, 2.5rem) 1rem clamp(2.5rem, 5vh, 4rem);
   box-sizing:border-box;
+}
+
+/* Header */
+.balloon-header{
+  margin-bottom:clamp(1.5rem, 3vh, 2.4rem);
+}
+.balloon-title{
+  font-family:"Fraunces", Georgia, serif;
+  font-size:clamp(2rem, 5.5vw, 2.8rem);
+  font-weight:900;
+  color:var(--gold-1, #ffdf70);
+  text-shadow:0 0 20px rgba(255, 207, 106, 0.4);
+  margin-bottom:0.35rem;
+  line-height:1.15;
+}
+.balloon-subtitle{
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-style:italic;
+  color:#fed7aa;
+  font-size:clamp(0.95rem, 2.5vw, 1.15rem);
+  font-weight:600;
+  letter-spacing:0.03em;
+}
+
+/* Balloons Grid */
+.balloons-grid{
+  display:flex; flex-wrap:wrap;
+  justify-content:center;
+  gap:clamp(1.8rem, 3.5vh, 2.6rem) clamp(1.4rem, 4vw, 2.4rem);
+  max-width:380px;
+  margin-bottom:clamp(1.8rem, 3vh, 2.5rem);
+}
+.balloon-slot{
+  position:relative; width:64px; height:96px;
+  display:flex; justify-content:center;
+}
+
+/* Balloon Body & 3D Lighting */
+.balloon{
+  position:absolute; inset:0;
   cursor:pointer;
-  will-change:transform, opacity;
-  transition:border-color 0.35s ease,
-             box-shadow 0.35s ease,
-             background 0.35s ease,
-             transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-             opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow:inset -10px -10px 18px rgba(0, 0, 0, 0.45), inset 6px 6px 12px rgba(255, 255, 255, 0.35), 0 10px 22px rgba(0, 0, 0, 0.55);
+  transform-origin:bottom center;
+  animation:floatBalloon 3.2s ease-in-out infinite alternate;
+  transition:transform 0.18s ease;
+}
+.balloon:hover{
+  transform:scale(1.08);
+}
+.balloon:active{
+  transform:scale(0.94);
 }
 
-/* Sliding entrance from alternating sides */
-.item-right .timeline-pill{
-  opacity:0; transform:translateX(28px);
-}
-.item-left .timeline-pill{
-  opacity:0; transform:translateX(-28px);
-}
-.timeline-item.is-revealed .timeline-pill{
-  opacity:1; transform:translateX(0);
+/* 3D Highlight Glare */
+.balloon-glare{
+  position:absolute; top:8px; left:8px;
+  width:13px; height:26px;
+  border-radius:50%;
+  background:rgba(255, 255, 255, 0.55);
+  transform:rotate(35deg);
+  filter:blur(1px);
+  pointer-events:none;
 }
 
-/* Pill Typography (Enlarged Proportions) */
-.timeline-pill-text{
+/* Balloon Knot */
+.balloon-knot{
+  position:absolute; bottom:-4px; left:50%;
+  transform:translateX(-50%);
+  width:11px; height:8px;
+  border-radius:50%;
+  background:inherit;
+  pointer-events:none;
+}
+
+/* Balloon String */
+.balloon-string{
+  position:absolute; bottom:-44px; left:50%;
+  width:1px; height:42px;
+  background:rgba(255, 255, 255, 0.3);
+  transform-origin:top center;
+  pointer-events:none;
+}
+
+/* Popping Animation */
+@keyframes popEffect{
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.balloon.popping{
+  animation:popEffect 0.18s ease-out forwards;
+  pointer-events:none;
+}
+
+/* Floating Keyframe */
+@keyframes floatBalloon{
+  0% { transform: translateY(0) rotate(-2deg); }
+  100% { transform: translateY(-10px) rotate(2deg); }
+}
+
+/* Burst Particle Pieces */
+.balloon-particle{
+  position:absolute; width:6px; height:6px;
+  border-radius:50%; pointer-events:none;
+  animation:balloonScatter 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  z-index:20;
+}
+@keyframes balloonScatter{
+  0% { transform: translate(0, 0) scale(1.2); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* Progress Counter Badge */
+.balloon-counter-badge{
+  background:rgba(22, 6, 16, 0.8);
+  border:1px solid rgba(255, 207, 106, 0.3);
+  border-radius:9999px;
+  padding:8px 24px;
+  margin-bottom:1.5rem;
+  box-shadow:0 4px 18px rgba(0, 0, 0, 0.4);
+  backdrop-filter:blur(8px);
+}
+.balloon-counter-text{
+  color:#fed7aa;
+  font-size:0.82rem;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+
+/* Actions Panel / Closing Block */
+.balloon-actions-panel{
+  min-height:75px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.balloon-closing-block{
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  animation:popIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.balloon-closing-text{
   font-family:"Cormorant Garamond", Georgia, serif;
   font-style:italic; font-weight:600;
-  font-size:clamp(14px, 3vw, 17.5px);
-  letter-spacing:0.03em; color:#fff8f2;
-  text-shadow:0 1px 3px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 207, 106, 0.55);
-  line-height:1.3;
-  text-align:center;
-  transition:color 0.35s ease, text-shadow 0.35s ease;
+  font-size:clamp(1.2rem, 3.2vw, 1.5rem);
+  color:var(--gold-1, #ffdf70);
+  text-shadow:0 0 15px rgba(255, 207, 106, 0.5);
+  margin-bottom:1rem;
 }
-
-/* Interactive Hover / Highlight States */
-.timeline-item.is-highlighted .timeline-pill,
-.timeline-pill:hover{
-  border-color:rgba(255, 223, 112, 0.9);
-  background:rgba(38, 12, 28, 0.88);
-  box-shadow:0 0 24px rgba(255, 207, 106, 0.6), 0 6px 20px rgba(0, 0, 0, 0.65);
-  transform:scale(1.04);
+.balloon-btn-group{
+  display:flex; flex-direction:column; align-items:center; gap:0.75rem;
 }
-.timeline-item.is-highlighted .timeline-dot,
-.timeline-item.is-pulsing .timeline-dot{
-  transform:translate(-50%, -50%) scale(1.6);
-  box-shadow:0 0 18px #ffffff, 0 0 30px rgba(255, 207, 106, 1), 0 0 45px rgba(232, 162, 61, 0.7);
+.balloon-reset-btn{
+  background:none; border:none;
+  color:rgba(254, 215, 170, 0.7);
+  font-size:0.8rem; letter-spacing:0.05em;
+  cursor:pointer; padding:4px 12px;
+  transition:color 0.2s ease;
 }
-.timeline-item.is-highlighted .timeline-pill-text,
-.timeline-pill:hover .timeline-pill-text{
-  color:#ffffff;
-  text-shadow:0 0 14px rgba(255, 235, 185, 1), 0 0 24px rgba(255, 207, 106, 0.9);
-}
-
-/* Climax Hero Item (6th Star) */
-.item-hero .timeline-pill-text{
-  color:#fed7aa;
-  font-size:clamp(15px, 3.2vw, 18.5px);
-}
-.item-hero .timeline-dot{
-  width:15px; height:15px;
-}
-
-/* Closing Headline Block */
-.constellation-closing{
-  position:relative; z-index:8; margin-top:clamp(1.6rem, 3.5vh, 2.6rem);
-  display:flex; flex-direction:column; align-items:center; perspective:800px;
-}
-.constellation-closing-inner{
-  display:flex; flex-direction:column; align-items:center; text-align:center;
-  max-width:min(92vw, 500px); transform-origin:50% 0%; will-change:transform, opacity;
-  opacity:0; transform:perspective(800px) rotateX(-80deg) translateY(15px);
-}
-.constellation-title{
-  font-family:"Fraunces", Georgia, serif; font-weight:800;
-  font-size:clamp(26px, 6.5vw, 42px); line-height:1.1; letter-spacing:-0.02em;
-  color:#fff8f1; margin:0 0 4px;
-  text-shadow:0 0 22px rgba(255, 207, 106, 0.85), 0 2px 8px rgba(90, 8, 36, 0.7);
-}
-.constellation-rule{
-  display:block; width:clamp(52px, 14vw, 92px); height:2px;
-  margin:0.3em auto 0.6em;
-  background:linear-gradient(90deg, rgba(232, 162, 61, 0), var(--gold-1) 50%, rgba(232, 162, 61, 0));
-  box-shadow:0 0 10px rgba(255, 223, 112, 0.95);
-}
-.constellation-sub{
-  font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600;
-  font-size:clamp(15px, 3.4vw, 19px); letter-spacing:0.03em;
-  color:#fed7aa; text-shadow:0 0 12px rgba(255, 180, 120, 0.6), 0 1px 3px rgba(0, 0, 0, 0.8);
-  margin:0 0 clamp(1rem, 2.5vh, 1.6rem);
+.balloon-reset-btn:hover{
+  color:#fff8f2; text-decoration:underline;
 }
 
 /* ============================================================
    SCENE 9 — ENVELOPE & TYPEWRITER LETTER
    ============================================================ */
 .scene9{
-  position:absolute; inset:0; z-index:auto;
+  position:absolute; inset:0; z-index:6;
   opacity:0; visibility:hidden; pointer-events:none;
-  transition:opacity .8s ease, visibility .8s ease;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
   overflow-y:auto; overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
 }
 .scene9.is-active{
   opacity:1; visibility:visible; pointer-events:auto;
-}
-
-.scene9__bg{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(120% 90% at 50% 25%, #fffdf9 0%, var(--paper-0) 38%, var(--paper-1) 72%, var(--paper-2) 100%);
 }
 
 /* Warm Parchment Dissolve Transition Veil */
@@ -2093,24 +1956,24 @@ body{
 /* Letter Stage (Warm daylight desk setting) */
 .letter-stage{
   position:relative; min-height:100%; width:100%;
-  background:transparent;
+  background:radial-gradient(120% 90% at 50% 25%, #fffdf9 0%, var(--paper-0) 38%, var(--paper-1) 72%, var(--paper-2) 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   overflow-x:hidden; box-sizing:border-box;
   padding:clamp(1.5rem, 3.5vh, 2.5rem) 1rem clamp(2rem, 4vh, 3.5rem);
-  z-index:4;
 }
 
 /* Warm ambient background light pool */
 .letter-bg-ambient{
-  position:absolute; top:35%; left:50%; transform:translate(-50%, -50%);
+  position:absolute; top:35%; left:50%; transform:translate3d(-50%, -50%, 0);
   width:min(94vw, 720px); height:min(90vw, 550px);
   background:radial-gradient(ellipse, rgba(255, 238, 215, 0.55) 0%, rgba(242, 201, 184, 0.25) 45%, transparent 75%);
   filter:blur(45px); pointer-events:none; z-index:1;
+  contain:paint;
   animation:letterAmbientBreath 7s ease-in-out infinite alternate;
 }
 @keyframes letterAmbientBreath{
-  0%{ opacity:0.65; transform:translate(-50%, -50%) scale(0.95); }
-  100%{ opacity:1; transform:translate(-50%, -50%) scale(1.05); }
+  0%{ opacity:0.65; transform:translate3d(-50%, -50%, 0) scale(0.95); }
+  100%{ opacity:1; transform:translate3d(-50%, -50%, 0) scale(1.05); }
 }
 
 /* Ambient Warm Gold Dust Motes */
@@ -2123,7 +1986,7 @@ body{
   background:radial-gradient(circle, #ffcf6a 0%, rgba(232, 162, 61, 0.5) 60%, transparent 100%);
   box-shadow:0 0 4px rgba(255, 207, 106, 0.6);
   animation:letterMoteDrift 6s ease-in-out infinite alternate;
-  animation-delay:var(--ld); will-change:transform, opacity;
+  animation-delay:var(--ld);
 }
 @keyframes letterMoteDrift{
   0%{ transform:translateY(0) translateX(0); opacity:0.25; }
@@ -2266,7 +2129,7 @@ body{
   background:radial-gradient(ellipse at 50% 55%, rgba(100, 25, 50, 0.24) 0%, rgba(120, 40, 65, 0.12) 55%, transparent 78%);
   filter:blur(20px); border-radius:16px;
   pointer-events:none; z-index:1;
-  transition:all 0.8s ease;
+  transition:opacity 0.8s ease, transform 0.8s ease;
 }
 .letter-card-container.is-breathing .letter-card-shadow{
   animation:letterCardBreathe 5s ease-in-out infinite alternate;
@@ -2354,30 +2217,12 @@ body{
 }
 
 /* ============================================================
-   FUTURE SCENES (Scene 10 & 11)
-   ============================================================ */
-.scene10, .scene11{
-  position:absolute; inset:0; z-index:auto;
-  opacity:0; visibility:hidden; pointer-events:none;
-  background:transparent;
-  transition:opacity 0.8s ease, visibility 0.8s ease;
-  overflow:hidden;
-}
-.scene10.is-active, .scene11.is-active{
-  opacity:1; visibility:visible; pointer-events:auto;
-}
-.scene10__bg, .scene11__bg{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:#090205;
-}
-
-/* ============================================================
    GLOBAL AMBIENT PARTICLES (Shared across all scenes)
    ============================================================ */
 .global-ambient-particles{
   position:fixed; inset:0;
   pointer-events:none; overflow:hidden;
-  z-index:2;
+  z-index:50;
 }
 
 /* Individual particle base */
@@ -2408,7 +2253,7 @@ body{
 /* ============================================================
    THE LENS — grain + vignette over every act
    ============================================================ */
-.grade{ position:absolute; inset:0; z-index:9; pointer-events:none; }
+.grade{ position:fixed; inset:0; z-index:55; pointer-events:none; }
 .grade__vignette{
   position:absolute; inset:0;
   background:radial-gradient(125% 95% at 50% 42%, transparent 54%, rgba(60,18,30,.14) 84%, rgba(40,12,22,.3) 100%);
@@ -2418,6 +2263,472 @@ body{
   position:absolute; inset:0;
   background:url('/textures/grain.png') repeat;
   background-size:300px; opacity:.05; mix-blend-mode:overlay;
+}
+
+/* ============================================================
+   SCENE 10 — FIREWORKS FINALE BUILD-UP
+   ============================================================ */
+.scene10{
+  position:absolute; inset:0; z-index:6;
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
+  overflow-y:auto; overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.scene10.is-active{
+  opacity:1; visibility:visible; pointer-events:auto;
+}
+
+/* Page-of-Light Dissolve Transition Veil */
+.fireworks-veil{
+  position:absolute; inset:0;
+  background:radial-gradient(circle at center, rgba(255, 248, 240, 0.98) 0%, rgba(255, 235, 200, 0.92) 45%, rgba(36, 10, 22, 0.96) 80%, #080105 100%);
+  z-index:30; pointer-events:none; opacity:0; transform:scale(1.06);
+  will-change:opacity, transform;
+}
+
+/* Fireworks Stage */
+.fireworks-stage{
+  position:relative; width:100%; height:100%; min-height:100%;
+  background:radial-gradient(ellipse at 50% 35%, #240a16 0%, #14030c 55%, #080105 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+  overflow:hidden; box-sizing:border-box;
+  padding:1rem 1rem clamp(1.5rem, 4vh, 3rem);
+}
+
+/* 2D Canvas for Fireworks & Heart particles */
+.fireworks-canvas{
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none; z-index:4;
+}
+
+/* Interactive Launch Pad (Center Bottom) */
+.fireworks-launch-pad{
+  position:absolute; bottom:clamp(24px, 6vh, 48px); left:50%;
+  transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  z-index:10; user-select:none;
+  transition:opacity 0.6s ease, transform 0.6s var(--ease-out);
+}
+.fireworks-launch-pad.is-hidden{
+  opacity:0; pointer-events:none; transform:translate(-50%, 15px);
+}
+
+.fireworks-launch-btn{
+  position:relative; width:52px; height:52px;
+  border-radius:50%; border:none; background:transparent;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  padding:0; outline:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform 0.25s var(--ease-out);
+}
+.fireworks-launch-btn:hover{
+  transform:scale(1.08);
+}
+.fireworks-launch-btn:active{
+  transform:scale(0.94);
+}
+.fireworks-launch-btn:focus-visible{
+  outline:2px solid var(--gold-1);
+  outline-offset:4px;
+}
+
+.launch-tube-svg{
+  width:44px; height:48px; display:block;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,207,106,0.3));
+}
+
+.launch-ember{
+  animation:launchEmberPulse 1.6s ease-in-out infinite alternate;
+  transform-origin:22px 15px;
+}
+@keyframes launchEmberPulse{
+  0%{ r:4; opacity:0.75; transform:scale(0.85); }
+  100%{ r:5.5; opacity:1; transform:scale(1.15); filter:drop-shadow(0 0 6px rgba(255,207,106,0.9)); }
+}
+
+.launch-btn-halo{
+  position:absolute; inset:-8px; border-radius:50%;
+  border:1px dashed rgba(255,207,106,0.35);
+  animation:haloSpin 14s linear infinite;
+  pointer-events:none;
+}
+@keyframes haloSpin{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+/* Hint Text */
+.fireworks-hint{
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-style:italic; font-weight:600;
+  font-size:clamp(14px, 3vw, 16.5px);
+  letter-spacing:0.04em; color:#fed7aa;
+  text-shadow:0 0 10px rgba(255,207,106,0.7), 0 1px 3px rgba(0,0,0,0.8);
+  margin:0; transition:color 0.3s ease;
+}
+.fireworks-hint.pulsing{
+  animation:hintPulse 2.2s ease-in-out infinite;
+}
+
+/* Closing Headline Block */
+.fireworks-closing{
+  position:absolute; top:clamp(48%, 51vh, 55%); left:50%;
+  transform:translateX(-50%);
+  width:min(94vw, 560px);
+  display:flex; flex-direction:column; align-items:center; perspective:800px;
+  pointer-events:none; z-index:8;
+}
+.fireworks-closing-inner{
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  max-width:min(92vw, 560px); transform-origin:50% 0%; will-change:transform, opacity;
+  opacity:0; transform:perspective(800px) rotateX(-80deg) translateY(20px);
+}
+.fireworks-title{
+  font-family:"Fraunces", Georgia, serif; font-weight:800;
+  font-size:clamp(28px, 7vw, 46px); line-height:1.1; letter-spacing:-0.02em;
+  color:#fff8f1; margin:0 0 4px;
+  text-shadow:0 0 24px rgba(255, 207, 106, 0.9), 0 0 40px rgba(212, 35, 92, 0.4), 0 2px 8px rgba(90, 8, 36, 0.8);
+}
+.fireworks-rule{
+  display:block; width:clamp(56px, 15vw, 100px); height:2px;
+  margin:0.35em auto 0.7em;
+  background:linear-gradient(90deg, rgba(232, 162, 61, 0), var(--gold-1) 50%, rgba(232, 162, 61, 0));
+  box-shadow:0 0 10px rgba(255, 223, 112, 0.95);
+}
+.fireworks-sub{
+  font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600;
+  font-size:clamp(15px, 3.4vw, 20px); letter-spacing:0.03em; line-height:1.35;
+  color:#fed7aa; text-shadow:0 0 12px rgba(255, 180, 120, 0.6), 0 1px 3px rgba(0, 0, 0, 0.8);
+  margin:0 0 clamp(1.2rem, 3vh, 2rem);
+}
+.fireworks-closing .tap-next-hint{
+  pointer-events:none;
+}
+
+/* ============================================================
+   SCENE 11 — THE FINAL TOAST (CLOSING SCENE)
+   ============================================================ */
+.scene11{
+  position:absolute; inset:0; z-index:6;
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity 1.25s cubic-bezier(.22, 1, .36, 1), visibility 1.25s cubic-bezier(.22, 1, .36, 1);
+  overflow:hidden;
+  background:radial-gradient(circle at 50% 38%, #fffdfa 0%, var(--paper-0, #fcf6ee) 40%, var(--paper-1, #f7ede0) 75%, var(--paper-2, #efdecd) 100%);
+}
+.scene11.is-active{
+  opacity:1; visibility:visible; pointer-events:auto;
+}
+
+/* Warm Dawn Transition Veil (Firework night settling into warm daylight) */
+.toast-veil{
+  position:absolute; inset:0;
+  background:radial-gradient(circle at center, rgba(255, 245, 230, 0.96) 0%, rgba(35, 18, 30, 0.95) 100%);
+  z-index:20; pointer-events:none; opacity:0;
+  will-change:opacity;
+}
+
+/* Ambient warm background glow */
+.toast-bg-glow{
+  position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 45%, rgba(255, 215, 170, 0.35) 0%, rgba(255, 240, 225, 0.15) 50%, transparent 80%);
+  pointer-events:none; z-index:1;
+}
+
+/* Toast Stage */
+.toast-stage{
+  position:relative; width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:clamp(1.5rem, 4vh, 3rem) clamp(1.2rem, 4vw, 2.5rem);
+  box-sizing:border-box; z-index:3;
+}
+
+/* 1. Clinking Glasses Wrap */
+.toast-glasses-wrap{
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  width:clamp(200px, 46vw, 300px);
+  height:clamp(110px, 20vh, 150px);
+  margin-bottom:clamp(1.2rem, 3vh, 2.2rem);
+  z-index:4;
+}
+
+.toast-glass{
+  position:absolute;
+  width:clamp(55px, 12vw, 75px);
+  height:clamp(95px, 20vh, 130px);
+  will-change:transform, opacity;
+  filter:drop-shadow(0 4px 12px rgba(160, 50, 70, 0.15));
+}
+.toast-glass .glass-svg{
+  width:100%; height:100%; display:block;
+  overflow:visible;
+}
+
+.toast-glass--left{
+  left:calc(50% - clamp(60px, 13vw, 85px));
+  transform-origin:50% 90%;
+  transform:translateX(-100px) rotate(-15deg);
+  opacity:0;
+}
+.toast-glass--right{
+  right:calc(50% - clamp(60px, 13vw, 85px));
+  transform-origin:50% 90%;
+  transform:translateX(100px) rotate(15deg);
+  opacity:0;
+}
+
+/* Spark / Bloom Burst at point of contact */
+.toast-clink-burst{
+  position:absolute; left:50%; top:28%;
+  transform:translate(-50%, -50%) scale(0);
+  width:80px; height:80px;
+  pointer-events:none; z-index:5; opacity:0;
+}
+.clink-sparkle-center{
+  position:absolute; inset:25%;
+  background:radial-gradient(circle, #ffffff 0%, #ffe9a6 45%, rgba(255, 205, 100, 0) 75%);
+  border-radius:50%;
+  box-shadow:0 0 24px rgba(255, 215, 110, 0.95), 0 0 45px rgba(255, 180, 80, 0.6);
+}
+.clink-ring{
+  position:absolute; inset:12%;
+  border:2px solid rgba(255, 235, 175, 0.85);
+  border-radius:50%;
+  box-shadow:0 0 16px rgba(255, 210, 100, 0.7);
+}
+.clink-rays{
+  position:absolute; inset:0;
+}
+.clink-ray{
+  position:absolute; left:50%; top:50%;
+  width:2px; height:28px;
+  margin-left:-1px; margin-top:-14px;
+  background:linear-gradient(to bottom, transparent, #ffe49e 40%, #ffffff 50%, #ffe49e 60%, transparent);
+  transform:rotate(var(--rot, 0deg)) translateY(-18px);
+  border-radius:1px;
+}
+
+/* Warm Light Wash across the entire screen on clink */
+.toast-light-wash{
+  position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 40%, rgba(255, 235, 190, 0.65) 0%, rgba(255, 210, 160, 0.35) 45%, transparent 75%);
+  z-index:10; pointer-events:none; opacity:0;
+  will-change:opacity;
+}
+
+/* 2. Closing Wish Treatment (Echoing Act 1 wish) */
+.toast-closing-wish{
+  position:relative;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  max-width:min(90vw, 680px);
+  z-index:4;
+}
+
+.toast-eyebrow{
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-style:italic; font-weight:600;
+  font-size:clamp(15px, 3.4vw, 24px);
+  letter-spacing:0.06em;
+  color:#9c4f63;
+  margin:0 0 0.35em;
+  text-shadow:0 1px 2px #fff8f1, 0 0 10px rgba(255, 248, 241, 0.95);
+  opacity:0; transform:translateY(12px); filter:blur(4px);
+}
+
+.toast-hero-wrap{
+  position:relative; display:inline-block;
+  margin:0 0 0.25em;
+}
+.toast-hero-wrap::before{
+  content:""; position:absolute; left:-12%; right:-12%; top:-25%; bottom:-22%;
+  background:radial-gradient(60% 70% at 50% 50%, rgba(255, 214, 168, 0.45), rgba(255, 150, 150, 0.18) 55%, transparent 75%);
+  filter:blur(14px); z-index:-1; opacity:0; pointer-events:none;
+}
+.toast-hero-wrap::after{
+  content:"\2726";
+  position:absolute; right:-2%; top:-12%;
+  font-size:clamp(16px, 3.8vw, 30px);
+  color:#ffe1a0; text-shadow:0 0 12px rgba(255, 205, 120, 0.95);
+  opacity:0; pointer-events:none;
+}
+
+.toast-hero{
+  font-family:"Great Vibes", cursive; font-weight:400;
+  font-size:clamp(38px, 9.2vw, 82px);
+  line-height:1.06; margin:0;
+  background:linear-gradient(180deg, #e85a83 0%, #c41f52 50%, #9c0f42 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:
+    drop-shadow(0 1px 1px rgba(255, 252, 248, 0.98))
+    drop-shadow(0 2px 6px rgba(130, 18, 55, 0.38));
+  clip-path:inset(0 100% -28% -10%);
+  transform-origin:center center;
+}
+
+.toast-rule{
+  display:block; width:clamp(55px, 14vw, 120px); height:2px;
+  margin:0.3em auto 0.65em;
+  background:linear-gradient(90deg, transparent, var(--gold-2, #e8a23d) 30%, var(--gold-2, #e8a23d) 70%, transparent);
+  box-shadow:0 0 8px rgba(255, 247, 240, 0.9);
+  opacity:0; transform:translateY(10px) scaleX(0.3);
+}
+
+.toast-sub{
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-style:italic; font-weight:600;
+  font-size:clamp(14px, 3vw, 21px);
+  letter-spacing:0.04em;
+  color:#6e3f4a;
+  margin:0; line-height:1.45;
+  text-shadow:0 1px 2px #fff8f1, 0 0 8px rgba(255, 248, 241, 0.98);
+  opacity:0; transform:translateY(12px); filter:blur(4px);
+}
+
+/* 3. Replay from the Start Pill Button */
+.toast-actions{
+  margin-top:clamp(1.4rem, 3.2vh, 2.4rem);
+  display:flex; justify-content:center;
+  z-index:6;
+}
+
+.toast-replay-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 22px 10px 18px; border-radius:999px;
+  font-family:"Cormorant Garamond", Georgia, serif;
+  font-style:italic; font-weight:600;
+  font-size:clamp(15px, 3.2vw, 18px);
+  letter-spacing:0.06em;
+  color:var(--ink, #4a1526);
+  background:rgba(255, 248, 242, 0.88);
+  border:1px solid rgba(175, 75, 95, 0.28);
+  box-shadow:0 6px 24px -6px rgba(130, 25, 55, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  cursor:pointer; opacity:0; visibility:hidden;
+  transform:translateY(10px);
+  transition:all 0.35s ease;
+  user-select:none;
+}
+.toast-replay-pill.is-shown{
+  opacity:1; visibility:visible;
+  transform:translateY(0);
+}
+.toast-replay-pill.is-shown:hover{
+  background:rgba(255, 252, 248, 0.98);
+  border-color:rgba(195, 85, 110, 0.5);
+  box-shadow:0 8px 28px -4px rgba(130, 25, 55, 0.45), 0 0 14px rgba(255, 215, 120, 0.4);
+  transform:translateY(-2px) scale(1.02);
+}
+.toast-replay-pill.is-shown:active{
+  transform:translateY(0) scale(0.98);
+}
+.toast-replay-pill .replay-icon{
+  width:16px; height:16px; flex-shrink:0;
+  color:#9c405a;
+  transition:transform 0.4s ease;
+}
+.toast-replay-pill:hover .replay-icon{
+  transform:rotate(-90deg);
+}
+
+/* Permanent Resting State: Falling Petals/Confetti */
+.toast-particles{
+  position:absolute; inset:0;
+  pointer-events:none; z-index:2; overflow:hidden;
+}
+
+.toast-petal{
+  position:absolute; top:-40px;
+  pointer-events:none; will-change:transform, opacity;
+  filter:drop-shadow(0 2px 4px rgba(130, 30, 60, 0.12));
+}
+.toast-petal svg{
+  width:100%; height:100%; display:block;
+}
+
+/* ============================================================
+   GLOBAL BACKGROUND MUSIC TOGGLE BUTTON
+   Fixed bottom-left glass button with speaker state icon
+   ============================================================ */
+.music-toggle-btn{
+  position:fixed;
+  bottom:clamp(16px, 3vh, 24px);
+  left:clamp(16px, 3vw, 24px);
+  z-index:60;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255, 248, 242, 0.88);
+  border:1px solid rgba(175, 75, 95, 0.28);
+  box-shadow:0 6px 20px -4px rgba(130, 25, 55, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  color:var(--rose-deep, #9c1543);
+  cursor:pointer;
+  outline:none;
+  padding:0;
+  transition:transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+             background-color 0.3s ease,
+             border-color 0.3s ease,
+             box-shadow 0.3s ease,
+             color 0.3s ease;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.music-toggle-btn:hover{
+  transform:scale(1.08);
+  background:rgba(255, 252, 248, 0.98);
+  border-color:rgba(195, 85, 110, 0.5);
+  box-shadow:0 8px 24px -2px rgba(130, 25, 55, 0.38), 0 0 12px rgba(255, 207, 106, 0.35);
+}
+
+.music-toggle-btn:active{
+  transform:scale(0.94);
+}
+
+.music-toggle-btn .music-icon{
+  width:19px;
+  height:19px;
+  flex-shrink:0;
+  transition:transform 0.25s ease, opacity 0.25s ease;
+}
+
+.music-toggle-btn .music-icon--off{
+  display:none;
+}
+
+.music-toggle-btn.is-muted{
+  color:var(--ink-soft, #8a4a5a);
+  background:rgba(255, 244, 236, 0.75);
+  border-color:rgba(150, 60, 80, 0.2);
+}
+
+.music-toggle-btn.is-muted .music-icon--on{
+  display:none;
+}
+
+.music-toggle-btn.is-muted .music-icon--off{
+  display:block;
+}
+
+/* Subtle playing breath animation when music is actively playing */
+@keyframes musicNoteBreath{
+  0%, 100%{ transform:scale(1); }
+  50%{ transform:scale(1.06); }
+}
+
+.music-toggle-btn.is-playing .music-icon--on{
+  animation:musicNoteBreath 3s ease-in-out infinite;
+}
+
+/* Night scenes ambient glow — applied via JS class since music button is
+   now outside <main> and can't be reached by scene sibling selectors */
+.music-toggle-btn.night-mode{
+  box-shadow:0 6px 20px -4px rgba(0, 0, 0, 0.6), 0 0 14px rgba(255, 207, 106, 0.35);
 }
 
 /* ============================================================
@@ -2437,11 +2748,9 @@ body{
   .pin-dots.is-error{ animation:none !important; opacity:0.5; }
   .pin-lock-badge{ transition:none !important; }
   .pin-card.is-unlocked .pin-lock-badge{ transform:none !important; }
-  .pin-success-content{ animation:none !important; }
   .curtain{ transition:none !important; }
   .scene4.curtains-open .curtain-left,
   .scene4.curtains-open .curtain-right{ display:none !important; }
-  .revealed-content{ transition:none !important; }
   .candle-flame{ animation:none !important; }
   .candle-smoke{ animation:none !important; }
   .cake-wrap.is-blown .candle-smoke{ display:none !important; }
@@ -2455,14 +2764,9 @@ body{
   .film-frame{ opacity:1 !important; filter:none !important; transform:none !important; }
   .film-climax-headline{ opacity:1 !important; transform:none !important; }
   .projector-beam{ animation:none !important; }
-  .p-mote{ animation:none !important; }
-  .timeline-pill{ opacity:1 !important; transform:none !important; transition:none !important; }
-  .timeline-dot{ opacity:1 !important; transform:translate(-50%, -50%) !important; transition:none !important; }
-  .timeline-branch{ opacity:1 !important; transition:none !important; }
-  .constellation-closing-inner{ opacity:1 !important; transform:none !important; }
-  .sky-nebula{ animation:none !important; }
-  .bg-star{ animation:none !important; opacity:0.6 !important; }
-  .envelope-heart-svg{ animation:none !important; }
+  .balloon{ animation:none !important; }
+  .balloon-particle{ display:none !important; }
+  .balloon-toast-msg{ transition:none !important; }
   .heart-pulse-glow{ animation:none !important; }
   .envelope-hint{ animation:none !important; opacity:0.8 !important; }
   .letter-card-shadow{ animation:none !important; }
@@ -2470,4 +2774,184 @@ body{
   .letter-card-container{ transition:none !important; }
   .envelope-wrapper{ transition:none !important; }
   .global-ambient-particles{ display:none !important; }
+  .fireworks-launch-pad{ display:none !important; }
+  .fireworks-closing-inner{ opacity:1 !important; transform:none !important; }
+  .launch-ember{ animation:none !important; }
+  .launch-btn-halo{ animation:none !important; }
+  .fireworks-hint{ animation:none !important; }
+
+  /* Scene 11 reduced motion */
+  .toast-veil{ transition:none !important; }
+  .toast-glass{ opacity:1 !important; transform:none !important; filter:none !important; }
+  .toast-clink-burst{ display:none !important; }
+  .toast-light-wash{ display:none !important; }
+  .toast-eyebrow{ opacity:1 !important; transform:none !important; filter:none !important; }
+  .toast-hero{ clip-path:none !important; opacity:1 !important; }
+  .toast-hero-wrap::before, .toast-hero-wrap::after{ opacity:0.8 !important; }
+  .toast-rule{ opacity:1 !important; transform:none !important; }
+  .toast-sub{ opacity:1 !important; transform:none !important; filter:none !important; }
+  .toast-replay-pill{ opacity:1 !important; visibility:visible !important; transform:none !important; }
+  .toast-particles{ display:none !important; }
+  .music-toggle-btn{ transition:none !important; }
+  .music-toggle-btn.is-playing .music-icon--on{ animation:none !important; }
 }
+
+/* ============================================================
+   DEMO / PREVIEW OVERLAYS (preview.html)
+   ============================================================ */
+.preview-demo-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  background: rgba(26, 12, 18, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(232, 162, 61, 0.2);
+  z-index: 9999;
+  box-sizing: border-box;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.preview-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #f7e7dc;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.preview-back-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(232, 162, 61, 0.4);
+  color: #fed7aa;
+}
+
+.preview-demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(212, 35, 92, 0.15);
+  border: 1px solid rgba(212, 35, 92, 0.3);
+  border-radius: 9999px;
+  color: #ffd9e4;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.preview-top-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1.1rem;
+  background: linear-gradient(135deg, #d4235c 0%, #b81b4c 100%);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px rgba(212, 35, 92, 0.4), 0 0 10px rgba(232, 162, 61, 0.3);
+  border: 1px solid rgba(255, 214, 160, 0.3);
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.preview-top-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(212, 35, 92, 0.55), 0 0 15px rgba(232, 162, 61, 0.45);
+}
+
+.preview-floating-cta-wrap {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 9998;
+  padding: 0 1rem;
+}
+
+.preview-floating-cta {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(30, 12, 22, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(232, 162, 61, 0.35);
+  border-radius: 9999px;
+  color: #fff8f1;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 35, 92, 0.35);
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+.preview-floating-cta .btn-gold-accent {
+  color: var(--gold-1);
+}
+
+.preview-floating-cta .cta-arrow {
+  color: var(--gold-1);
+  transition: transform 0.2s ease;
+}
+
+.preview-floating-cta:hover {
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(232, 162, 61, 0.6);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), 0 0 25px rgba(212, 35, 92, 0.5);
+}
+
+.preview-floating-cta:hover .cta-arrow {
+  transform: translateX(4px);
+}
+
+/* Hide demo bars when embedded in editor or iframe */
+.is-embedded .preview-demo-bar,
+.is-embedded .preview-floating-cta-wrap {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .preview-demo-bar {
+    padding: 0 0.75rem;
+    height: 50px;
+  }
+  .preview-demo-badge {
+    display: none;
+  }
+  .preview-top-cta {
+    font-size: 0.78rem;
+    padding: 0.35rem 0.8rem;
+  }
+  .preview-floating-cta {
+    font-size: 0.85rem;
+    padding: 0.6rem 1.1rem;
+    gap: 0.5rem;
+  }
+}
+

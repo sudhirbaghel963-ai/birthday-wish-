@@ -1,0 +1,1188 @@
+<!doctype html>
+<html lang="en" class="h-full bg-slate-900">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Velvet & Keepsake — Platform Admin</title>
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#fdf2f8',
+              500: '#ec4899',
+              600: '#db2777',
+              700: '#be185d',
+              900: '#831843'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbars for high-density tables */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="h-full font-sans bg-slate-100 text-slate-900 antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- ============================================================
+       1. ADMIN AUTHENTICATION SCREEN (Shown when logged out)
+       ============================================================ -->
+  <div id="authScreen" class="min-h-full flex items-center justify-center p-4 bg-slate-900">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl border border-slate-800 p-8 space-y-6">
+      
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-900 text-white font-bold text-xl shadow-md">
+          VK
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Platform Admin</h1>
+        <p class="text-xs text-slate-500">Internal management portal for Velvet &amp; Keepsake</p>
+      </div>
+
+      <form id="adminLoginForm" class="space-y-4" onsubmit="return false;">
+        <div>
+          <label for="adminEmail" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Admin Email</label>
+          <input type="email" id="adminEmail" required value="admin@velvetkeepsake.com" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400" placeholder="admin@velvetkeepsake.com" />
+        </div>
+
+        <div>
+          <label for="adminPassword" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Password</label>
+          <input type="password" id="adminPassword" required value="AdminVelvet2026!" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:border-slate-900 focus:ring-1 focus:ring-slate-900 outline-none transition-all placeholder:text-slate-400" placeholder="••••••••••••" />
+        </div>
+
+        <div id="loginError" class="hidden p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium"></div>
+
+        <button type="submit" id="btnAdminLogin" class="w-full py-2.5 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm transition-all shadow-sm flex items-center justify-center gap-2">
+          <span>Sign In to Admin</span>
+          <span>&rarr;</span>
+        </button>
+      </form>
+
+      <div class="pt-4 border-t border-slate-100 text-center">
+        <p class="text-[11px] text-slate-400">Restricted area for platform operators only.</p>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       2. MAIN ADMIN APP SHELL (Shown when logged in)
+       ============================================================ -->
+  <div id="adminApp" class="hidden min-h-full flex flex-col md:flex-row bg-slate-50">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col justify-between border-r border-slate-800">
+      
+      <div>
+        <!-- Brand Header -->
+        <div class="p-5 border-b border-slate-800/80 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-brand-600 text-white font-bold flex items-center justify-center text-sm">
+              VK
+            </div>
+            <div>
+              <div class="font-bold text-white text-sm leading-none">Velvet &amp; Keepsake</div>
+              <div class="text-[10px] text-slate-400 font-medium mt-1 uppercase tracking-wider">Internal Console</div>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Live</span>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="p-3 space-y-1 text-sm font-medium">
+          <button type="button" class="nav-btn active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-white bg-slate-800 transition-colors" data-view="dashboard">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Dashboard</span>
+          </button>
+          
+          <button type="button" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors" data-view="orders">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <span>Orders &amp; Gifts</span>
+            <span id="ordersCountBadge" class="ml-auto px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">0</span>
+          </button>
+
+          <button type="button" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors" data-view="experiences">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <span>Pricing &amp; Catalog</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- User Info & Logout -->
+      <div class="p-4 border-t border-slate-800 bg-slate-950/40 flex items-center justify-between text-xs">
+        <div class="truncate mr-2">
+          <div class="font-semibold text-white truncate" id="adminUserDisplay">admin@velvetkeepsake.com</div>
+          <div class="text-slate-500 text-[10px]">Super Administrator</div>
+        </div>
+        <button id="btnAdminLogout" type="button" class="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition-colors" title="Log Out">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </button>
+      </div>
+
+    </aside>
+
+
+    <!-- Main Work Area -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      
+      <!-- Top Action Bar -->
+      <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-20 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <h2 id="viewTitle" class="text-lg font-bold text-slate-900">Dashboard Overview</h2>
+          <button id="btnRefreshData" type="button" class="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors" title="Refresh Live Data">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3 text-xs">
+          <a href="./index.html" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 font-medium text-slate-700 transition-colors">
+            <span>Customer Storefront</span>
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+        </div>
+      </header>
+
+
+      <!-- ============================================================
+           VIEW 1: DASHBOARD / OVERVIEW
+           ============================================================ -->
+      <div id="viewDashboard" class="p-6 space-y-6 max-w-7xl w-full mx-auto">
+        
+        <!-- KPI Metrics Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Card: Total Revenue -->
+          <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-500 font-semibold uppercase tracking-wider">
+              <span>Total Revenue</span>
+              <span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-bold">Gross</span>
+            </div>
+            <div class="text-3xl font-extrabold text-slate-900 tracking-tight" id="kpiTotalRevenue">₹0.00</div>
+            <div class="text-xs text-slate-500 font-medium" id="kpiAvgOrder">Avg: ₹0.00 / paid order</div>
+          </div>
+
+          <!-- Card: Paid Orders -->
+          <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-500 font-semibold uppercase tracking-wider">
+              <span>Paid Orders</span>
+              <span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-bold">Completed</span>
+            </div>
+            <div class="text-3xl font-extrabold text-slate-900 tracking-tight" id="kpiPaidOrders">0</div>
+            <div class="text-xs text-slate-500 font-medium" id="kpiConversion">Conversion rate: 0%</div>
+          </div>
+
+          <!-- Card: Total Gifts / Drafts -->
+          <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-500 font-semibold uppercase tracking-wider">
+              <span>All-Time Gifts</span>
+              <span class="text-purple-600 bg-purple-50 px-2 py-0.5 rounded font-bold">Total</span>
+            </div>
+            <div class="text-3xl font-extrabold text-slate-900 tracking-tight" id="kpiTotalGifts">0</div>
+            <div class="text-xs text-slate-500 font-medium" id="kpiDraftsCount">0 in-progress drafts</div>
+          </div>
+
+          <!-- Card: Velocity -->
+          <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-500 font-semibold uppercase tracking-wider">
+              <span>Recent Activity</span>
+              <span class="text-amber-600 bg-amber-50 px-2 py-0.5 rounded font-bold">7 Days</span>
+            </div>
+            <div class="text-3xl font-extrabold text-slate-900 tracking-tight" id="kpiRecentWeek">0</div>
+            <div class="text-xs text-slate-500 font-medium" id="kpiTodayCount">0 created today</div>
+          </div>
+
+        </div>
+
+        <!-- 30-Day Orders Trend Chart -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Orders &amp; Drafts Velocity</h3>
+              <p class="text-xs text-slate-500">Daily creation volume over the last 30 days</p>
+            </div>
+            <div class="flex items-center gap-4 text-xs font-semibold">
+              <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500"></span> Paid</span>
+              <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-300"></span> Draft</span>
+            </div>
+          </div>
+
+          <!-- Simple SVG Bar Chart Container -->
+          <div class="h-48 w-full flex items-end gap-1.5 pt-4 border-b border-slate-200" id="ordersChartContainer">
+            <!-- Dynamically populated via JS -->
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+            <span>30 days ago</span>
+            <span>15 days ago</span>
+            <span>Today</span>
+          </div>
+        </div>
+
+        <!-- Recent Orders Snapshot -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-slate-900 text-base">Latest 5 Orders</h3>
+            <button type="button" class="text-xs font-semibold text-brand-600 hover:text-brand-700" onclick="switchView('orders')">
+              View All Orders &rarr;
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+                  <th class="py-2.5 px-3">Recipient</th>
+                  <th class="py-2.5 px-3">Experience</th>
+                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3">Price</th>
+                  <th class="py-2.5 px-3">Created</th>
+                  <th class="py-2.5 px-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardRecentTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- ============================================================
+           VIEW 2: ORDERS & GIFTS MANAGEMENT TABLE
+           ============================================================ -->
+      <div id="viewOrders" class="hidden p-6 space-y-4 max-w-7xl w-full mx-auto">
+        
+        <!-- Controls Bar: Search, Filters, Sorting -->
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+          
+          <!-- Search Input -->
+          <div class="relative flex-1">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="orderSearchInput" placeholder="Search by recipient name, gift ID, or slug..." class="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-xs focus:border-slate-900 focus:outline-none placeholder:text-slate-400" />
+          </div>
+
+          <!-- Filter Controls -->
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            
+            <!-- Status Filter -->
+            <select id="filterStatus" class="px-3 py-2 rounded-lg border border-slate-200 bg-white font-medium text-slate-700 focus:border-slate-900 focus:outline-none">
+              <option value="all">All Statuses</option>
+              <option value="paid">Paid Orders</option>
+              <option value="draft">Drafts</option>
+              <option value="refunded">Refunded</option>
+            </select>
+
+            <!-- Experience Filter -->
+            <select id="filterExperience" class="px-3 py-2 rounded-lg border border-slate-200 bg-white font-medium text-slate-700 focus:border-slate-900 focus:outline-none">
+              <option value="all">All Editions</option>
+              <option value="birthday-film">Warm Paper Edition</option>
+              <option value="birthday-film-glass">Glass Edition</option>
+            </select>
+
+            <!-- Sort Option -->
+            <select id="sortOrders" class="px-3 py-2 rounded-lg border border-slate-200 bg-white font-medium text-slate-700 focus:border-slate-900 focus:outline-none">
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="price-desc">Highest Price</option>
+            </select>
+
+          </div>
+
+        </div>
+
+        <!-- Orders Table Card -->
+        <div class="rounded-2xl bg-white border border-slate-200 shadow-2xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+                  <th class="py-3 px-4">Recipient</th>
+                  <th class="py-3 px-4">Experience / Theme</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4">Price Paid</th>
+                  <th class="py-3 px-4">Created</th>
+                  <th class="py-3 px-4">Slug / ID</th>
+                  <th class="py-3 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Bar -->
+          <div class="p-4 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <div id="paginationInfo">Showing 0 of 0 gifts</div>
+            <div class="flex items-center gap-1.5" id="paginationControls">
+              <button id="btnPrevPage" type="button" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 font-semibold disabled:opacity-40 disabled:pointer-events-none">Previous</button>
+              <span id="currentPageDisplay" class="px-3 font-semibold text-slate-700">1</span>
+              <button id="btnNextPage" type="button" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 font-semibold disabled:opacity-40 disabled:pointer-events-none">Next</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- ============================================================
+           VIEW 3: EXPERIENCES & PRICING MANAGEMENT
+           ============================================================ -->
+      <div id="viewExperiences" class="hidden p-6 space-y-6 max-w-7xl w-full mx-auto">
+        
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg">Experience Catalog &amp; Pricing</h3>
+            <p class="text-xs text-slate-500">Manage customer-facing experience availability and active prices live without code deploys.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="experiencesAdminContainer">
+          <!-- Injected via JS -->
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <!-- ============================================================
+       3. ORDER DETAIL INSPECTOR MODAL (Live Film + Assets + Actions)
+       ============================================================ -->
+  <div id="orderDetailModal" class="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-xs hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl my-auto flex flex-col max-h-[92vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/70 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-slate-300" id="detailStatusDot"></span>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-slate-900 text-base" id="detailRecipientTitle">Elena's Birthday Film</h3>
+              <span id="detailStatusBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase">Paid</span>
+              <span id="detailRefundBadge" class="hidden px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-100 text-amber-800">Refunded</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-mono mt-0.5" id="detailIdDisplay">ID: ---</p>
+          </div>
+        </div>
+
+        <button type="button" id="btnCloseDetailModal" class="p-2 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-800 text-lg font-bold">×</button>
+      </div>
+
+      <!-- Modal Body (Split: Metadata + Assets + Live Preview) -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Top Info Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Experience &amp; Theme</span>
+            <span class="font-semibold text-slate-800" id="detailExpTheme">---</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Price Paid</span>
+            <span class="font-semibold text-emerald-600" id="detailPricePaid">₹0.00</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Payment ID</span>
+            <span class="font-mono text-slate-700 truncate block" id="detailPaymentId">None</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Created Date</span>
+            <span class="font-semibold text-slate-700" id="detailCreatedDate">---</span>
+          </div>
+        </div>
+
+        <!-- Public Share URL Bar (if paid) -->
+        <div id="detailSlugBar" class="hidden p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2 truncate">
+            <span class="text-emerald-700 font-bold">Public Recipient Link:</span>
+            <span class="font-mono text-emerald-800 truncate" id="detailPublicLinkText">---</span>
+          </div>
+          <button id="btnCopyPublicLink" type="button" class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] flex-shrink-0">
+            Copy Link
+          </button>
+        </div>
+
+        <!-- Live Film Inspection Panel -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-700 uppercase tracking-wider">
+            <span>Live Experience Inspector</span>
+            <span class="text-slate-400 font-normal">Real interactive film loaded with this gift's custom data</span>
+          </div>
+          
+          <div class="w-full h-80 sm:h-96 rounded-2xl overflow-hidden border border-slate-800 bg-black relative shadow-inner">
+            <iframe id="adminPreviewIframe" src="./preview.html" class="w-full h-full border-0" title="Admin Gift Inspector Preview"></iframe>
+          </div>
+        </div>
+
+        <!-- Uploaded Customer Assets Section -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Uploaded Media &amp; Audio Assets</h4>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            
+            <!-- Photos -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-700 block">Wall of Us Photos (Scene 6)</span>
+              <div id="detailPhotosList" class="flex flex-wrap gap-2">
+                <span class="text-slate-400 italic">No custom photos uploaded</span>
+              </div>
+            </div>
+
+            <!-- Video Clips -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-700 block">Memory Reel Clips (Scene 7)</span>
+              <div id="detailClipsList" class="flex flex-wrap gap-2">
+                <span class="text-slate-400 italic">No custom video clips uploaded</span>
+              </div>
+            </div>
+
+            <!-- Custom Music -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-700 block">Music Track</span>
+              <div id="detailMusicInfo" class="space-y-1.5">
+                <span class="text-slate-600">Default film track (starts at 0:27)</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer & Administrative Actions -->
+      <div class="p-4 sm:p-5 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
+        
+        <div class="text-xs text-slate-500">
+          <span class="font-semibold text-slate-700">Internal Audit Note:</span> Refunds recorded here do not trigger live payment gateways.
+        </div>
+
+        <div class="flex items-center gap-2.5 w-full sm:w-auto">
+          
+          <!-- Refund Action Button -->
+          <button id="btnToggleRefund" type="button" class="px-4 py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold transition-colors">
+            Mark as Refunded
+          </button>
+
+          <!-- Delete Draft Button -->
+          <button id="btnDeleteGift" type="button" class="px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition-colors">
+            Delete Gift
+          </button>
+
+          <button id="btnCloseDetailModal2" type="button" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors">
+            Close
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       4. CLIENT SCRIPT CONTROLLER (Vanilla JS + Supabase Integration)
+       ============================================================ -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    // 1. Supabase Initialization
+    const SUPABASE_URL = (import.meta.env && import.meta.env.VITE_SUPABASE_URL) || window.__SUPABASE_URL || 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
+    const SUPABASE_ANON_KEY = (import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || window.__SUPABASE_KEY || 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';
+    
+    let supabase = null;
+    try {
+      if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+        supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch (e) {
+      console.warn('Supabase initialization failed in admin:', e);
+    }
+
+    // 2. Admin Authentication State
+    let adminSession = JSON.parse(sessionStorage.getItem('vk_admin_session') || 'null');
+    let allGifts = [];
+    let allExperiences = [];
+    let currentFilteredGifts = [];
+    let currentSelectedGift = null;
+    let currentPage = 1;
+    const pageSize = 25;
+
+    // Helper: SHA-256 Hasher for Admin allowlist login
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // 3. UI View Switcher
+    window.switchView = function(viewName) {
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.getAttribute('data-view') === viewName) {
+          btn.classList.add('text-white', 'bg-slate-800');
+          btn.classList.remove('text-slate-400', 'hover:bg-slate-800/50');
+        } else {
+          btn.classList.remove('text-white', 'bg-slate-800');
+          btn.classList.add('text-slate-400', 'hover:bg-slate-800/50');
+        }
+      });
+
+      const titles = {
+        dashboard: 'Dashboard Overview',
+        orders: 'Orders & Gifts Directory',
+        experiences: 'Catalog & Experience Pricing'
+      };
+
+      document.getElementById('viewTitle').textContent = titles[viewName] || 'Admin Console';
+      document.getElementById('viewDashboard').classList.toggle('hidden', viewName !== 'dashboard');
+      document.getElementById('viewOrders').classList.toggle('hidden', viewName !== 'orders');
+      document.getElementById('viewExperiences').classList.toggle('hidden', viewName !== 'experiences');
+    };
+
+    // 4. Admin Auth Handler
+    async function handleLogin() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const errorEl = document.getElementById('loginError');
+      errorEl.classList.add('hidden');
+
+      if (!email || !password) {
+        errorEl.textContent = 'Please enter both email and password.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      const passHash = await sha256(password);
+
+      // Verify credentials via Supabase RPC or direct admin_users query
+      let isAuthenticated = false;
+      let userRole = 'admin';
+
+      if (supabase) {
+        try {
+          const { data, error } = await supabase.rpc('verify_admin_login', {
+            p_email: email,
+            p_password_hash: passHash
+          });
+          if (data && data.length > 0 && data[0].authenticated) {
+            isAuthenticated = true;
+            userRole = data[0].role;
+          }
+        } catch (e) {
+          console.warn('RPC verify failed, checking table directly...', e);
+        }
+
+        if (!isAuthenticated) {
+          try {
+            const { data } = await supabase.from('admin_users').select('*').eq('email', email).eq('password_hash', passHash).single();
+            if (data) isAuthenticated = true;
+          } catch (e) {}
+        }
+      }
+
+      // Allow master local allowlist credential as reliable internal fallback
+      if (!isAuthenticated) {
+        if (email.toLowerCase() === 'admin@velvetkeepsake.com' && password === 'AdminVelvet2026!') {
+          isAuthenticated = true;
+        }
+      }
+
+      if (isAuthenticated) {
+        adminSession = { email, role: userRole, loggedAt: new Date().toISOString() };
+        sessionStorage.setItem('vk_admin_session', JSON.stringify(adminSession));
+        renderApp();
+      } else {
+        errorEl.textContent = 'Invalid admin credentials or account not on allowlist.';
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('vk_admin_session');
+      adminSession = null;
+      renderApp();
+    }
+
+    // 5. Fetch Live Data from Supabase
+    async function fetchPlatformData() {
+      if (!supabase) return;
+
+      try {
+        // Fetch all gifts
+        const { data: giftsData, error: giftsError } = await supabase
+          .from('gifts')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (giftsData && !giftsError) {
+          allGifts = giftsData;
+        }
+
+        // Fetch experiences catalog
+        const { data: expData, error: expError } = await supabase
+          .from('experiences')
+          .select('*')
+          .order('sort_order', { ascending: true });
+
+        if (expData && !expError && expData.length > 0) {
+          allExperiences = expData;
+        } else {
+          // Fallback defaults if table empty
+          allExperiences = [
+            { id: 'birthday-film', name: 'The Birthday Film (Warm Paper Edition)', category: 'birthday', price: '₹100', original_price: '₹199', is_active: true, tagline: 'Signature 11-Scene Interactive Journey' },
+            { id: 'birthday-film-glass', name: 'The Birthday Film (Glass Edition)', category: 'birthday', price: '₹100', original_price: '₹199', is_active: true, tagline: 'Luminous Dark Jewel & Frosted Glass' },
+            { id: 'milestone-anniversary', name: 'The Milestone Anniversary', category: 'milestone', price: '₹100', original_price: '₹199', is_active: false, tagline: 'Chapter-by-Chapter Keepsake' }
+          ];
+        }
+
+        renderDashboard();
+        applyOrdersFilter();
+        renderExperiencesAdmin();
+      } catch (err) {
+        console.error('Data fetch error:', err);
+      }
+    }
+
+    // 6. Render Dashboard Overview & KPIs
+    function renderDashboard() {
+      const totalGifts = allGifts.length;
+      const paidGifts = allGifts.filter(g => g.status === 'paid');
+      const refundedGifts = allGifts.filter(g => g.refunded);
+      const paidCount = paidGifts.length;
+      const draftCount = totalGifts - paidCount;
+
+      const totalRevenue = paidGifts.reduce((sum, g) => sum + (parseFloat(g.price_paid) || 100.00), 0);
+      const avgOrder = paidCount > 0 ? (totalRevenue / paidCount) : 0;
+      const conversionRate = totalGifts > 0 ? ((paidCount / totalGifts) * 100).toFixed(1) : 0;
+
+      const now = new Date();
+      const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const createdToday = allGifts.filter(g => new Date(g.created_at) >= oneDayAgo).length;
+      const createdWeek = allGifts.filter(g => new Date(g.created_at) >= sevenDaysAgo).length;
+
+      document.getElementById('kpiTotalRevenue').textContent = `₹${totalRevenue.toFixed(2)}`;
+      document.getElementById('kpiAvgOrder').textContent = `Avg: ₹${avgOrder.toFixed(2)} / order`;
+      document.getElementById('kpiPaidOrders').textContent = String(paidCount);
+      document.getElementById('kpiConversion').textContent = `Conversion: ${conversionRate}%`;
+      document.getElementById('kpiTotalGifts').textContent = String(totalGifts);
+      document.getElementById('kpiDraftsCount').textContent = `${draftCount} in-progress drafts`;
+      document.getElementById('kpiRecentWeek').textContent = String(createdWeek);
+      document.getElementById('kpiTodayCount').textContent = `${createdToday} created in last 24h`;
+      document.getElementById('ordersCountBadge').textContent = String(totalGifts);
+
+      // Render 30-Day SVG Chart
+      renderChart(allGifts);
+
+      // Render Latest 5 in Dashboard
+      const recent5 = allGifts.slice(0, 5);
+      const tableBody = document.getElementById('dashboardRecentTableBody');
+      if (tableBody) {
+        if (recent5.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400 italic">No gifts created yet.</td></tr>`;
+        } else {
+          tableBody.innerHTML = recent5.map(g => renderOrderRow(g)).join('');
+        }
+      }
+    }
+
+    // 7. Render 30-Day Bar Chart
+    function renderChart(gifts) {
+      const container = document.getElementById('ordersChartContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const days = 30;
+      const counts = [];
+      const now = new Date();
+
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+        const nextD = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i + 1);
+        
+        const dayGifts = gifts.filter(g => {
+          const cd = new Date(g.created_at);
+          return cd >= d && cd < nextD;
+        });
+
+        const paid = dayGifts.filter(g => g.status === 'paid').length;
+        const draft = dayGifts.length - paid;
+
+        counts.push({ date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), paid, draft, total: dayGifts.length });
+      }
+
+      const maxCount = Math.max(...counts.map(c => c.total), 5);
+
+      container.innerHTML = counts.map(c => {
+        const totalHeight = (c.total / maxCount) * 100;
+        const paidHeight = c.total > 0 ? (c.paid / c.total) * 100 : 0;
+        return `
+          <div class="flex-1 flex flex-col justify-end items-center h-full group relative" title="${c.date}: ${c.paid} paid, ${c.draft} draft">
+            <div class="w-full max-w-[14px] rounded-t overflow-hidden bg-slate-200 transition-all group-hover:bg-slate-300" style="height: ${Math.max(totalHeight, 4)}%;">
+              <div class="bg-emerald-500 w-full" style="height: ${paidHeight}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 8. Order Table Filtering & Pagination
+    function applyOrdersFilter() {
+      const search = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('filterStatus')?.value || 'all';
+      const expFilter = document.getElementById('filterExperience')?.value || 'all';
+      const sort = document.getElementById('sortOrders')?.value || 'date-desc';
+
+      currentFilteredGifts = allGifts.filter(g => {
+        const recName = (g.content?.recipientName || 'Elena').toLowerCase();
+        const gid = (g.id || '').toLowerCase();
+        const slug = (g.slug || '').toLowerCase();
+
+        // Search match
+        if (search && !recName.includes(search) && !gid.includes(search) && !slug.includes(search)) {
+          return false;
+        }
+
+        // Status match
+        if (statusFilter === 'paid' && g.status !== 'paid') return false;
+        if (statusFilter === 'draft' && g.status !== 'draft') return false;
+        if (statusFilter === 'refunded' && !g.refunded) return false;
+
+        // Experience match
+        if (expFilter !== 'all' && g.experience_id !== expFilter) return false;
+
+        return true;
+      });
+
+      // Sorting
+      currentFilteredGifts.sort((a, b) => {
+        if (sort === 'date-desc') return new Date(b.created_at) - new Date(a.created_at);
+        if (sort === 'date-asc') return new Date(a.created_at) - new Date(b.created_at);
+        if (sort === 'price-desc') return (parseFloat(b.price_paid) || 0) - (parseFloat(a.price_paid) || 0);
+        return 0;
+      });
+
+      renderOrdersTable();
+    }
+
+    function renderOrdersTable() {
+      const tbody = document.getElementById('ordersTableBody');
+      const infoEl = document.getElementById('paginationInfo');
+      const prevBtn = document.getElementById('btnPrevPage');
+      const nextBtn = document.getElementById('btnNextPage');
+      const curPageEl = document.getElementById('currentPageDisplay');
+
+      if (!tbody) return;
+
+      const totalItems = currentFilteredGifts.length;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      currentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+      const startIndex = (currentPage - 1) * pageSize;
+      const pageItems = currentFilteredGifts.slice(startIndex, startIndex + pageSize);
+
+      if (infoEl) {
+        infoEl.textContent = totalItems > 0 
+          ? `Showing ${startIndex + 1}–${Math.min(startIndex + pageSize, totalItems)} of ${totalItems} gifts`
+          : 'Showing 0 gifts';
+      }
+
+      if (curPageEl) curPageEl.textContent = `${currentPage} / ${totalPages}`;
+      if (prevBtn) prevBtn.disabled = currentPage <= 1;
+      if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+      if (pageItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 italic">No matching gifts found.</td></tr>`;
+      } else {
+        tbody.innerHTML = pageItems.map(g => renderOrderRow(g)).join('');
+      }
+
+      // Bind View Action Buttons
+      tbody.querySelectorAll('.btn-view-gift').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const gid = btn.getAttribute('data-id');
+          const gift = allGifts.find(x => x.id === gid);
+          if (gift) openOrderDetail(gift);
+        });
+      });
+    }
+
+    function renderOrderRow(g) {
+      const recName = g.content?.recipientName || 'Elena';
+      const isPaid = g.status === 'paid';
+      const isRefunded = Boolean(g.refunded);
+      const expName = g.experience_id === 'birthday-film-glass' ? 'Glass Edition' : 'Warm Paper';
+      const themeName = g.theme_id || 'paper';
+      const price = isPaid ? `₹${parseFloat(g.price_paid || 100).toFixed(2)}` : '—';
+      const dateStr = new Date(g.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const identifier = g.slug ? `<span class="font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">${g.slug}</span>` : `<span class="font-mono text-slate-400">${(g.id || '').substring(0, 8)}...</span>`;
+
+      let statusBadge = isPaid 
+        ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">Paid</span>`
+        : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-200 text-slate-700">Draft</span>`;
+
+      if (isRefunded) {
+        statusBadge += ` <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-100 text-amber-800">Refunded</span>`;
+      }
+
+      return `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+          <td class="py-3 px-4 font-bold text-slate-900">${recName}</td>
+          <td class="py-3 px-4 text-slate-600">${expName} <span class="text-slate-400">(${themeName})</span></td>
+          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4 font-bold ${isPaid ? 'text-emerald-700' : 'text-slate-400'}">${price}</td>
+          <td class="py-3 px-4 text-slate-500 font-normal">${dateStr}</td>
+          <td class="py-3 px-4">${identifier}</td>
+          <td class="py-3 px-4 text-right">
+            <button type="button" class="btn-view-gift px-3 py-1 rounded-lg border border-slate-300 hover:border-slate-900 bg-white hover:bg-slate-900 text-slate-700 hover:text-white font-semibold text-xs transition-all shadow-2xs" data-id="${g.id}">
+              Inspect &rarr;
+            </button>
+          </td>
+        </tr>
+      `;
+    }
+
+    // 9. Order Detail Inspector & Live Preview Sync
+    function openOrderDetail(gift) {
+      currentSelectedGift = gift;
+      const modal = document.getElementById('orderDetailModal');
+      if (!modal) return;
+
+      const recName = gift.content?.recipientName || 'Elena';
+      document.getElementById('detailRecipientTitle').textContent = `${recName}'s Birthday Experience`;
+      document.getElementById('detailIdDisplay').textContent = `ID: ${gift.id}`;
+      document.getElementById('detailExpTheme').textContent = `${gift.experience_id || 'birthday-film'} (${gift.theme_id || 'paper'})`;
+      document.getElementById('detailPricePaid').textContent = gift.status === 'paid' ? `₹${parseFloat(gift.price_paid || 100).toFixed(2)}` : '₹0.00 (Draft)';
+      document.getElementById('detailPaymentId').textContent = gift.razorpay_payment_id || 'None (Unpaid)';
+      document.getElementById('detailCreatedDate').textContent = new Date(gift.created_at).toLocaleString();
+
+      const statusBadge = document.getElementById('detailStatusBadge');
+      const statusDot = document.getElementById('detailStatusDot');
+      const refundBadge = document.getElementById('detailRefundBadge');
+
+      if (gift.status === 'paid') {
+        statusBadge.textContent = 'PAID ORDER';
+        statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800';
+        statusDot.className = 'w-3 h-3 rounded-full bg-emerald-500';
+      } else {
+        statusBadge.textContent = 'IN-PROGRESS DRAFT';
+        statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-200 text-slate-700';
+        statusDot.className = 'w-3 h-3 rounded-full bg-slate-400';
+      }
+
+      refundBadge.classList.toggle('hidden', !gift.refunded);
+
+      // Public Slug Bar
+      const slugBar = document.getElementById('detailSlugBar');
+      if (gift.status === 'paid' && gift.slug) {
+        slugBar.classList.remove('hidden');
+        const origin = window.location.origin + window.location.pathname.replace('admin.html', '').replace('admin', '');
+        const fullUrl = `${origin}gift.html?slug=${gift.slug}`;
+        document.getElementById('detailPublicLinkText').textContent = fullUrl;
+      } else {
+        slugBar.classList.add('hidden');
+      }
+
+      // Refund button state
+      const refundBtn = document.getElementById('btnToggleRefund');
+      if (refundBtn) {
+        refundBtn.textContent = gift.refunded ? 'Mark as Not Refunded' : 'Mark as Refunded';
+        refundBtn.classList.toggle('hidden', gift.status !== 'paid');
+      }
+
+      // Populate Media Assets
+      const photosContainer = document.getElementById('detailPhotosList');
+      const photos = (gift.photo_urls && Array.isArray(gift.photo_urls)) ? gift.photo_urls.filter(Boolean) : [];
+      if (photos.length > 0) {
+        photosContainer.innerHTML = photos.map((url, i) => `
+          <a href="${url}" target="_blank" class="block w-14 h-14 rounded-lg overflow-hidden border border-slate-300 hover:border-slate-800 transition-colors shadow-2xs group relative" title="View photo slot ${i + 1}">
+            <img src="${url}" class="w-full h-full object-cover" />
+          </a>
+        `).join('');
+      } else {
+        photosContainer.innerHTML = `<span class="text-slate-400 italic">No custom photos uploaded</span>`;
+      }
+
+      const clipsContainer = document.getElementById('detailClipsList');
+      const clips = (gift.clip_urls && Array.isArray(gift.clip_urls)) ? gift.clip_urls.filter(Boolean) : [];
+      if (clips.length > 0) {
+        clipsContainer.innerHTML = clips.map((url, i) => `
+          <a href="${url}" target="_blank" class="block w-14 h-14 rounded-lg overflow-hidden border border-slate-300 bg-black hover:border-slate-800 transition-colors relative" title="Play clip ${i + 1}">
+            <video src="${url}" class="w-full h-full object-cover" muted></video>
+            <div class="absolute inset-0 flex items-center justify-center text-white bg-black/30 font-bold text-xs">▶</div>
+          </a>
+        `).join('');
+      } else {
+        clipsContainer.innerHTML = `<span class="text-slate-400 italic">No custom video clips uploaded</span>`;
+      }
+
+      const musicInfo = document.getElementById('detailMusicInfo');
+      if (gift.music?.trackType === 'custom' && gift.music?.customTrackUrl) {
+        musicInfo.innerHTML = `
+          <div class="font-semibold text-slate-800">Custom Audio Track</div>
+          <audio controls src="${gift.music.customTrackUrl}" class="w-full h-8 mt-1"></audio>
+          <div class="text-slate-500 text-[10px]">Starts loop at ${gift.music.startSeconds || 0}s</div>
+        `;
+      } else {
+        musicInfo.innerHTML = `<span class="text-slate-600">Default film track (starts loop at ${gift.music?.startSeconds || 27}s)</span>`;
+      }
+
+      // Sync Live Preview Iframe with gift's GIFT_DATA
+      const iframe = document.getElementById('adminPreviewIframe');
+      if (iframe) {
+        const expSlug = gift.experience_id || 'birthday-film';
+        iframe.src = `./preview.html?experience=${expSlug}&mode=admin-inspect`;
+        
+        setTimeout(() => {
+          if (iframe.contentWindow) {
+            try {
+              iframe.contentWindow.postMessage({
+                type: 'GIFT_DATA_UPDATE',
+                giftData: {
+                  recipientName: gift.content?.recipientName || 'Elena',
+                  themeId: gift.theme_id || 'paper',
+                  theme: gift.content?.theme || {},
+                  scenes: gift.content?.scenes || {},
+                  music: gift.music || {},
+                  photos: gift.photo_urls || [],
+                  clips: gift.clip_urls || []
+                }
+              }, '*');
+            } catch (e) {}
+          }
+        }, 600);
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    // 10. Admin Actions: Refund & Delete
+    async function toggleRefund() {
+      if (!currentSelectedGift || !supabase) return;
+      const nextVal = !currentSelectedGift.refunded;
+      
+      try {
+        const { error } = await supabase
+          .from('gifts')
+          .update({ refunded: nextVal })
+          .eq('id', currentSelectedGift.id);
+
+        if (!error) {
+          currentSelectedGift.refunded = nextVal;
+          const target = allGifts.find(g => g.id === currentSelectedGift.id);
+          if (target) target.refunded = nextVal;
+          openOrderDetail(currentSelectedGift);
+          applyOrdersFilter();
+        }
+      } catch (err) {
+        alert('Could not update refund status: ' + err.message);
+      }
+    }
+
+    async function deleteGift() {
+      if (!currentSelectedGift || !supabase) return;
+      
+      const confirmDelete = confirm(`Are you sure you want to permanently delete this gift (${currentSelectedGift.id})? This will also remove any associated photos and video clips from storage.`);
+      if (!confirmDelete) return;
+
+      try {
+        // 1. Delete associated files from storage
+        const gid = currentSelectedGift.id;
+        const buckets = ['gift-photos', 'gift-clips', 'gift-music'];
+        
+        for (const b of buckets) {
+          try {
+            const { data: files } = await supabase.storage.from(b).list(gid);
+            if (files && files.length > 0) {
+              const filePaths = files.map(f => `${gid}/${f.name}`);
+              await supabase.storage.from(b).remove(filePaths);
+            }
+          } catch (e) {}
+        }
+
+        // 2. Delete database row
+        const { error } = await supabase.from('gifts').delete().eq('id', gid);
+        if (!error) {
+          allGifts = allGifts.filter(g => g.id !== gid);
+          document.getElementById('orderDetailModal').classList.add('hidden');
+          renderDashboard();
+          applyOrdersFilter();
+          alert('Gift and associated storage assets deleted successfully.');
+        } else {
+          alert('Error deleting gift row: ' + error.message);
+        }
+      } catch (err) {
+        alert('Delete failed: ' + err.message);
+      }
+    }
+
+    // 11. Render Experiences & Pricing Catalog Editor
+    function renderExperiencesAdmin() {
+      const container = document.getElementById('experiencesAdminContainer');
+      if (!container) return;
+
+      container.innerHTML = allExperiences.map(exp => `
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-4" data-exp-id="${exp.id}">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-900 text-sm">${exp.name}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${exp.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'}">
+                ${exp.is_active ? 'ACTIVE' : 'INACTIVE'}
+              </span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono">${exp.id}</span>
+          </div>
+
+          <p class="text-xs text-slate-500">${exp.tagline || exp.description || ''}</p>
+
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Active Price</label>
+              <input type="text" class="exp-price-input w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-800 focus:border-slate-900 focus:outline-none" value="${exp.price}" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Original Price (Strike)</label>
+              <input type="text" class="exp-orig-price-input w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-500 focus:border-slate-900 focus:outline-none" value="${exp.original_price || '₹199'}" />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+            <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+              <input type="checkbox" class="exp-active-toggle rounded border-slate-300 text-slate-900 focus:ring-0" ${exp.is_active ? 'checked' : ''} />
+              <span>Visible on Storefront</span>
+            </label>
+
+            <button type="button" class="btn-save-exp px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors shadow-2xs">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // Wire save handlers
+      container.querySelectorAll('.btn-save-exp').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const card = e.target.closest('[data-exp-id]');
+          const expId = card.getAttribute('data-exp-id');
+          const price = card.querySelector('.exp-price-input').value.trim();
+          const origPrice = card.querySelector('.exp-orig-price-input').value.trim();
+          const isActive = card.querySelector('.exp-active-toggle').checked;
+
+          btn.textContent = 'Saving...';
+
+          if (supabase) {
+            try {
+              const { error } = await supabase
+                .from('experiences')
+                .upsert({
+                  id: expId,
+                  price: price,
+                  original_price: origPrice,
+                  is_active: isActive,
+                  updated_at: new Date().toISOString()
+                });
+
+              if (!error) {
+                const target = allExperiences.find(x => x.id === expId);
+                if (target) {
+                  target.price = price;
+                  target.original_price = origPrice;
+                  target.is_active = isActive;
+                }
+                btn.textContent = 'Saved ✓';
+                setTimeout(() => { btn.textContent = 'Save Changes'; renderExperiencesAdmin(); }, 1200);
+                return;
+              }
+            } catch (err) {}
+          }
+
+          btn.textContent = 'Saved (Local)';
+          setTimeout(() => { btn.textContent = 'Save Changes'; }, 1200);
+        });
+      });
+    }
+
+    // 12. Main App Render & Event Listeners
+    function renderApp() {
+      const authScreen = document.getElementById('authScreen');
+      const adminApp = document.getElementById('adminApp');
+
+      if (adminSession) {
+        authScreen.classList.add('hidden');
+        adminApp.classList.remove('hidden');
+        document.getElementById('adminUserDisplay').textContent = adminSession.email;
+        fetchPlatformData();
+      } else {
+        authScreen.classList.remove('hidden');
+        adminApp.classList.add('hidden');
+      }
+    }
+
+    // Init Listeners
+    document.getElementById('btnAdminLogin')?.addEventListener('click', handleLogin);
+    document.getElementById('adminLoginForm')?.addEventListener('submit', handleLogin);
+    document.getElementById('btnAdminLogout')?.addEventListener('click', handleLogout);
+    document.getElementById('btnRefreshData')?.addEventListener('click', fetchPlatformData);
+
+    // Nav Switcher
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchView(btn.getAttribute('data-view')));
+    });
+
+    // Orders Filter Inputs
+    document.getElementById('orderSearchInput')?.addEventListener('input', applyOrdersFilter);
+    document.getElementById('filterStatus')?.addEventListener('change', applyOrdersFilter);
+    document.getElementById('filterExperience')?.addEventListener('change', applyOrdersFilter);
+    document.getElementById('sortOrders')?.addEventListener('change', applyOrdersFilter);
+
+    // Pagination
+    document.getElementById('btnPrevPage')?.addEventListener('click', () => { currentPage--; renderOrdersTable(); });
+    document.getElementById('btnNextPage')?.addEventListener('click', () => { currentPage++; renderOrdersTable(); });
+
+    // Modal Close Handlers
+    const closeModal = () => document.getElementById('orderDetailModal')?.classList.add('hidden');
+    document.getElementById('btnCloseDetailModal')?.addEventListener('click', closeModal);
+    document.getElementById('btnCloseDetailModal2')?.addEventListener('click', closeModal);
+
+    // Action Handlers
+    document.getElementById('btnToggleRefund')?.addEventListener('click', toggleRefund);
+    document.getElementById('btnDeleteGift')?.addEventListener('click', deleteGift);
+
+    document.getElementById('btnCopyPublicLink')?.addEventListener('click', () => {
+      const text = document.getElementById('detailPublicLinkText')?.textContent;
+      if (text) {
+        navigator.clipboard.writeText(text);
+        const btn = document.getElementById('btnCopyPublicLink');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy Link'; }, 1500);
+      }
+    });
+
+    // Boot
+    renderApp();
+  </script>
+</body>
+</html>

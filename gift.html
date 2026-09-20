@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>A Birthday Surprise For You ♥ — Velvet & Keepsake</title>
+  <meta name="description" content="A bespoke cinematic birthday keepsake journey." />
+  <meta name="theme-color" content="#f7e7dc" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+
+  <!-- Open Graph / Social Sharing Meta Tags -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" id="ogTitle" content="A Birthday Surprise For You ♥" />
+  <meta property="og:description" id="ogDesc" content="An intimate, touch-responsive 11-scene birthday film created just for you." />
+  <meta property="og:image" content="./favicon.png" />
+
+  <!-- Google Fonts: Cormorant Garamond, Fraunces, Great Vibes, Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./birthday.css" />
+  <link rel="stylesheet" href="./theme-paper.css" />
+  <link rel="stylesheet" href="./theme-glass.css" />
+
+  <style>
+    /* Loading overlay */
+    #giftLoadingScreen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #fffdf9 0%, #fbf3ea 50%, #f4e3d1 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+      font-family: 'Fraunces', Georgia, serif;
+      text-align: center;
+      padding: 1.5rem;
+    }
+    [data-theme="glass"] #giftLoadingScreen {
+      background: radial-gradient(circle at center, #260c33 0%, #15061c 60%, #08020d 100%);
+      color: #f5edff;
+    }
+    .gift-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(212, 35, 92, 0.2);
+      border-top-color: #d4235c;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Invalid Gift Message Card */
+    #invalidGiftScreen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #fffdf9 0%, #fcf6ee 45%, #f7ede0 80%, #efdecd 100%);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .invalid-card {
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid rgba(210, 170, 160, 0.5);
+      box-shadow: 0 20px 45px -10px rgba(110, 10, 49, 0.15);
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="theme-paper">
+
+  <!-- ============================================================
+       1. LOADING SCREEN (Active while fetching paid gift from Supabase)
+       ============================================================ -->
+  <div id="giftLoadingScreen" aria-live="polite">
+    <div class="gift-spinner"></div>
+    <div class="space-y-1">
+      <h2 class="text-xl font-bold text-ink-900" style="font-family:'Fraunces', serif;">
+        Unwrapping your gift...
+      </h2>
+      <p class="text-xs text-ink-500" style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:16px;">
+        Preparing an unforgettable cinematic experience
+      </p>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       2. INVALID GIFT SCREEN (Shown if slug is missing, mistyped, or unpaid)
+       ============================================================ -->
+  <div id="invalidGiftScreen" class="hidden">
+    <div class="invalid-card">
+      <div style="width:64px; height:64px; border-radius:50%; background:#fff0f5; color:#d4235c; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; font-size:28px;">
+        🎁
+      </div>
+      <h1 style="font-family:'Fraunces', serif; font-size:24px; font-weight:700; color:#211317; margin-bottom:0.75rem;">
+        This gift link isn't valid
+      </h1>
+      <p style="font-size:13px; line-height:1.6; color:#7d636c; margin-bottom:1.75rem;">
+        We couldn’t find a birthday experience at this link. Please check the web address or ask the person who shared it with you to send it again.
+      </p>
+      <a href="./index.html" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 28px; border-radius:999px; background:linear-gradient(135deg, #2d0a1a 0%, #d4235c 100%); color:#ffffff; font-weight:600; font-size:13px; text-decoration:none; box-shadow:0 4px 14px rgba(212,35,92,0.3);">
+        <span>Visit Velvet &amp; Keepsake</span>
+        <span>&rarr;</span>
+      </a>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       3. 11-SCENE BESPOKE FILM (Exact matching structure)
+       ============================================================ -->
+  <main class="scene" id="filmContainer">
+
+    <!-- The tree world (Act 4). One canvas; it stays transparent until the
+         intro hands off, then it draws its own warm sky + blossom tree. -->
+    <canvas id="tree" class="tree" aria-label="A blossom tree grows and blooms into a heart made of petals" role="img"></canvas>
+
+    <!-- ACT 1 — THE INVITATION ------------------------------------------------ -->
+    <section class="hero" id="hero" aria-label="Draw the bow to open your card">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="hero__motes" id="motes" aria-hidden="true"></div>
+
+      <p class="hero__eyebrow" id="eyebrow">a little something, for you</p>
+
+      <!-- THE TARGET — the heart the arrow flies to (GSAP animates .target) -->
+      <div class="targetWrap" aria-hidden="true">
+        <div class="target" id="target">
+          <span class="heart__glow" aria-hidden="true"></span>
+          <span class="target__heart" id="targetHeart">
+            <svg class="heart__svg" viewBox="0 0 100 92" aria-hidden="true">
+              <defs>
+                <radialGradient id="hg" cx="38%" cy="30%" r="80%">
+                  <stop offset="0%"  stop-color="#ffd9e4" />
+                  <stop offset="42%" stop-color="#ff6f97" />
+                  <stop offset="82%" stop-color="#d81e57" />
+                  <stop offset="100%" stop-color="#9d0f3e" />
+                </radialGradient>
+                <linearGradient id="hsheen" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"  stop-color="rgba(255,255,255,.85)" />
+                  <stop offset="34%" stop-color="rgba(255,255,255,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M50 86.5C26 68 10.5 53.6 10.5 34.6 10.5 20.4 21 11 33.2 11c8.6 0 14.2 4.7 16.8 11.4C52.6 15.7 58.2 11 66.8 11 79 11 89.5 20.4 89.5 34.6 89.5 53.6 74 68 50 86.5Z" fill="url(#hg)" />
+              <path d="M50 86.5C26 68 10.5 53.6 10.5 34.6 10.5 20.4 21 11 33.2 11c8.6 0 14.2 4.7 16.8 11.4C52.6 15.7 58.2 11 66.8 11 79 11 89.5 20.4 89.5 34.6 89.5 53.6 74 68 50 86.5Z" fill="url(#hsheen)" opacity=".7" />
+              <ellipse cx="34" cy="30" rx="8.5" ry="5.4" fill="#fff" opacity=".72" style="mix-blend-mode:screen" />
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- THE BOW + ARROW -->
+      <div class="archery" id="archery" role="button" tabindex="0"
+           aria-label="Draw the bow and release to send the arrow to the heart">
+          <div class="aim" id="aim" aria-hidden="true"></div>
+          <svg class="bow" id="bow" viewBox="0 0 460 300" aria-hidden="true">
+            <defs>
+              <linearGradient id="limb" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0"   stop-color="#4a2a1a" />
+                <stop offset=".18" stop-color="#6b3f24" />
+                <stop offset=".5"  stop-color="#8a5127" />
+                <stop offset=".82" stop-color="#6b3f24" />
+                <stop offset="1"   stop-color="#4a2a1a" />
+              </linearGradient>
+              <linearGradient id="limbHi" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="rgba(255,214,160,.8)" />
+                <stop offset="1" stop-color="rgba(255,214,160,0)" />
+              </linearGradient>
+              <linearGradient id="grip" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#2a1a10" />
+                <stop offset=".5" stop-color="#5a3822" />
+                <stop offset="1" stop-color="#2a1a10" />
+              </linearGradient>
+            </defs>
+            <path id="limbTop" class="bow__limb" d="M 60,30 Q 150,110 230,150" fill="none" stroke="url(#limb)" stroke-width="12" stroke-linecap="round" />
+            <path class="bow__limb" d="M 60,30 Q 150,110 230,150" fill="none" stroke="url(#limbHi)" stroke-width="3" stroke-linecap="round" opacity=".5" />
+            <path id="limbBot" class="bow__limb" d="M 230,150 Q 310,190 400,270" fill="none" stroke="url(#limb)" stroke-width="12" stroke-linecap="round" />
+            <path class="bow__limb" d="M 230,150 Q 310,190 400,270" fill="none" stroke="url(#limbHi)" stroke-width="3" stroke-linecap="round" opacity=".5" />
+            <ellipse cx="60" cy="30" rx="7" ry="5" fill="#e8a23d" transform="rotate(-30 60 30)" />
+            <ellipse cx="400" cy="270" rx="7" ry="5" fill="#e8a23d" transform="rotate(30 400 270)" />
+            <rect x="214" y="134" width="32" height="32" rx="6" fill="url(#grip)" transform="rotate(27 230 150)" stroke="#1a0f08" stroke-width="1.5" />
+            <line id="stringTop" x1="60" y1="30" x2="230" y2="150" stroke="#fff5ea" stroke-width="2" stroke-linecap="round" opacity=".92" />
+            <line id="stringBot" x1="230" y1="150" x2="400" y2="270" stroke="#fff5ea" stroke-width="2" stroke-linecap="round" opacity=".92" />
+          </svg>
+
+          <svg class="arrow" id="arrow" viewBox="0 0 54 260" aria-hidden="true">
+            <defs>
+              <linearGradient id="shaft" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#b87428" />
+                <stop offset=".5" stop-color="#e8a23d" />
+                <stop offset="1" stop-color="#8a4e14" />
+              </linearGradient>
+              <linearGradient id="goldHead" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#fff2c8" />
+                <stop offset=".4" stop-color="#ffd466" />
+                <stop offset="1" stop-color="#d98b18" />
+              </linearGradient>
+            </defs>
+            <rect x="25" y="24" width="4" height="210" rx="2" fill="url(#shaft)" />
+            <path d="M 27,2 L 40,30 Q 27,24 14,30 Z" fill="url(#goldHead)" stroke="#9a5a08" stroke-width="1" />
+            <path d="M 27,4 L 27,24" stroke="#fff" stroke-width="1.2" opacity=".7" />
+            <path d="M 23,234 L 31,234 L 31,246 L 27,242 L 23,246 Z" fill="#4a2a1a" />
+            <g class="arrow__wings" id="arrowWings">
+              <path class="wingL" d="M 25,206 C 14,204 4,214 2,230 C 10,230 20,224 25,218 Z" fill="#fff5ea" opacity=".95" stroke="#e8a23d" stroke-width=".8" />
+              <path class="wingR" d="M 29,206 C 40,204 50,214 52,230 C 44,230 34,224 29,218 Z" fill="#fff5ea" opacity=".95" stroke="#e8a23d" stroke-width=".8" />
+            </g>
+          </svg>
+      </div>
+
+      <p class="hero__hint" id="hint">pull &amp; release</p>
+    </section>
+
+    <!-- ACT 2 — THE FLOOD -->
+    <div class="flood" id="flood" aria-hidden="true"></div>
+
+    <!-- ACT 3 — THE WISH FIELD -->
+    <section class="field" id="field" aria-label="A kinetic birthday wish">
+      <div class="blob blob--1" id="blob1" aria-hidden="true"></div>
+      <div class="blob blob--2" id="blob2" aria-hidden="true"></div>
+      <div class="blob blob--3" id="blob3" aria-hidden="true"></div>
+      <div class="fgrid" aria-hidden="true"></div>
+      <div class="fvignette" aria-hidden="true"></div>
+
+      <div class="bar bar--top" id="barTop" aria-hidden="true"></div>
+      <div class="bar bar--bot" id="barBot" aria-hidden="true"></div>
+
+      <div class="camera" id="camera">
+        <p class="kEyebrow" id="kEyebrow">make a wish&hellip;</p>
+        <h1 class="headline" id="headline" aria-label="HAPPY BIRTHDAY">
+          <span class="hl__line">
+            <span class="mask"><span class="hl__word" id="w1">HAPPY</span></span>
+          </span>
+          <span class="hl__line">
+            <span class="mask"><span class="hl__word" id="w2">BIRTHDAY</span></span>
+          </span>
+        </h1>
+        <svg class="uline" id="uline" viewBox="0 0 380 28" fill="none" aria-hidden="true">
+          <path d="M 12 15 Q 95 4 190 14 T 368 13" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" />
+        </svg>
+        <p class="kSub" id="kSub">to someone worth celebrating</p>
+      </div>
+    </section>
+
+    <!-- ACT 4 — THE TREE'S WISH -->
+    <div class="bloom" id="bloom" aria-hidden="true"></div>
+
+    <section class="wish" id="wish" aria-label="Final wish">
+      <p class="wish__eyebrow" id="wEyebrow">and&hellip; make it count</p>
+      <div class="wish__heroWrap">
+        <p class="wish__hero" id="wHero">Happy Birthday</p>
+      </div>
+      <span class="wish__rule" aria-hidden="true"></span>
+      <p class="wish__sub" id="wSub">here&rsquo;s to a year that blooms</p>
+    </section>
+
+    <!-- SCENE 2 — THE GIFT BOX REVEAL -->
+    <section class="scene scene2" id="scene2" aria-label="Surprise Gift Box Reveal">
+      <div class="gift-stage">
+        <div class="gift-header">
+          <span class="gift-badge">Special Delivery</span>
+          <h2 class="gift-title">A surprise awaits you...</h2>
+          <p class="gift-subtitle">crafted with love, just for you</p>
+        </div>
+
+        <div class="gift-box-wrap" id="giftBoxWrap" role="button" tabindex="0" aria-label="Tap to open the birthday surprise box">
+          <div class="gift-glow" aria-hidden="true"></div>
+          <svg class="gift-svg" viewBox="0 0 200 200" aria-hidden="true">
+            <defs>
+              <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff6f97" />
+                <stop offset="50%" stop-color="#d81e57" />
+                <stop offset="100%" stop-color="#9d0f3e" />
+              </linearGradient>
+              <linearGradient id="lidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff8dae" />
+                <stop offset="60%" stop-color="#e82c66" />
+                <stop offset="100%" stop-color="#ad1247" />
+              </linearGradient>
+              <linearGradient id="goldRibbon" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fff2c8" />
+                <stop offset="45%" stop-color="#ffd466" />
+                <stop offset="100%" stop-color="#d98b18" />
+              </linearGradient>
+            </defs>
+            <rect x="35" y="80" width="130" height="95" rx="12" fill="url(#boxGrad)" stroke="#780a2f" stroke-width="2" />
+            <rect x="91" y="80" width="18" height="95" fill="url(#goldRibbon)" />
+            <g id="giftLid" class="gift-lid">
+              <rect x="25" y="60" width="150" height="26" rx="7" fill="url(#lidGrad)" stroke="#780a2f" stroke-width="2" />
+              <rect x="91" y="60" width="18" height="26" fill="url(#goldRibbon)" />
+              <path d="M 72 60 C 50 25 85 20 96 55 C 99 40 101 40 104 55 C 115 20 150 25 128 60 Z" fill="url(#goldRibbon)" stroke="#b57310" stroke-width="1.5" />
+              <circle cx="100" cy="58" r="6" fill="#ffe28a" />
+            </g>
+          </svg>
+          <div class="gift-burst" id="giftBurst" aria-hidden="true"></div>
+          <p class="gift-tap-hint" id="giftTapHint">tap the box to unwrap</p>
+        </div>
+
+        <div class="gift-reveal-card" id="giftRevealCard" aria-hidden="true">
+          <div class="gift-card-inner">
+            <span class="gift-card-heart">♥</span>
+            <h3 class="gift-card-title">Unwrapped with Love</h3>
+            <span class="gift-card-rule"></span>
+            <p class="gift-card-text">Every moment with you is a gift to cherish. May this year bring endless smiles, sweet surprises, and warm happiness!</p>
+            <button class="next-scene-btn tap-next-hint" id="btnNextToScene3" type="button">
+              <span>Continue the journey</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 3 — PIN LOCK -->
+    <section class="scene scene3" id="scene3" aria-label="Secret PIN Keepsake Lock">
+      <div class="pin-stage">
+        <div class="pin-spotlight" aria-hidden="true"></div>
+        <div class="pin-card" id="pinCard">
+          <div class="pin-clock-wrap">
+            <span class="pin-clock" id="pinLiveClock">12:00</span>
+            <span class="pin-subtitle">A special moment locked in time</span>
+          </div>
+
+          <div class="pin-lock-header">
+            <div class="pin-lock-badge" id="pinLockBadge">
+              <svg class="lock-svg lock-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <svg class="lock-svg lock-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+              </svg>
+            </div>
+            <p class="pin-instruction" id="pinInstruction">enter the code to unlock it</p>
+          </div>
+
+          <div class="pin-status-wrap">
+            <span class="pin-status-pill pin-hint" id="pinStatusPill">hint: our favourite number</span>
+          </div>
+
+          <div class="pin-dots" id="pinDots">
+            <span class="pin-dot" data-index="0"></span>
+            <span class="pin-dot" data-index="1"></span>
+            <span class="pin-dot" data-index="2"></span>
+            <span class="pin-dot" data-index="3"></span>
+          </div>
+
+          <div class="pin-input-area" id="pinInputArea">
+            <div class="pin-keypad" id="pinKeypad">
+              <button class="keypad-btn" type="button" data-val="1">1</button>
+              <button class="keypad-btn" type="button" data-val="2">2</button>
+              <button class="keypad-btn" type="button" data-val="3">3</button>
+              <button class="keypad-btn" type="button" data-val="4">4</button>
+              <button class="keypad-btn" type="button" data-val="5">5</button>
+              <button class="keypad-btn" type="button" data-val="6">6</button>
+              <button class="keypad-btn" type="button" data-val="7">7</button>
+              <button class="keypad-btn" type="button" data-val="8">8</button>
+              <button class="keypad-btn" type="button" data-val="9">9</button>
+              <span class="keypad-spacer"></span>
+              <button class="keypad-btn" type="button" data-val="0">0</button>
+              <button class="keypad-btn keypad-del" type="button" id="btnPinDelete" aria-label="Delete last digit">&#x232B;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 4 — VELVET CURTAIN -->
+    <section class="scene scene4" id="scene4" aria-label="Theatrical Velvet Curtain Reveal">
+      <div class="stage-background">
+        <div class="spotlight"></div>
+      </div>
+      <div class="curtain-top-valance" aria-hidden="true"></div>
+      <div class="curtain curtain-left" id="curtainLeft" aria-hidden="true"></div>
+      <div class="curtain curtain-right" id="curtainRight" aria-hidden="true"></div>
+      <div class="trigger-container" id="triggerContainer">
+        <button class="open-btn btn-open-curtain" id="btnOpenCurtain" type="button" aria-label="Open velvet curtains">
+          <span class="heart-icon">&#10084;</span>
+          <span>Open the Curtains</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- SCENE 5 — CAKE & COUNTDOWN -->
+    <section class="scene scene5" id="scene5" aria-label="Birthday Cake and Lifetime Stats">
+      <div class="cake-stage">
+        <div class="cake-spotlight" aria-hidden="true"></div>
+        <div class="cake-confetti-container" id="cakeConfetti" aria-hidden="true"></div>
+        <div class="cake-card">
+          <div class="cake-header">
+            <span class="cake-badge">Milestone Moment</span>
+            <h2 class="cake-title">Happy Birthday, Beautiful &#127874;</h2>
+            <span class="cake-rule"></span>
+            <p class="cake-subtitle">The world has been sweeter since you arrived &#9829;</p>
+          </div>
+
+          <div class="cake-stats-grid" id="cakeStatsGrid">
+            <div class="cake-stat-box"><span class="cake-stat-val" id="statDays">0</span><span class="cake-stat-lbl">Days on Earth</span></div>
+            <div class="cake-stat-box"><span class="cake-stat-val" id="statHours">0</span><span class="cake-stat-lbl">Hours of Smiles</span></div>
+            <div class="cake-stat-box"><span class="cake-stat-val" id="statMins">0</span><span class="cake-stat-lbl">Minutes of Magic</span></div>
+            <div class="cake-stat-box"><span class="cake-stat-val" id="statHeartbeats">0</span><span class="cake-stat-lbl">Heartbeats</span></div>
+          </div>
+
+          <div class="cake-wrap" id="cakeWrap" role="button" tabindex="0" aria-label="Blow out candles">
+            <div class="cake-candles">
+              <div class="candle"><div class="candle-flame-wrap"><div class="candle-flame"></div><div class="candle-smoke"></div></div><div class="candle-wick"></div><div class="candle-body"><div class="candle-stripes"></div><span class="candle-digit" id="candleDigit1">2</span></div></div>
+              <div class="candle"><div class="candle-flame-wrap"><div class="candle-flame"></div><div class="candle-smoke"></div></div><div class="candle-wick"></div><div class="candle-body"><div class="candle-stripes"></div><span class="candle-digit" id="candleDigit2">0</span></div></div>
+            </div>
+            <div class="cake-body-wrap">
+              <div class="cake-tier-top"><div class="cake-drips"><span class="cake-drip"></span><span class="cake-drip"></span><span class="cake-drip"></span><span class="cake-drip"></span><span class="cake-drip"></span></div></div>
+              <div class="cake-tier-bottom"><div class="cake-pearls"><span class="cake-pearl"></span><span class="cake-pearl"></span><span class="cake-pearl"></span><span class="cake-pearl"></span><span class="cake-pearl"></span><span class="cake-pearl"></span></div></div>
+              <div class="cake-plate"></div>
+            </div>
+          </div>
+
+          <div class="cake-action-area">
+            <div class="cake-prompt-ui" id="cakePromptUi">
+              <p class="cake-prompt-hint">&#10024; Tap the cake or blow into mic &#10024;</p>
+              <button class="cake-mic-btn" id="btnCakeMic" type="button">
+                <svg class="cake-mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                <span>Enable Mic Blow</span>
+              </button>
+              <p class="cake-prompt-sub">make a wish before you blow</p>
+            </div>
+
+            <div class="cake-success-ui is-hidden" id="cakeSuccessUi">
+              <button class="cake-relight-btn" id="btnRelightCandles" type="button">&#8635; Relight Candles</button>
+              <h3 class="cake-wish-title">Make a wish... &#127776;</h3>
+              <p class="cake-wish-sub">May all your sweetest dreams take flight</p>
+              <button class="next-scene-btn tap-next-hint" id="btnNextToScene6" type="button">
+                <span>See Our Memory Wall</span>
+                <span>&rarr;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 6 — WALL OF US -->
+    <section class="scene scene6" id="scene6" aria-label="The Memory Wall">
+      <div class="memory-transition-wipe" id="memoryWipe" aria-hidden="true"></div>
+      <div class="memory-stage">
+        <div class="memory-spotlight" aria-hidden="true"></div>
+        <div class="memory-motes" id="memoryMotes" aria-hidden="true"></div>
+        <div class="memory-header">
+          <p class="memory-eyebrow" id="memoryEyebrow">a few frames from the reel</p>
+        </div>
+        <div class="memory-board-wrap">
+          <svg class="memory-twine-svg" viewBox="0 0 540 760" fill="none" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M 40,80 Q 140,110 270,90 T 500,85" stroke="rgba(215,175,135,0.7)" stroke-width="1.8" stroke-dasharray="3 3" />
+            <path d="M 40,320 Q 180,350 270,330 T 500,325" stroke="rgba(215,175,135,0.7)" stroke-width="1.8" stroke-dasharray="3 3" />
+            <path d="M 40,560 Q 150,590 270,570 T 500,565" stroke="rgba(215,175,135,0.7)" stroke-width="1.8" stroke-dasharray="3 3" />
+          </svg>
+          <div class="memory-board" id="memoryBoard">
+            <div class="memory-frame" id="mFrame0"><span class="frame-pin"></span><div class="frame-photo frame-photo-1"><span class="photo-icon">&#127799;</span></div><p class="frame-caption">the trip we almost didn't survive</p></div>
+            <div class="memory-frame" id="mFrame1"><span class="frame-pin"></span><div class="frame-photo frame-photo-2"><span class="photo-icon">&#9749;</span></div><p class="frame-caption">3am phone calls about nothing</p></div>
+            <div class="memory-frame" id="mFrame2"><span class="frame-pin"></span><div class="frame-photo frame-photo-3"><span class="photo-icon">&#10024;</span></div><p class="frame-caption">that one inside joke, still funny</p></div>
+            <div class="memory-frame" id="mFrame3"><span class="frame-pin"></span><div class="frame-photo frame-photo-4"><span class="photo-icon">&#127926;</span></div><p class="frame-caption">dancing in the kitchen out of tune</p></div>
+            <div class="memory-frame" id="mFrame4"><span class="frame-pin"></span><div class="frame-photo frame-photo-5"><span class="photo-icon">&#127749;</span></div><p class="frame-caption">the sunset we wished would freeze</p></div>
+            <div class="memory-frame" id="mFrame5"><span class="frame-pin"></span><div class="frame-photo frame-photo-6"><span class="photo-icon">&#129315;</span></div><p class="frame-caption">laughing until our stomachs hurt</p></div>
+          </div>
+        </div>
+
+        <div class="memory-closing" id="memoryClosing">
+          <div class="memory-closing-inner">
+            <h3 class="memory-closing-title">So Many Moments</h3>
+            <span class="memory-closing-rule"></span>
+            <p class="memory-closing-sub">and this is just the highlight reel.</p>
+            <button class="next-scene-btn tap-next-hint" id="btnNextToScene7" type="button">
+              <span>Roll the film</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 7 — MEMORY REEL -->
+    <section class="scene scene7" id="scene7" aria-label="Vintage Film-Strip Memory Reel">
+      <div class="projector-shutter-flash" id="filmFlash" aria-hidden="true"></div>
+      <div class="film-stage">
+        <div class="projector-beam" aria-hidden="true"></div>
+        <div class="projector-dust" id="filmDust" aria-hidden="true"></div>
+        <div class="film-viewport" id="filmViewport">
+          <div class="film-mask-top" aria-hidden="true"></div>
+          <div class="film-mask-bottom" aria-hidden="true"></div>
+          <div class="film-strip" id="filmStrip">
+            <div class="film-sprockets sprockets-left" aria-hidden="true"></div>
+            <div class="film-sprockets sprockets-right" aria-hidden="true"></div>
+            <div class="film-frames">
+              <div class="film-frame" id="fFrame0"><div class="frame-celluloid frame-cell-1"><span class="frame-icon">&#127873;</span><div class="frame-vignette"></div></div><p class="frame-caption">the year we became inseparable</p></div>
+              <div class="film-frame" id="fFrame1"><div class="frame-celluloid frame-cell-2"><span class="frame-icon">&#9728;</span><div class="frame-vignette"></div></div><p class="frame-caption">every ridiculous plan that somehow worked</p></div>
+              <div class="film-frame" id="fFrame2"><div class="frame-celluloid frame-cell-3"><span class="frame-icon">&#127756;</span><div class="frame-vignette"></div></div><p class="frame-caption">places that only make sense with you</p></div>
+              <div class="film-frame" id="fFrame3"><div class="frame-celluloid frame-cell-4"><span class="frame-icon">&#127775;</span><div class="frame-vignette"></div></div><p class="frame-caption">the quiet moments that meant the most</p></div>
+              <div class="film-frame" id="fFrame4"><div class="frame-celluloid frame-cell-5"><span class="frame-icon">&#128150;</span><div class="frame-vignette"></div></div><p class="frame-caption">every chapter better than the last</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="film-climax-headline" id="filmHeadline">
+          <div class="film-headline-glow" aria-hidden="true"></div>
+          <h3 class="film-headline-title">Frame by Frame</h3>
+          <span class="film-headline-rule"></span>
+          <p class="film-headline-sub">you're in almost all of my favorites.</p>
+          <button class="next-scene-btn tap-next-hint" id="btnNextToScene8" type="button">
+            <span>Look at the stars</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 8 — BALLOON POP -->
+    <section class="scene scene8" id="scene8" aria-label="Pop the Wishes: Balloon Surprise">
+      <!-- Ambient Warm Glow -->
+      <div class="balloon-ambient-glow" aria-hidden="true"></div>
+
+      <!-- Top Floating Toast for the balloon wish -->
+      <div class="balloon-toast-container" id="balloonToastContainer" aria-live="polite">
+        <div class="balloon-toast-msg" id="balloonToastMsg"></div>
+      </div>
+
+      <div class="balloon-scene-content">
+        <div class="balloon-header">
+          <h2 class="balloon-title" id="balloonTitle">Pop the Wishes 🎈</h2>
+          <p class="balloon-subtitle" id="balloonSubtitle">Tap each balloon to reveal a little wish</p>
+        </div>
+
+        <!-- 6 Interactive Balloons Grid -->
+        <div class="balloons-grid" id="balloonsGrid"></div>
+
+        <!-- Progress Counter Badge -->
+        <div class="balloon-counter-badge">
+          <span class="balloon-counter-text" id="balloonCounterText">Popped 0/6</span>
+        </div>
+
+        <!-- Action / Ending Panel -->
+        <div class="balloon-actions-panel" id="balloonActionsPanel">
+          <div class="balloon-closing-block" id="balloonClosingBlock" hidden>
+            <p class="balloon-closing-text" id="balloonClosingText">wishes released 🎈</p>
+            <div class="balloon-btn-group">
+              <button class="next-scene-btn tap-next-hint is-shown" id="btnNextToScene9" type="button" aria-label="Continue to next scene">
+                <span>The Letter awaits</span>
+                <span class="hint-arrow">&rarr;</span>
+              </button>
+              <button class="balloon-reset-btn" id="balloonResetBtn" type="button">pop them again ↺</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 9 — THE LETTER -->
+    <section class="scene scene9" id="scene9" aria-label="Typewritten Birthday Letter">
+      <div class="letter-veil" id="letterVeil" aria-hidden="true"></div>
+      <div class="letter-stage">
+        <div class="letter-bg-ambient" aria-hidden="true"></div>
+        <div class="letter-dust" id="letterDust" aria-hidden="true"></div>
+        <div class="letter-scene-content">
+          <div class="envelope-wrapper" id="envelopeWrapper">
+            <div class="envelope-container" id="envelopeContainer" role="button" tabindex="0" aria-label="Open the birthday letter envelope">
+              <div class="envelope-shadow"></div>
+              <div class="envelope-back"></div>
+              <div class="envelope-body"></div>
+              <div class="envelope-flap" id="envelopeFlap"></div>
+              <div class="envelope-heart">
+                <div class="heart-pulse-glow"></div>
+                <svg class="envelope-heart-svg" viewBox="0 0 32 30" fill="none">
+                  <path d="M16 28.5C7.5 22.5 2 17.5 2 11C2 5.5 6 1.5 11.5 1.5C14.5 1.5 17.5 3 19 5.5C20.5 3 23.5 1.5 26.5 1.5C32 1.5 36 5.5 36 11C36 17.5 30.5 22.5 22 28.5L16 33L10 28.5Z" fill="url(#envHeartGrad)" />
+                  <defs><linearGradient id="envHeartGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff7597" /><stop offset="100%" stop-color="#d4235c" /></linearGradient></defs>
+                </svg>
+              </div>
+            </div>
+            <p class="envelope-hint pulsing" id="envelopeHint">tap to open</p>
+          </div>
+
+          <div class="letter-card-container is-hidden" id="letterCardContainer">
+            <div class="letter-card-shadow"></div>
+            <div class="letter-card" id="letterCard">
+              <div class="letter-card-texture"></div>
+              <p class="letter-eyebrow">a note for you</p>
+              <div class="letter-card-scroll">
+                <p class="letter-typewriter-text" id="typewriterText"></p>
+              </div>
+            </div>
+            <div class="letter-card-actions">
+              <button class="next-scene-btn tap-next-hint" id="btnNextToScene10" type="button">
+                <span>The finale awaits</span>
+                <span>&rarr;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 10 — FIREWORKS FINALE -->
+    <section class="scene scene10" id="scene10" aria-label="Midnight Fireworks Finale">
+      <div class="fireworks-veil" id="fireworksVeil" aria-hidden="true"></div>
+      <div class="fireworks-stage">
+        <canvas class="fireworks-canvas" id="fireworksCanvas"></canvas>
+        <div class="fireworks-launch-pad" id="fireworksLaunchPad">
+          <button class="fireworks-launch-btn" id="btnLaunchFirework" type="button" aria-label="Launch Firework">
+            <div class="launch-btn-halo"></div>
+            <svg class="launch-tube-svg" viewBox="0 0 44 48" fill="none">
+              <rect x="14" y="16" width="16" height="30" rx="3" fill="url(#tubeGrad)" stroke="#ffcf6a" stroke-width="1.5" />
+              <circle class="launch-ember" cx="22" cy="15" r="5" fill="#ffdf70" />
+              <defs><linearGradient id="tubeGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6e1b42" /><stop offset="50%" stop-color="#d4235c" /><stop offset="100%" stop-color="#4a0e2a" /></linearGradient></defs>
+            </svg>
+          </button>
+          <p class="fireworks-hint pulsing" id="fireworksHint">tap to launch fireworks</p>
+        </div>
+
+        <div class="fireworks-closing" id="fireworksClosing">
+          <div class="fireworks-closing-inner">
+            <h3 class="fireworks-title">Here's To You</h3>
+            <span class="fireworks-rule"></span>
+            <p class="fireworks-sub">may this year be loud, lucky, and full of ridiculous stories we'll tell for years.</p>
+            <button class="next-scene-btn tap-next-hint" id="btnNextToScene11" type="button">
+              <span>Raise a glass</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 11 — THE FINAL TOAST -->
+    <section class="scene scene11" id="scene11" aria-label="The Final Birthday Toast">
+      <div class="toast-veil" id="toastVeil" aria-hidden="true"></div>
+      <div class="toast-bg-glow" aria-hidden="true"></div>
+      <div class="toast-stage">
+        <div class="toast-glasses-wrap" id="toastGlassesWrap" aria-hidden="true">
+          <div class="toast-glass toast-glass--left" id="toastGlassLeft">
+            <svg class="glass-svg" viewBox="0 0 70 120" fill="none">
+              <path d="M 12,12 Q 10,65 35,78 L 35,110 L 18,114 L 52,114 L 35,110 L 35,78 Q 60,65 58,12 Z" stroke="rgba(212,35,92,0.4)" stroke-width="2.5" fill="rgba(255,245,235,0.2)" />
+              <path d="M 15,38 Q 25,60 35,68 Q 45,60 55,38 Z" fill="url(#champagneGrad)" opacity="0.85" />
+              <line x1="20" y1="114" x2="50" y2="114" stroke="#d99b26" stroke-width="3" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="toast-glass toast-glass--right" id="toastGlassRight">
+            <svg class="glass-svg" viewBox="0 0 70 120" fill="none">
+              <path d="M 12,12 Q 10,65 35,78 L 35,110 L 18,114 L 52,114 L 35,110 L 35,78 Q 60,65 58,12 Z" stroke="rgba(212,35,92,0.4)" stroke-width="2.5" fill="rgba(255,245,235,0.2)" />
+              <path d="M 15,38 Q 25,60 35,68 Q 45,60 55,38 Z" fill="url(#champagneGrad)" opacity="0.85" />
+              <line x1="20" y1="114" x2="50" y2="114" stroke="#d99b26" stroke-width="3" stroke-linecap="round" />
+              <defs><linearGradient id="champagneGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff2c8" /><stop offset="60%" stop-color="#f5b838" /><stop offset="100%" stop-color="#d98b18" /></linearGradient></defs>
+            </svg>
+          </div>
+          <div class="toast-clink-burst" id="toastClinkBurst">
+            <div class="clink-sparkle-center"></div>
+            <div class="clink-ring"></div>
+            <div class="clink-rays">
+              <span class="clink-ray" style="--rot: 0deg;"></span>
+              <span class="clink-ray" style="--rot: 45deg;"></span>
+              <span class="clink-ray" style="--rot: 90deg;"></span>
+              <span class="clink-ray" style="--rot: 135deg;"></span>
+              <span class="clink-ray" style="--rot: 180deg;"></span>
+              <span class="clink-ray" style="--rot: 225deg;"></span>
+              <span class="clink-ray" style="--rot: 270deg;"></span>
+              <span class="clink-ray" style="--rot: 315deg;"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="toast-closing-wish" id="toastClosingWish">
+          <p class="toast-eyebrow" id="toastEyebrow">and so, once more &mdash;</p>
+          <div class="toast-hero-wrap">
+            <h2 class="toast-hero" id="toastHero">Happy Birthday, Elena</h2>
+          </div>
+          <span class="toast-rule" id="toastRule" aria-hidden="true"></span>
+          <p class="toast-sub" id="toastSub">here&rsquo;s to another year of us being a little bit unstoppable together.</p>
+          <div class="toast-actions" id="toastActions">
+            <button class="toast-replay-pill" id="btnToastReplay" type="button" aria-label="Replay film from the beginning">
+              <svg class="replay-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              <span>Play Again</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="toast-particles" id="toastParticles" aria-hidden="true"></div>
+      <div class="toast-light-wash" id="toastLightWash" aria-hidden="true"></div>
+    </section>
+
+  </main>
+
+  <!-- Single, shared, continuously-looping ambient particle layer -->
+  <div class="global-ambient-particles" id="ambientParticles" aria-hidden="true"></div>
+
+  <!-- One lens over the whole film: vignette + fine grain -->
+  <div class="grade" aria-hidden="true">
+    <div class="grade__vignette"></div>
+    <div class="grade__grain"></div>
+  </div>
+
+  <!-- Persistent background music audio element -->
+  <audio id="bgMusic" src="assets/bg-music.mp3" preload="auto"></audio>
+
+  <!-- Persistent Music Mute/Unmute Toggle Button -->
+  <button class="music-toggle-btn" id="musicToggleBtn" type="button" aria-label="Mute background music" aria-pressed="false">
+    <svg class="music-icon music-icon--on" viewBox="0 0 24 24" aria-hidden="true" width="19" height="19">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" fill="currentColor"/>
+    </svg>
+    <svg class="music-icon music-icon--off" viewBox="0 0 24 24" aria-hidden="true" width="19" height="19">
+      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <p class="sr-only">Happy Birthday. Here&rsquo;s to a wonderful year ahead.</p>
+
+
+  <!-- ============================================================
+       SCRIPT: SUPABASE PAID GIFT LOADER & THEME BOOTSTRAPPER
+       ============================================================ -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) 
+      || 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
+    const SUPABASE_ANON_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) 
+      || 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 1. Extract Slug from URL
+    function getGiftSlug() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let slug = urlParams.get('slug') || urlParams.get('gift') || urlParams.get('id');
+      
+      if (!slug) {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart && lastPart !== 'gift.html' && lastPart !== 'gift' && lastPart !== 'preview.html') {
+          slug = lastPart;
+        }
+      }
+      return slug ? slug.trim() : null;
+    }
+
+    // 2. Fetch and Mount Gift
+    async function loadPublicGift() {
+      const slug = getGiftSlug();
+      const loadingScreen = document.getElementById('giftLoadingScreen');
+      const invalidScreen = document.getElementById('invalidGiftScreen');
+
+      if (!slug) {
+        loadingScreen?.classList.add('hidden');
+        invalidScreen?.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        // Query Supabase for paid gift matching unique slug
+        const { data: gift, error } = await supabase
+          .from('gifts')
+          .select('*')
+          .eq('slug', slug)
+          .eq('status', 'paid')
+          .single();
+
+        if (error || !gift) {
+          // If no paid gift found, show on-brand invalid gift card
+          loadingScreen?.classList.add('hidden');
+          invalidScreen?.classList.remove('hidden');
+          return;
+        }
+
+        // Parse content and normalize schema
+        const content = gift.content || gift.data || {};
+        const themeId = gift.theme_id || content.themeId || 'paper';
+        const expId = gift.experience_id || 'birthday-film';
+
+        const finalGiftData = {
+          recipientName: content.recipientName || 'Elena',
+          themeId: themeId,
+          experienceId: expId,
+          theme: content.theme || {
+            primaryColor: '#d4235c',
+            accentColor: themeId === 'glass' ? '#f3b749' : '#e8a23d'
+          },
+          scenes: content.scenes || {},
+          music: content.music || {
+            trackType: 'default',
+            customTrackUrl: null,
+            startSeconds: 27
+          },
+          photos: (content.scenes && content.scenes.scene6_wallOfUs && content.scenes.scene6_wallOfUs.photos) || gift.photo_urls || [null, null, null, null, null, null]
+        };
+
+        // Inject uploaded photos if present
+        if (gift.photo_urls && Array.isArray(gift.photo_urls)) {
+          if (!finalGiftData.scenes.scene6_wallOfUs) finalGiftData.scenes.scene6_wallOfUs = {};
+          finalGiftData.scenes.scene6_wallOfUs.photos = gift.photo_urls;
+        }
+
+        // Inject uploaded video clips if present
+        if (gift.clip_urls && Array.isArray(gift.clip_urls)) {
+          if (!finalGiftData.scenes.scene7_memoryReel) finalGiftData.scenes.scene7_memoryReel = {};
+          finalGiftData.scenes.scene7_memoryReel.clips = gift.clip_urls;
+        }
+
+        // Inject custom music if present
+        if (gift.music && typeof gift.music === 'object') {
+          finalGiftData.music = { ...finalGiftData.music, ...gift.music };
+        }
+
+        // Apply Theme to document
+        document.documentElement.setAttribute('data-theme', themeId);
+        document.body.className = 'theme-' + themeId;
+
+        // Set Dynamic Page Title & Social Meta
+        const recName = finalGiftData.recipientName || 'You';
+        document.title = `A Birthday Surprise for ${recName} ♥ — Velvet & Keepsake`;
+        const ogTitle = document.getElementById('ogTitle');
+        if (ogTitle) ogTitle.setAttribute('content', `A Birthday Surprise for ${recName} ♥`);
+        const ogDesc = document.getElementById('ogDesc');
+        if (ogDesc) ogDesc.setAttribute('content', `An intimate, 11-scene cinematic birthday celebration crafted with love for ${recName}.`);
+
+        // Inject into window.GIFT_DATA before loading birthday.js
+        window.GIFT_DATA = finalGiftData;
+
+        // Fade out loader
+        if (loadingScreen) {
+          loadingScreen.style.opacity = '0';
+          setTimeout(() => { loadingScreen.classList.add('hidden'); }, 600);
+        }
+
+        // Dynamically import birthday film engine
+        await import('./birthday.js');
+
+      } catch (err) {
+        console.error('Error loading gift:', err);
+        loadingScreen?.classList.add('hidden');
+        invalidScreen?.classList.remove('hidden');
+      }
+    }
+
+    loadPublicGift();
+  </script>
+</body>
+</html>

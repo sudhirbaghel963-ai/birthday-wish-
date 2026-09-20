@@ -1,0 +1,1138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Happy Birthday ♥ — a little film</title>
+  <meta name="description" content="A cinematic birthday film in four acts: a beating heart you open with a tap, a rush of colour, a kinetic wish, and a tree that blooms into a heart of petals." />
+  <meta name="theme-color" content="#f7e7dc" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&display=swap" rel="stylesheet" />
+
+  <script>
+    document.documentElement.classList.add('js');
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const exp = urlParams.get('experience');
+      const theme = urlParams.get('theme');
+      if (exp === 'birthday-film-glass' || theme === 'glass') {
+        document.documentElement.setAttribute('data-theme', 'glass');
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="./birthday.css" />
+  <link rel="stylesheet" href="./theme-paper.css" />
+  <link rel="stylesheet" href="./theme-glass.css" />
+</head>
+<body>
+  <main class="scene">
+
+    <!-- The tree world (Act 4). One canvas; it stays transparent until the
+         intro hands off, then it draws its own warm sky + blossom tree. -->
+    <canvas id="tree" class="tree" aria-label="A blossom tree grows and blooms into a heart made of petals" role="img"></canvas>
+
+    <!-- ACT 1 — THE INVITATION ------------------------------------------------
+         A single beating heart on a warm field. It is the only thing the
+         visitor has to do: tap it. Real <button> so it is tappable + keyboard
+         focusable; everything decorative around it is aria-hidden. -->
+    <section class="hero" id="hero" aria-label="Draw the bow to open your card">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="hero__motes" id="motes" aria-hidden="true"></div>
+
+      <p class="hero__eyebrow" id="eyebrow">a little something, for you</p>
+
+      <!-- THE TARGET — the heart the arrow flies to (GSAP animates .target) -->
+      <div class="targetWrap" aria-hidden="true">
+        <div class="target" id="target">
+          <span class="heart__glow" aria-hidden="true"></span>
+          <span class="target__heart" id="targetHeart">
+            <svg class="heart__svg" viewBox="0 0 100 92" aria-hidden="true">
+              <defs>
+                <radialGradient id="hg" cx="38%" cy="30%" r="80%">
+                  <stop offset="0%"  stop-color="#ffd9e4" />
+                  <stop offset="42%" stop-color="#ff6f97" />
+                  <stop offset="82%" stop-color="#d81e57" />
+                  <stop offset="100%" stop-color="#9d0f3e" />
+                </radialGradient>
+                <linearGradient id="hsheen" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"  stop-color="rgba(255,255,255,.85)" />
+                  <stop offset="34%" stop-color="rgba(255,255,255,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M50 86.5C26 68 10.5 53.6 10.5 34.6 10.5 20.4 21 11 33.2 11c8.6 0 14.2 4.7 16.8 11.4C52.6 15.7 58.2 11 66.8 11 79 11 89.5 20.4 89.5 34.6 89.5 53.6 74 68 50 86.5Z" fill="url(#hg)" />
+              <path d="M50 86.5C26 68 10.5 53.6 10.5 34.6 10.5 20.4 21 11 33.2 11c8.6 0 14.2 4.7 16.8 11.4C52.6 15.7 58.2 11 66.8 11 79 11 89.5 20.4 89.5 34.6 89.5 53.6 74 68 50 86.5Z" fill="url(#hsheen)" opacity=".7" />
+              <ellipse cx="34" cy="30" rx="8.5" ry="5.4" fill="#fff" opacity=".72" style="mix-blend-mode:screen" />
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- THE BOW + ARROW — draw the string back, release to fire. The rig is
+           placed lower-left and rotated by JS to aim at the heart, so the shot
+           travels on a diagonal. A real control: role=button + keyboard drag. -->
+      <div class="archery" id="archery" role="button" tabindex="0"
+           aria-label="Draw the bow and release to send the arrow to the heart">
+
+          <!-- aim line, inside the rig so it points straight at the heart -->
+          <div class="aim" id="aim" aria-hidden="true"></div>
+
+          <!-- realistic recurve bow: wooden limbs, leather grip, a live string -->
+          <svg class="bow" id="bow" viewBox="0 0 460 300" aria-hidden="true">
+            <defs>
+              <linearGradient id="limb" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0"   stop-color="#4a2a1a" />
+                <stop offset=".18" stop-color="#6b3f24" />
+                <stop offset=".5"  stop-color="#8a5127" />
+                <stop offset=".82" stop-color="#6b3f24" />
+                <stop offset="1"   stop-color="#4a2a1a" />
+              </linearGradient>
+              <linearGradient id="limbHi" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="rgba(255,214,160,.8)" />
+                <stop offset="1" stop-color="rgba(255,214,160,0)" />
+              </linearGradient>
+              <linearGradient id="grip" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#2a1a10" />
+                <stop offset=".5" stop-color="#5a3822" />
+                <stop offset="1" stop-color="#2a1a10" />
+              </linearGradient>
+            </defs>
+            <!-- limb body (taper faked with two stacked strokes) -->
+            <path class="bow__limb" d="M34 96 C 118 168, 168 240, 230 252 C 292 240, 342 168, 426 96"
+                  fill="none" stroke="url(#limb)" stroke-width="13" stroke-linecap="round" />
+            <path class="bow__limbHi" d="M34 96 C 118 168, 168 240, 230 252 C 292 240, 342 168, 426 96"
+                  fill="none" stroke="url(#limbHi)" stroke-width="3" stroke-linecap="round" opacity=".7" />
+            <!-- recurve tip hooks -->
+            <path d="M34 96 C 22 82, 26 70, 40 66" fill="none" stroke="url(#limb)" stroke-width="8" stroke-linecap="round" />
+            <path d="M426 96 C 438 82, 434 70, 420 66" fill="none" stroke="url(#limb)" stroke-width="8" stroke-linecap="round" />
+            <!-- leather grip over the belly -->
+            <rect x="216" y="206" width="28" height="70" rx="9" fill="url(#grip)" />
+            <path d="M219 220h22 M219 236h22 M219 252h22" stroke="rgba(0,0,0,.35)" stroke-width="2" />
+            <!-- the string: two segments meeting at the nock (JS animates the nock).
+                 A warm taupe so the taut string actually reads against the cream. -->
+            <line class="bow__str" id="strL" x1="40" y1="70" x2="230" y2="96" stroke="#9a8068" stroke-width="2.2" stroke-linecap="round" />
+            <line class="bow__str" id="strR" x1="420" y1="70" x2="230" y2="96" stroke="#9a8068" stroke-width="2.2" stroke-linecap="round" />
+            <circle class="bow__serving" id="serving" cx="230" cy="96" r="4.5" fill="#6f5137" />
+          </svg>
+
+          <!-- the arrow: winged golden heart tip (Cupid), gold feather fletching -->
+          <svg class="arrow" id="arrow" viewBox="0 0 64 220" aria-hidden="true">
+            <defs>
+              <linearGradient id="shaft" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#4a2c14" />
+                <stop offset=".5" stop-color="#8a5a2c" />
+                <stop offset="1" stop-color="#3e2410" />
+              </linearGradient>
+              <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffe38c" />
+                <stop offset=".45" stop-color="#f4a626" />
+                <stop offset="1" stop-color="#a85f0e" />
+              </linearGradient>
+              <linearGradient id="feath" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ff7f9c" />
+                <stop offset=".5" stop-color="#e6396a" />
+                <stop offset="1" stop-color="#a8154a" />
+              </linearGradient>
+              <linearGradient id="wing" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffffff" />
+                <stop offset="1" stop-color="#ffe0c4" />
+              </linearGradient>
+            </defs>
+
+            <!-- shaft (dark wood so it reads against the cream) -->
+            <rect x="29.4" y="30" width="5.2" height="168" rx="2.6" fill="url(#shaft)" />
+
+            <!-- angel wings flanking the heart tip -->
+            <g class="arrow__wings">
+              <path class="wingL" d="M31 30 C 10 16, 2 20, 4 34 C 12 30, 20 32, 31 40 Z" fill="url(#wing)" stroke="rgba(196,132,58,.72)" stroke-width="1.2"/>
+              <path class="wingR" d="M33 30 C 54 16, 62 20, 60 34 C 52 30, 44 32, 33 40 Z" fill="url(#wing)" stroke="rgba(196,132,58,.72)" stroke-width="1.2"/>
+            </g>
+
+            <!-- golden heart arrowhead (Cupid's love arrow) -->
+            <path class="arrow__head" d="M32 12 C 30 7, 22 6.5, 21.5 13 C 21 18, 27 22, 32 27 C 37 22, 43 18, 42.5 13 C 42 6.5, 34 7, 32 12 Z" fill="url(#gold)" stroke="#a5701a" stroke-width=".8" />
+            <ellipse cx="27" cy="13" rx="2.6" ry="1.7" fill="#fff" opacity=".8" style="mix-blend-mode:screen" />
+
+            <!-- gold feather fletching -->
+            <g class="arrow__fletch">
+              <path d="M32 150 C 16 156, 10 178, 15 200 C 24 194, 30 184, 32 176 Z" fill="url(#feath)" />
+              <path d="M32 150 C 48 156, 54 178, 49 200 C 40 194, 34 184, 32 176 Z" fill="url(#feath)" opacity=".92" />
+              <path d="M28 160l4 3 M26 170l6 3 M25 180l7 3" stroke="rgba(130,12,48,.45)" stroke-width="1" />
+              <path d="M36 160l-4 3 M38 170l-6 3 M39 180l-7 3" stroke="rgba(130,12,48,.45)" stroke-width="1" />
+            </g>
+            <!-- nock -->
+            <path d="M29 200 L32 205 L35 200" fill="none" stroke="#c9a25a" stroke-width="2" stroke-linecap="round"/>
+            <!-- invisible tip marker: JS measures it to land the head on the heart -->
+            <circle id="tip" cx="32" cy="9" r="0.6" fill="none" />
+          </svg>
+      </div>
+
+      <p class="hero__hint" id="hint">pull &amp; release</p>
+    </section>
+
+    <!-- ACT 2 — THE FLOOD -----------------------------------------------------
+         The heart bursts into this circle at its landing point, and it swallows
+         the frame in rose. Same trick as the intro dot: no cross-fade anywhere,
+         the colour just arrives. -->
+    <div class="flood" id="flood" aria-hidden="true"></div>
+
+    <!-- ACT 3 — THE WISH (kinetic type on the flood) --------------------------
+         Lives inside the flood's own colour, revealed by it. Every glyph hinges
+         up out of its mask — nothing fades. -->
+    <div class="field" id="field" aria-hidden="true">
+      <div class="blob blob--1"></div>
+      <div class="blob blob--2"></div>
+      <div class="blob blob--3"></div>
+      <div class="fgrid" id="fgrid"></div>
+      <div class="fvignette"></div>
+
+      <div class="camera" id="camera">
+        <p class="kEyebrow" id="kEyebrow">make a wish&hellip;</p>
+        <h2 class="headline" id="headline">
+          <span class="hl__line"><span class="mask"><span class="hl__word" id="wLine1">Happy</span></span></span>
+          <span class="hl__line"><span class="mask"><span class="hl__word" id="wLine2">Birthday</span></span></span>
+        </h2>
+        <svg class="uline" id="uline" viewBox="0 0 300 26" fill="none" aria-hidden="true">
+          <path class="uline__path" d="M8 16C56 7 132 4 178 6c30 1 78 5 114 12-40 3-108 4-176 3"
+                stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <p class="kSub" id="kSub">to someone worth celebrating</p>
+      </div>
+
+      <div class="bar bar--top" id="barTop"></div>
+      <div class="bar bar--bot" id="barBot"></div>
+    </div>
+
+    <!-- The gold light that bridges the rose wish into the dawn of the tree. -->
+    <div class="bloom" id="bloom" aria-hidden="true"></div>
+
+    <!-- ACT 4 — THE HAND-LETTERED WISH (over the tree) ------------------------ -->
+    <div class="wish" id="wish" aria-hidden="true">
+      <p class="wish__eyebrow" id="wEyebrow">and&hellip; make it count</p>
+      <div class="wish__heroWrap"><h1 class="wish__hero" id="wHero">Happy Birthday</h1></div>
+      <span class="wish__rule" id="wRule"></span>
+      <p class="wish__sub" id="wSub">here&rsquo;s to a year that blooms</p>
+    </div>
+
+
+    <!-- Advance to Scene 2 once Scene 1's film has settled. -->
+    <div class="tap-next-hint scene1-next" id="nextScene1" aria-hidden="true" hidden>
+      <span>tap anywhere to continue</span> <span class="hint-arrow">&rarr;</span>
+    </div>
+
+    <!-- SCENE 2 — THE SURPRISE GIFT BOX ---------------------------------- -->
+    <section class="scene2" id="scene2" aria-label="A special birthday gift box" aria-hidden="true">
+      <div class="gift-stage">
+        <!-- Ambient golden spotlight & particles -->
+        <div class="gift-spotlight" aria-hidden="true"></div>
+        <div class="gift-particles" id="giftParticles" aria-hidden="true"></div>
+
+        <!-- Header / Eyebrow before opening -->
+        <div class="gift-header" id="giftHeader">
+          <span class="gift-badge">Special Delivery</span>
+          <h2 class="gift-title">A surprise awaits you...</h2>
+          <span class="gift-rule" aria-hidden="true"></span>
+          <p class="gift-subtitle">crafted with love, just for you</p>
+        </div>
+
+        <!-- Interactive Gift Box Container -->
+        <div class="gift-box-wrap" id="giftBoxWrap" role="button" tabindex="0" aria-label="Tap to open the birthday gift box">
+          <!-- Inner radial light burst when opened -->
+          <div class="gift-glow" id="giftGlow" aria-hidden="true"></div>
+
+          <!-- Confetti & sparkles container -->
+          <div class="gift-burst" id="giftBurst" aria-hidden="true"></div>
+
+          <!-- SVG Isometric Gift Box -->
+          <svg class="gift-svg" viewBox="0 0 100 120" aria-hidden="true">
+            <defs>
+              <linearGradient id="boxFaceLeft" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e83a72" />
+                <stop offset="50%" stop-color="#d4235c" />
+                <stop offset="100%" stop-color="#9c0f42" />
+              </linearGradient>
+              <linearGradient id="boxFaceRight" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#c41f52" />
+                <stop offset="50%" stop-color="#a80f43" />
+                <stop offset="100%" stop-color="#6e0a31" />
+              </linearGradient>
+              <linearGradient id="ribbonGold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffe699" />
+                <stop offset="50%" stop-color="#f5b838" />
+                <stop offset="100%" stop-color="#dfa938" />
+              </linearGradient>
+              <linearGradient id="ribbonGoldDark" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#e8a23d" />
+                <stop offset="100%" stop-color="#b87214" />
+              </linearGradient>
+            </defs>
+
+            <!-- Box Base -->
+            <g class="gift-base">
+              <!-- Inside bottom (visible when open) -->
+              <polygon points="17,59 50,45 83,59 50,73" fill="#500722" />
+              <polygon points="17,59 50,45 83,59 50,73" fill="black" opacity="0.35" />
+
+              <!-- Left Face -->
+              <polygon points="15,60 50,75 50,105 15,90" fill="url(#boxFaceLeft)" />
+              <!-- Right Face -->
+              <polygon points="50,75 85,60 85,90 50,105" fill="url(#boxFaceRight)" />
+
+              <!-- Ribbon Left Face -->
+              <polygon points="28,65.5 36,69 36,99 28,95.5" fill="url(#ribbonGold)" />
+              <!-- Ribbon Right Face -->
+              <polygon points="64,69 72,65.5 72,95.5 64,99" fill="url(#ribbonGoldDark)" />
+            </g>
+
+            <!-- Box Lid (animated when clicked) -->
+            <g class="gift-lid" id="giftLid">
+              <!-- Lid Left Face -->
+              <polygon points="12,55 50,71 50,81 12,65" fill="url(#boxFaceLeft)" />
+              <polygon points="12,55 50,71 50,81 12,65" fill="white" opacity="0.12" />
+              <!-- Lid Right Face -->
+              <polygon points="50,71 88,55 88,65 50,81" fill="url(#boxFaceRight)" />
+              <polygon points="50,71 88,55 88,65 50,81" fill="black" opacity="0.18" />
+              <!-- Lid Top Face -->
+              <polygon points="12,55 50,39 88,55 50,71" fill="url(#boxFaceLeft)" />
+              <polygon points="12,55 50,39 88,55 50,71" fill="white" opacity="0.18" />
+
+              <!-- Lid Ribbon Left-to-Right -->
+              <polygon points="25,49.5 33,46 75,63.5 67,67" fill="url(#ribbonGold)" />
+              <!-- Lid Ribbon Front-to-Back -->
+              <polygon points="67,46 75,49.5 33,67 25,63.5" fill="url(#ribbonGoldDark)" />
+
+              <!-- Bow Knots -->
+              <ellipse cx="50" cy="51" rx="6" ry="4" fill="#dfa938" transform="rotate(-20 50 51)" />
+              <path d="M 50 51 C 35 35, 25 45, 45 55" fill="none" stroke="url(#ribbonGold)" stroke-width="4" stroke-linecap="round" />
+              <path d="M 50 51 C 65 35, 75 45, 55 55" fill="none" stroke="url(#ribbonGold)" stroke-width="4" stroke-linecap="round" />
+              <circle cx="50" cy="51" r="3.2" fill="#ffe699" />
+            </g>
+          </svg>
+
+          <p class="gift-tap-hint" id="giftTapHint">tap the gift to open</p>
+        </div>
+
+        <!-- Revealed Surprise Card that rises from the box -->
+        <div class="gift-reveal-card" id="giftRevealCard" aria-hidden="true">
+          <div class="gift-card-inner">
+            <span class="gift-card-heart">♥</span>
+            <h3 class="gift-card-title">Unwrapped with Love</h3>
+            <span class="gift-card-rule" aria-hidden="true"></span>
+            <p class="gift-card-text">Every moment with you is a gift to cherish. May this year bring endless smiles, sweet surprises, and warm happiness!</p>
+            <div class="tap-next-hint" id="nextScene2" aria-hidden="true">
+              <span>tap anywhere to continue</span> <span class="hint-arrow">&rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 3 — THE SECRET PIN KEEPSAKE CARD ----------------------------- -->
+    <section class="scene3" id="scene3" aria-label="A locked keepsake card" aria-hidden="true">
+      <div class="pin-stage">
+        <!-- Ambient golden spotlight & particles -->
+        <div class="pin-spotlight" aria-hidden="true"></div>
+        <div class="pin-particles" aria-hidden="true"></div>
+
+        <!-- The Central Keepsake Card -->
+        <div class="pin-card" id="pinCard">
+          
+          <!-- 1. Live Clock & Subtitle -->
+          <div class="pin-clock-wrap">
+            <time class="pin-clock" id="pinClock">12:00</time>
+            <p class="pin-subtitle">a little something, locked away</p>
+          </div>
+
+          <!-- 2. Lock Icon Badge & Instruction -->
+          <div class="pin-lock-header">
+            <div class="pin-lock-badge" id="pinLockBadge" aria-hidden="true">
+              <!-- Closed padlock -->
+              <svg class="lock-svg lock-closed" id="lockClosedSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="3" ry="3" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                <circle cx="12" cy="16" r="1.5" fill="currentColor" />
+              </svg>
+              <!-- Open padlock (flipped on success) -->
+              <svg class="lock-svg lock-open" id="lockOpenSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="3" ry="3" />
+                <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                <circle cx="12" cy="16" r="1.5" fill="currentColor" />
+              </svg>
+            </div>
+            <p class="pin-instruction" id="pinInstruction">enter the code to unlock it</p>
+          </div>
+
+          <!-- 3. Hint / Error Status Pill -->
+          <div class="pin-status-wrap">
+            <div class="pin-status-pill pin-hint" id="pinStatusPill">hint: our favourite number</div>
+          </div>
+
+          <!-- 4. Active PIN Input Area (dots + keypad) -->
+          <div class="pin-input-area" id="pinInputArea">
+            <!-- 4 PIN Dots -->
+            <div class="pin-dots" id="pinDots" role="status" aria-label="PIN digits entered">
+              <span class="pin-dot" data-index="0"></span>
+              <span class="pin-dot" data-index="1"></span>
+              <span class="pin-dot" data-index="2"></span>
+              <span class="pin-dot" data-index="3"></span>
+            </div>
+
+            <!-- 3x3+1 Numeric Keypad -->
+            <div class="pin-keypad" id="pinKeypad" role="group" aria-label="PIN Keypad">
+              <button type="button" class="keypad-btn" data-key="1">1</button>
+              <button type="button" class="keypad-btn" data-key="2">2</button>
+              <button type="button" class="keypad-btn" data-key="3">3</button>
+              <button type="button" class="keypad-btn" data-key="4">4</button>
+              <button type="button" class="keypad-btn" data-key="5">5</button>
+              <button type="button" class="keypad-btn" data-key="6">6</button>
+              <button type="button" class="keypad-btn" data-key="7">7</button>
+              <button type="button" class="keypad-btn" data-key="8">8</button>
+              <button type="button" class="keypad-btn" data-key="9">9</button>
+              <span class="keypad-spacer" aria-hidden="true"></span>
+              <button type="button" class="keypad-btn" data-key="0">0</button>
+              <button type="button" class="keypad-btn keypad-del" data-action="delete" aria-label="Delete last digit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" aria-hidden="true">
+                  <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
+                  <line x1="18" y1="9" x2="12" y2="15" />
+                  <line x1="12" y1="9" x2="18" y2="15" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 4 — THE THEATRICAL CURTAIN REVEAL ---------------------------- -->
+    <section class="scene4" id="scene4" aria-label="A special birthday surprise behind velvet curtains" aria-hidden="true">
+      <!-- Background revealed once curtains open -->
+      <div class="stage-background">
+        <div class="spotlight" aria-hidden="true"></div>
+      </div>
+
+      <!-- Top Decorative Valance -->
+      <div class="curtain-top-valance" aria-hidden="true"></div>
+
+      <!-- Left Curtain Panel -->
+      <div class="curtain curtain-left" id="curtainLeft" aria-hidden="true"></div>
+
+      <!-- Right Curtain Panel -->
+      <div class="curtain curtain-right" id="curtainRight" aria-hidden="true"></div>
+
+      <!-- Center Open Button -->
+      <div class="trigger-container" id="triggerContainer">
+        <button class="open-btn" id="openCurtainsBtn" type="button">
+          <span class="heart-icon" aria-hidden="true">♥</span>
+          <span>Open</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- SCENE 5 — THE BIRTHDAY CAKE & LIFETIME COUNTDOWN ---------------- -->
+    <section class="scene5" id="scene5" aria-label="Birthday Cake and Lifetime Countdown" aria-hidden="true">
+      <div class="cake-stage">
+        <!-- Ambient golden/rose glow spotlight -->
+        <div class="cake-spotlight" aria-hidden="true"></div>
+
+        <!-- Confetti container for celebratory burst -->
+        <div class="cake-confetti-container" id="cakeConfettiWrap" aria-hidden="true"></div>
+
+        <!-- Main Card -->
+        <div class="cake-card">
+          <!-- Header -->
+          <div class="cake-header">
+            <span class="cake-badge">Milestone Moment</span>
+            <h2 class="cake-title">Happy Birthday, Beautiful 🎂</h2>
+            <span class="cake-rule" aria-hidden="true"></span>
+            <p class="cake-subtitle">The world has been sweeter since you arrived &hearts;</p>
+          </div>
+
+          <!-- 2x2 Lifetime Stats Grid -->
+          <div class="cake-stats-grid" aria-label="Time lived so far">
+            <div class="cake-stat-box">
+              <span class="cake-stat-val" id="statYears">0</span>
+              <span class="cake-stat-lbl">Years</span>
+            </div>
+            <div class="cake-stat-box">
+              <span class="cake-stat-val" id="statDays">0</span>
+              <span class="cake-stat-lbl">Days</span>
+            </div>
+            <div class="cake-stat-box">
+              <span class="cake-stat-val" id="statHours">0</span>
+              <span class="cake-stat-lbl">Hours</span>
+            </div>
+            <div class="cake-stat-box">
+              <span class="cake-stat-val" id="statMinutes">0</span>
+              <span class="cake-stat-lbl">Minutes</span>
+            </div>
+          </div>
+
+          <!-- Interactive Cake & Candles Area -->
+          <div class="cake-wrap" id="cakeWrap" role="button" tabindex="0" aria-label="Tap to blow out birthday candles">
+            <!-- Candles Container -->
+            <div class="cake-candles" id="cakeCandles">
+              <!-- Digit 1 Candle -->
+              <div class="candle" id="candle0">
+                <div class="candle-flame-wrap">
+                  <div class="candle-flame" id="candleFlame0" aria-hidden="true"></div>
+                  <div class="candle-smoke" id="candleSmoke0" aria-hidden="true"></div>
+                </div>
+                <div class="candle-wick"></div>
+                <div class="candle-body">
+                  <div class="candle-stripes" aria-hidden="true"></div>
+                  <span class="candle-digit" id="candleDigit0">2</span>
+                </div>
+              </div>
+
+              <!-- Digit 2 Candle -->
+              <div class="candle" id="candle1">
+                <div class="candle-flame-wrap">
+                  <div class="candle-flame" id="candleFlame1" aria-hidden="true"></div>
+                  <div class="candle-smoke" id="candleSmoke1" aria-hidden="true"></div>
+                </div>
+                <div class="candle-wick"></div>
+                <div class="candle-body">
+                  <div class="candle-stripes" aria-hidden="true"></div>
+                  <span class="candle-digit" id="candleDigit1">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Layered Cake Illustration -->
+            <div class="cake-body-wrap">
+              <!-- Top Tier -->
+              <div class="cake-tier cake-tier-top">
+                <div class="cake-drips" aria-hidden="true">
+                  <span class="cake-drip"></span>
+                  <span class="cake-drip"></span>
+                  <span class="cake-drip"></span>
+                  <span class="cake-drip"></span>
+                  <span class="cake-drip"></span>
+                </div>
+              </div>
+              <!-- Bottom Tier -->
+              <div class="cake-tier cake-tier-bottom">
+                <div class="cake-pearls" aria-hidden="true">
+                  <span class="cake-pearl"></span>
+                  <span class="cake-pearl"></span>
+                  <span class="cake-pearl"></span>
+                  <span class="cake-pearl"></span>
+                  <span class="cake-pearl"></span>
+                  <span class="cake-pearl"></span>
+                </div>
+              </div>
+              <!-- Cake Plate Stand -->
+              <div class="cake-plate" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Area -->
+          <div class="cake-action-area" id="cakeActionArea">
+            <!-- Blowing prompt state -->
+            <div class="cake-prompt-ui" id="cakePromptUI">
+              <p class="cake-prompt-hint">Tap the cake to blow the candles 🎂</p>
+              <button class="cake-mic-btn" id="cakeMicBtn" type="button" aria-label="Blow with microphone breath">
+                <svg class="cake-mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="22"></line>
+                </svg>
+                <span id="cakeMicLabel">Blow with your breath</span>
+              </button>
+              <p class="cake-prompt-sub">Blow out the candles to continue ✨</p>
+            </div>
+
+            <!-- Success Wish State (revealed after blow) -->
+            <div class="cake-success-ui" id="cakeSuccessUI" hidden>
+              <button class="cake-relight-btn" id="cakeRelightBtn" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                </svg>
+                <span>Relight candles</span>
+              </button>
+              <h3 class="cake-wish-title">Make a wish&hellip; 🌠</h3>
+              <p class="cake-wish-sub">May all your sweetest dreams take flight</p>
+              <div class="tap-next-hint" id="nextScene5" aria-hidden="true">
+                <span>tap anywhere to continue</span> <span class="hint-arrow">&rarr;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 6 — THE MEMORY WALL --------------------------------------- -->
+    <section class="scene6" id="scene6" aria-label="Memory Wall: a few frames from the reel" aria-hidden="true">
+      <!-- Soft Light Wipe / Transition Bloom from Scene 5 -->
+      <div class="memory-transition-wipe" id="memoryWipe" aria-hidden="true"></div>
+
+      <div class="memory-stage">
+        <!-- Ambient Warm Spotlight -->
+        <div class="memory-spotlight" aria-hidden="true"></div>
+
+        <!-- Ambient Dust Motes Floating -->
+        <div class="memory-motes" id="memoryMotes" aria-hidden="true">
+          <span class="memory-mote" style="--mx: 15%; --my: 80%; --md: 0s; --ms: 4px;"></span>
+          <span class="memory-mote" style="--mx: 30%; --my: 60%; --md: 1.5s; --ms: 6px;"></span>
+          <span class="memory-mote" style="--mx: 75%; --my: 70%; --md: 0.8s; --ms: 5px;"></span>
+          <span class="memory-mote" style="--mx: 85%; --my: 40%; --md: 2.2s; --ms: 4px;"></span>
+          <span class="memory-mote" style="--mx: 50%; --my: 85%; --md: 3.1s; --ms: 5px;"></span>
+          <span class="memory-mote" style="--mx: 20%; --my: 25%; --md: 1.9s; --ms: 3px;"></span>
+        </div>
+
+        <!-- Header / Eyebrow -->
+        <div class="memory-header">
+          <p class="memory-eyebrow" id="memoryEyebrow">a few frames from the reel</p>
+        </div>
+
+        <!-- Memory Board with Frames -->
+        <div class="memory-board-wrap" id="memoryBoardWrap">
+          <!-- Hand-drawn Twine SVG Overlay -->
+          <svg class="memory-twine-svg" id="memoryTwineSvg" aria-hidden="true">
+            <path id="memoryTwinePath" d="" fill="none" stroke="var(--gold-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 2px 3px rgba(110,10,49,0.25))"></path>
+          </svg>
+
+          <div class="memory-board" id="memoryBoard">
+            <!-- Frame 1 -->
+            <div class="memory-frame" id="mFrame0" data-tilt="-2.5">
+              <div class="frame-pin" aria-hidden="true"></div>
+              <div class="frame-photo frame-photo-1">
+                <span class="photo-icon" aria-hidden="true">✈️</span>
+              </div>
+              <p class="frame-caption">the trip we almost didn't survive</p>
+            </div>
+
+            <!-- Frame 2 -->
+            <div class="memory-frame" id="mFrame1" data-tilt="2">
+              <div class="frame-pin" aria-hidden="true"></div>
+              <div class="frame-photo frame-photo-2">
+                <span class="photo-icon" aria-hidden="true">🌙</span>
+              </div>
+              <p class="frame-caption">3am phone calls about nothing</p>
+            </div>
+
+            <!-- Frame 3 -->
+            <div class="memory-frame" id="mFrame2" data-tilt="-1.5">
+              <div class="frame-pin" aria-hidden="true"></div>
+              <div class="frame-photo frame-photo-3">
+                <span class="photo-icon" aria-hidden="true">✨</span>
+              </div>
+              <p class="frame-caption">that one inside joke, still funny</p>
+            </div>
+
+            <!-- Frame 4 -->
+            <div class="memory-frame" id="mFrame3" data-tilt="3">
+              <div class="frame-pin" aria-hidden="true"></div>
+              <div class="frame-photo frame-photo-4">
+                <span class="photo-icon" aria-hidden="true">🎶</span>
+              </div>
+              <p class="frame-caption">dancing in the kitchen out of tune</p>
+            </div>
+
+            <!-- Frame 5 -->
+            <div class="memory-frame" id="mFrame4" data-tilt="-2">
+              <div class="frame-pin" aria-hidden="true"></div>
+              <div class="frame-photo frame-photo-5">
+                <span class="photo-icon" aria-hidden="true">🌅</span>
+              </div>
+              <p class="frame-caption">the sunset we wished would freeze in time</p>
+            </div>
+
+            <!-- Frame 6 -->
+            <div class="memory-frame" id="mFrame5" data-tilt="1.5">
+              <div class="frame-pin" aria-hidden="true"></div>
+              <div class="frame-photo frame-photo-6">
+                <span class="photo-icon" aria-hidden="true">🍰</span>
+              </div>
+              <p class="frame-caption">laughing until our stomachs hurt</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Closing Headline Block (Reveals up with 3D hinge after twine) -->
+        <div class="memory-closing" id="memoryClosing">
+          <div class="memory-closing-inner">
+            <h2 class="memory-closing-title">So Many Moments</h2>
+            <span class="memory-closing-rule" aria-hidden="true"></span>
+            <p class="memory-closing-sub">and this is just the highlight reel.</p>
+            <div class="tap-next-hint" id="nextScene6" aria-hidden="true" hidden>
+              <span>tap anywhere to continue</span> <span class="hint-arrow">&rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 7 — THE VINTAGE FILM-STRIP -------------------------------- -->
+    <section class="scene7" id="scene7" aria-label="Vintage Film-Strip: Frame by Frame" aria-hidden="true">
+      <!-- Projector Shutter Flash Transition bridging from Scene 6 -->
+      <div class="projector-shutter-flash" id="projectorFlash" aria-hidden="true"></div>
+
+      <div class="film-stage">
+        <!-- Projector Light Sweep Cone behind the strip -->
+        <div class="projector-beam" id="projectorBeam" aria-hidden="true"></div>
+
+        <!-- Cinema Projector Dust Motes -->
+        <div class="projector-dust" aria-hidden="true">
+          <span class="p-mote" style="--px: 25%; --py: 30%; --pd: 0s; --ps: 3px;"></span>
+          <span class="p-mote" style="--px: 70%; --py: 45%; --pd: 1.8s; --ps: 4px;"></span>
+          <span class="p-mote" style="--px: 40%; --py: 70%; --pd: 0.9s; --ps: 5px;"></span>
+          <span class="p-mote" style="--px: 80%; --py: 20%; --pd: 2.6s; --ps: 3px;"></span>
+          <span class="p-mote" style="--px: 20%; --py: 65%; --pd: 3.2s; --ps: 4px;"></span>
+        </div>
+
+        <!-- Film Viewport Window (Center stage framing) -->
+        <div class="film-viewport" id="filmViewport">
+          <!-- Vignetted top/bottom shadow masks -->
+          <div class="film-mask-top" aria-hidden="true"></div>
+          <div class="film-mask-bottom" aria-hidden="true"></div>
+
+          <!-- Vertical Scrolling Film-Strip -->
+          <div class="film-strip" id="filmStrip">
+            <!-- Sprocket Track Left -->
+            <div class="film-sprockets sprockets-left" aria-hidden="true"></div>
+
+            <!-- Film Frames Container -->
+            <div class="film-frames" id="filmFrames">
+              <!-- Frame 1 -->
+              <div class="film-frame" id="fFrame0">
+                <div class="frame-celluloid frame-cell-1">
+                  <div class="frame-vignette" aria-hidden="true"></div>
+                  <span class="frame-icon" aria-hidden="true">🎞️</span>
+                </div>
+                <p class="frame-caption">the year we became inseparable</p>
+              </div>
+
+              <!-- Frame 2 -->
+              <div class="film-frame" id="fFrame1">
+                <div class="frame-celluloid frame-cell-2">
+                  <div class="frame-vignette" aria-hidden="true"></div>
+                  <span class="frame-icon" aria-hidden="true">✨</span>
+                </div>
+                <p class="frame-caption">every ridiculous plan that somehow worked out</p>
+              </div>
+
+              <!-- Frame 3 -->
+              <div class="film-frame" id="fFrame2">
+                <div class="frame-celluloid frame-cell-3">
+                  <div class="frame-vignette" aria-hidden="true"></div>
+                  <span class="frame-icon" aria-hidden="true">🗺️</span>
+                </div>
+                <p class="frame-caption">places that only make sense with you</p>
+              </div>
+
+              <!-- Frame 4 -->
+              <div class="film-frame" id="fFrame3">
+                <div class="frame-celluloid frame-cell-4">
+                  <div class="frame-vignette" aria-hidden="true"></div>
+                  <span class="frame-icon" aria-hidden="true">☕</span>
+                </div>
+                <p class="frame-caption">the quiet moments that meant the most</p>
+              </div>
+
+              <!-- Frame 5 (Climax Frame) -->
+              <div class="film-frame" id="fFrame4">
+                <div class="frame-celluloid frame-cell-5">
+                  <div class="frame-vignette" aria-hidden="true"></div>
+                  <span class="frame-icon" aria-hidden="true">💖</span>
+                </div>
+                <p class="frame-caption">every chapter better than the last</p>
+              </div>
+            </div>
+
+            <!-- Sprocket Track Right -->
+            <div class="film-sprockets sprockets-right" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <!-- Climax Headline (Burns in once film settles) -->
+        <div class="film-climax-headline" id="filmClimaxHeadline">
+          <div class="film-headline-glow" aria-hidden="true"></div>
+          <h2 class="film-headline-title">Frame by Frame</h2>
+          <span class="film-headline-rule" aria-hidden="true"></span>
+          <p class="film-headline-sub">you're in almost all of my favorites.</p>
+          <div class="tap-next-hint" id="nextScene7" aria-hidden="true" hidden>
+            <span>tap anywhere to continue</span> <span class="hint-arrow">&rarr;</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 8 — BALLOON POP ------------------------------------------ -->
+    <section class="scene8" id="scene8" aria-label="Pop the Wishes: Balloon Surprise" aria-hidden="true">
+      <!-- Ambient Warm Glow -->
+      <div class="balloon-ambient-glow" aria-hidden="true"></div>
+
+      <!-- Top Floating Toast for the balloon wish -->
+      <div class="balloon-toast-container" id="balloonToastContainer" aria-live="polite">
+        <div class="balloon-toast-msg" id="balloonToastMsg"></div>
+      </div>
+
+      <div class="balloon-scene-content">
+        <div class="balloon-header">
+          <h2 class="balloon-title" id="balloonTitle">Pop the Wishes 🎈</h2>
+          <p class="balloon-subtitle" id="balloonSubtitle">Tap each balloon to reveal a little wish</p>
+        </div>
+
+        <!-- 6 Interactive Balloons Grid -->
+        <div class="balloons-grid" id="balloonsGrid"></div>
+
+        <!-- Progress Counter Badge -->
+        <div class="balloon-counter-badge">
+          <span class="balloon-counter-text" id="balloonCounterText">Popped 0/6</span>
+        </div>
+
+        <!-- Action / Ending Panel -->
+        <div class="balloon-actions-panel" id="balloonActionsPanel">
+          <div class="balloon-closing-block" id="balloonClosingBlock" hidden>
+            <p class="balloon-closing-text" id="balloonClosingText">wishes released 🎈</p>
+            <div class="balloon-btn-group">
+              <button class="next-scene-btn tap-next-hint is-shown" id="nextScene8" type="button" aria-label="Continue to next scene">
+                <span>The Letter awaits</span>
+                <span class="hint-arrow">&rarr;</span>
+              </button>
+              <button class="balloon-reset-btn" id="balloonResetBtn" type="button">pop them again ↺</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 9 — ENVELOPE & TYPEWRITER LETTER ------------------------- -->
+    <section class="scene9" id="scene9" aria-label="A birthday letter in an envelope" aria-hidden="true">
+      <!-- Warm Parchment Dissolve Transition Veil -->
+      <div class="letter-veil" id="letterVeil" aria-hidden="true"></div>
+
+      <div class="letter-stage" id="letterStage">
+        <!-- Warm ambient background light pool -->
+        <div class="letter-bg-ambient" aria-hidden="true"></div>
+
+        <!-- Ambient Warm Gold Dust Motes -->
+        <div class="letter-dust" aria-hidden="true">
+          <span class="l-mote" style="--lx: 18%; --ly: 22%; --ld: 0s; --ls: 3px;"></span>
+          <span class="l-mote" style="--lx: 78%; --ly: 30%; --ld: 1.5s; --ls: 4px;"></span>
+          <span class="l-mote" style="--lx: 32%; --ly: 78%; --ld: 2.7s; --ls: 2.5px;"></span>
+          <span class="l-mote" style="--lx: 84%; --ly: 72%; --ld: 0.9s; --ls: 3.5px;"></span>
+          <span class="l-mote" style="--lx: 14%; --ly: 58%; --ld: 2.2s; --ls: 3px;"></span>
+          <span class="l-mote" style="--lx: 68%; --ly: 16%; --ld: 3.6s; --ls: 2.5px;"></span>
+        </div>
+
+        <div class="letter-scene-content">
+          <!-- 1. Closed Envelope Stage -->
+          <div class="envelope-wrapper" id="envelopeWrapper">
+            <div class="envelope-container" id="envelope" role="button" tabindex="0" aria-label="Tap to open the envelope">
+              <div class="envelope-shadow" aria-hidden="true"></div>
+              <div class="envelope-back" aria-hidden="true"></div>
+              <div class="envelope-flap" id="envelopeFlap" aria-hidden="true"></div>
+              <div class="envelope-body" aria-hidden="true"></div>
+              <div class="envelope-heart" id="envelopeHeart" aria-hidden="true">
+                <svg class="envelope-heart-svg" viewBox="0 0 32 30" aria-hidden="true">
+                  <defs>
+                    <radialGradient id="envHeartGlow" cx="38%" cy="30%" r="80%">
+                      <stop offset="0%" stop-color="#ffd9e4" />
+                      <stop offset="42%" stop-color="#ff6f97" />
+                      <stop offset="82%" stop-color="#d81e57" />
+                      <stop offset="100%" stop-color="#9d0f3e" />
+                    </radialGradient>
+                  </defs>
+                  <path d="M16 28.5 C16 28.5 2 19 2 9.5 C2 4.5 6 1 11 1 C13.8 1 15.2 2.5 16 3.5 C16.8 2.5 18.2 1 21 1 C26 1 30 4.5 30 9.5 C30 19 16 28.5 16 28.5 Z" fill="url(#envHeartGlow)"/>
+                </svg>
+                <span class="heart-pulse-glow" aria-hidden="true"></span>
+              </div>
+            </div>
+            <p class="envelope-hint pulsing" id="envelopeHint">tap to open</p>
+          </div>
+
+          <!-- 2. Lined Paper Letter Card (Appears upon opening envelope) -->
+          <div class="letter-card-container is-hidden" id="letterContainer" aria-live="polite">
+            <div class="letter-card-shadow" id="letterCardShadow" aria-hidden="true"></div>
+            <div class="letter-card" id="letterCard">
+              <div class="letter-card-texture" aria-hidden="true"></div>
+              <p class="letter-eyebrow">a note for you</p>
+              <div class="letter-card-scroll" id="letterCardScroll">
+                <p class="letter-typewriter-text" id="typewriterText"></p>
+              </div>
+            </div>
+            <!-- Shared Next Tap Hint -->
+            <div class="letter-card-actions">
+              <div class="tap-next-hint" id="nextScene9" aria-hidden="true" hidden>
+                <span>tap anywhere to continue</span> <span class="hint-arrow">&rarr;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 10 — FIREWORKS FINALE BUILD-UP ------------------------- -->
+    <section class="scene10" id="scene10" aria-label="Fireworks Finale: Here's To You" aria-hidden="true">
+      <!-- Page-of-Light Dissolve Transition Veil -->
+      <div class="fireworks-veil" id="fireworksVeil" aria-hidden="true"></div>
+
+      <div class="fireworks-stage" id="fireworksStage">
+        <!-- Cosmic Nebula Glow -->
+        <div class="sky-nebula" aria-hidden="true"></div>
+
+        <!-- Ambient Twinkling Background Stars (Shared technique from Constellation) -->
+        <div class="sky-bg-stars" aria-hidden="true">
+          <span class="bg-star" style="--sx: 7%; --sy: 15%; --sd: 0.3s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 14%; --sy: 42%; --sd: 1.5s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 21%; --sy: 79%; --sd: 2.7s; --ss: 2.5px;"></span>
+          <span class="bg-star" style="--sx: 29%; --sy: 25%; --sd: 0.8s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 36%; --sy: 65%; --sd: 3.2s; --ss: 3px;"></span>
+          <span class="bg-star" style="--sx: 44%; --sy: 10%; --sd: 1.8s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 53%; --sy: 50%; --sd: 0.5s; --ss: 2.5px;"></span>
+          <span class="bg-star" style="--sx: 63%; --sy: 76%; --sd: 2.2s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 71%; --sy: 18%; --sd: 1.2s; --ss: 3px;"></span>
+          <span class="bg-star" style="--sx: 79%; --sy: 35%; --sd: 3.5s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 87%; --sy: 60%; --sd: 1.0s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 93%; --sy: 20%; --sd: 2.4s; --ss: 2.5px;"></span>
+          <span class="bg-star" style="--sx: 6%; --sy: 68%; --sd: 1.6s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 13%; --sy: 86%; --sd: 3.4s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 27%; --sy: 8%; --sd: 0.6s; --ss: 2.5px;"></span>
+          <span class="bg-star" style="--sx: 34%; --sy: 40%; --sd: 2.0s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 43%; --sy: 90%; --sd: 1.4s; --ss: 3px;"></span>
+          <span class="bg-star" style="--sx: 51%; --sy: 22%; --sd: 3.7s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 59%; --sy: 58%; --sd: 0.9s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 67%; --sy: 84%; --sd: 2.5s; --ss: 2.5px;"></span>
+          <span class="bg-star" style="--sx: 75%; --sy: 6%; --sd: 1.7s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 83%; --sy: 54%; --sd: 2.9s; --ss: 3px;"></span>
+          <span class="bg-star" style="--sx: 94%; --sy: 73%; --sd: 0.4s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 19%; --sy: 32%; --sd: 2.1s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 31%; --sy: 72%; --sd: 1.1s; --ss: 2.5px;"></span>
+          <span class="bg-star" style="--sx: 49%; --sy: 62%; --sd: 3.6s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 57%; --sy: 16%; --sd: 0.7s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 65%; --sy: 38%; --sd: 2.8s; --ss: 3px;"></span>
+          <span class="bg-star" style="--sx: 81%; --sy: 68%; --sd: 1.4s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 89%; --sy: 24%; --sd: 3.1s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 4%; --sy: 30%; --sd: 0.9s; --ss: 2.5px;"></span>
+          <span class="bg-star" style="--sx: 11%; --sy: 70%; --sd: 2.3s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 23%; --sy: 56%; --sd: 1.3s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 37%; --sy: 14%; --sd: 3.3s; --ss: 3px;"></span>
+          <span class="bg-star" style="--sx: 46%; --sy: 34%; --sd: 0.2s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 55%; --sy: 82%; --sd: 2.6s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 62%; --sy: 28%; --sd: 1.9s; --ss: 2.5px;"></span>
+          <span class="bg-star" style="--sx: 73%; --sy: 64%; --sd: 3.8s; --ss: 2px;"></span>
+          <span class="bg-star" style="--sx: 85%; --sy: 88%; --sd: 1.0s; --ss: 1.5px;"></span>
+          <span class="bg-star" style="--sx: 91%; --sy: 46%; --sd: 2.1s; --ss: 2.5px;"></span>
+        </div>
+
+        <!-- 2D Canvas for Fireworks & Heart particles -->
+        <canvas class="fireworks-canvas" id="fireworksCanvas" aria-hidden="true"></canvas>
+
+        <!-- Closing Headline Block (Hinges into view after finale heart settles) -->
+        <div class="fireworks-closing" id="fireworksClosing" aria-live="polite">
+          <div class="fireworks-closing-inner" id="fireworksClosingInner">
+            <h2 class="fireworks-title">Here&rsquo;s To You</h2>
+            <span class="fireworks-rule" aria-hidden="true"></span>
+            <p class="fireworks-sub">may this year be loud, lucky, and full of ridiculous stories we&rsquo;ll tell for years.</p>
+            <div class="tap-next-hint" id="nextScene10" aria-hidden="true" hidden>
+              <span>tap anywhere to continue</span> <span class="hint-arrow">&rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 11 — THE FINAL TOAST (CLOSING SCENE) ------------------------- -->
+    <section class="scene11" id="scene11" aria-label="The final toast and birthday closing" aria-hidden="true">
+      <!-- Warm Daylight Dawn Transition Veil (Firework night settling into warm daylight) -->
+      <div class="toast-veil" id="toastVeil" aria-hidden="true"></div>
+
+      <!-- Ambient warm background glow -->
+      <div class="toast-bg-glow" aria-hidden="true"></div>
+
+      <!-- Permanent resting state: soft falling petals/confetti container -->
+      <div class="toast-particles" id="toastParticles" aria-hidden="true"></div>
+
+      <!-- Toast stage container -->
+      <div class="toast-stage" id="toastStage">
+
+        <!-- 1. The Clinking Glasses -->
+        <div class="toast-glasses-wrap" id="toastGlassesWrap">
+          <!-- Left Glass (tilted slightly right) -->
+          <div class="toast-glass toast-glass--left" id="glassLeft" aria-hidden="true">
+            <svg class="glass-svg" viewBox="0 0 70 120" fill="none">
+              <defs>
+                <linearGradient id="amberDrinkLeft" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#ffd580" />
+                  <stop offset="45%" stop-color="#f59e0b" />
+                  <stop offset="100%" stop-color="#b45309" />
+                </linearGradient>
+                <linearGradient id="glassShineLeft" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.75)" />
+                  <stop offset="50%" stop-color="rgba(255,255,255,0.15)" />
+                  <stop offset="100%" stop-color="rgba(255,255,255,0.5)" />
+                </linearGradient>
+              </defs>
+              <!-- Bowl outline & soft glass fill -->
+              <path class="glass-bowl" d="M15 15 C15 65, 25 75, 35 80 C45 75, 55 65, 55 15 Z" fill="rgba(255, 250, 245, 0.35)" stroke="rgba(215, 175, 160, 0.75)" stroke-width="2" />
+              <!-- Liquid fill -->
+              <path class="glass-liquid" d="M18 35 C22 33, 48 33, 52 35 C52 58, 44 70, 35 76 C26 70, 18 58, 18 35 Z" fill="url(#amberDrinkLeft)" />
+              <!-- Liquid meniscus highlight -->
+              <ellipse cx="35" cy="35" rx="17" ry="3.5" fill="rgba(255,245,210,0.75)" />
+              <!-- Stem -->
+              <line x1="35" y1="80" x2="35" y2="108" stroke="rgba(215, 175, 160, 0.75)" stroke-width="3" stroke-linecap="round" />
+              <!-- Base -->
+              <ellipse cx="35" cy="110" rx="20" ry="4.5" fill="rgba(255, 250, 245, 0.35)" stroke="rgba(215, 175, 160, 0.75)" stroke-width="2" />
+              <!-- Specular reflection line -->
+              <path d="M22 20 C20 40, 24 60, 30 70" stroke="url(#glassShineLeft)" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+
+          <!-- Spark / Bloom Burst at point of contact -->
+          <div class="toast-clink-burst" id="clinkBurst" aria-hidden="true">
+            <div class="clink-sparkle-center"></div>
+            <div class="clink-ring"></div>
+            <div class="clink-rays">
+              <span class="clink-ray" style="--rot: 0deg;"></span>
+              <span class="clink-ray" style="--rot: 45deg;"></span>
+              <span class="clink-ray" style="--rot: 90deg;"></span>
+              <span class="clink-ray" style="--rot: 135deg;"></span>
+              <span class="clink-ray" style="--rot: 180deg;"></span>
+              <span class="clink-ray" style="--rot: 225deg;"></span>
+              <span class="clink-ray" style="--rot: 270deg;"></span>
+              <span class="clink-ray" style="--rot: 315deg;"></span>
+            </div>
+          </div>
+
+          <!-- Right Glass (tilted slightly left) -->
+          <div class="toast-glass toast-glass--right" id="glassRight" aria-hidden="true">
+            <svg class="glass-svg" viewBox="0 0 70 120" fill="none">
+              <defs>
+                <linearGradient id="amberDrinkRight" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#ffd580" />
+                  <stop offset="45%" stop-color="#f59e0b" />
+                  <stop offset="100%" stop-color="#b45309" />
+                </linearGradient>
+                <linearGradient id="glassShineRight" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.75)" />
+                  <stop offset="50%" stop-color="rgba(255,255,255,0.15)" />
+                  <stop offset="100%" stop-color="rgba(255,255,255,0.5)" />
+                </linearGradient>
+              </defs>
+              <!-- Bowl outline & soft glass fill -->
+              <path class="glass-bowl" d="M15 15 C15 65, 25 75, 35 80 C45 75, 55 65, 55 15 Z" fill="rgba(255, 250, 245, 0.35)" stroke="rgba(215, 175, 160, 0.75)" stroke-width="2" />
+              <!-- Liquid fill -->
+              <path class="glass-liquid" d="M18 35 C22 33, 48 33, 52 35 C52 58, 44 70, 35 76 C26 70, 18 58, 18 35 Z" fill="url(#amberDrinkRight)" />
+              <!-- Liquid meniscus highlight -->
+              <ellipse cx="35" cy="35" rx="17" ry="3.5" fill="rgba(255,245,210,0.75)" />
+              <!-- Stem -->
+              <line x1="35" y1="80" x2="35" y2="108" stroke="rgba(215, 175, 160, 0.75)" stroke-width="3" stroke-linecap="round" />
+              <!-- Base -->
+              <ellipse cx="35" cy="110" rx="20" ry="4.5" fill="rgba(255, 250, 245, 0.35)" stroke="rgba(215, 175, 160, 0.75)" stroke-width="2" />
+              <!-- Specular reflection line -->
+              <path d="M48 20 C50 40, 46 60, 40 70" stroke="url(#glassShineRight)" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Warm Light Wash Burst across the whole screen on clink -->
+        <div class="toast-light-wash" id="toastLightWash" aria-hidden="true"></div>
+
+        <!-- 2. The Closing Text Block (echoing Act 1 wish treatment) -->
+        <div class="toast-closing-wish" id="toastWish" aria-live="polite">
+          <p class="toast-eyebrow" id="toastEyebrow">and so, once more &mdash;</p>
+          <div class="toast-hero-wrap" id="toastHeroWrap">
+            <h1 class="toast-hero" id="toastHero">Happy Birthday, [Best Friend's Name]</h1>
+          </div>
+          <span class="toast-rule" id="toastRule" aria-hidden="true"></span>
+          <p class="toast-sub" id="toastSub">here&rsquo;s to another year of us being a little bit unstoppable together.</p>
+        </div>
+
+        <!-- 3. Final Ending Action: "Replay from the Start" pill button -->
+        <div class="toast-actions" id="toastActions">
+          <button class="toast-replay-pill" id="btnReplayAll" type="button" aria-label="Replay film from the start">
+            <svg class="replay-icon" viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+              <path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" fill="currentColor" />
+            </svg>
+            <span>Replay from the Start</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Single, shared, continuously-looping ambient particle layer —
+       Kept OUTSIDE <main> (body level) so it escapes main's overflow:hidden
+       containment and paints above every scene via a true document-level z-index. -->
+  <div class="global-ambient-particles" id="ambientParticles" aria-hidden="true"></div>
+
+  <!-- One lens over the whole film: vignette + fine grain.
+       Also at body level so it sits above the particle layer (grade above particles). -->
+  <div class="grade" aria-hidden="true">
+    <div class="grade__vignette"></div>
+    <div class="grade__grain"></div>
+  </div>
+
+  <!-- Persistent background music audio element -->
+  <audio id="bgMusic" src="assets/bg-music.mp3" preload="auto"></audio>
+
+  <!-- Persistent Music Mute/Unmute Toggle Button — body level, above grade -->
+  <button class="music-toggle-btn" id="musicToggleBtn" type="button" aria-label="Mute background music" aria-pressed="false">
+    <!-- Speaker Playing Icon -->
+    <svg class="music-icon music-icon--on" viewBox="0 0 24 24" aria-hidden="true" width="19" height="19">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" fill="currentColor"/>
+    </svg>
+    <!-- Speaker Muted Icon -->
+    <svg class="music-icon music-icon--off" viewBox="0 0 24 24" aria-hidden="true" width="19" height="19">
+      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <!-- Accessible equivalent for reduced-motion + screen readers. -->
+  <p class="sr-only">Happy Birthday. Here&rsquo;s to a wonderful year ahead.</p>
+
+  <!-- Top Demo Bar (Choose Experience back button + customize CTA) -->
+  <header class="preview-demo-bar" id="previewDemoBar" aria-label="Demo Preview Bar">
+    <a href="./create.html" class="preview-back-btn" id="previewBackBtn" aria-label="Back to Choose Experience">
+      <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+        <path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" />
+      </svg>
+      <span>Choose Experience</span>
+    </a>
+    <div class="preview-demo-badge">
+      <span aria-hidden="true">✦</span> Sample Demo Preview
+    </div>
+    <a href="./editor.html" class="preview-top-cta" id="previewTopCta">
+      <span>Personalize This Film</span>
+      <span aria-hidden="true">&rarr;</span>
+    </a>
+  </header>
+
+  <!-- Persistent Floating Bottom CTA Banner -->
+  <div class="preview-floating-cta-wrap" id="previewFloatingCtaWrap" aria-live="polite">
+    <a href="./editor.html" class="preview-floating-cta" id="previewFloatingCta">
+      <span class="btn-gold-accent" aria-hidden="true">✦</span>
+      <span>Like what you see? Personalize this film for someone special</span>
+      <span class="cta-arrow" aria-hidden="true">&rarr;</span>
+    </a>
+  </div>
+
+  <script>
+    (function() {
+      // Check if running inside iframe (e.g. within editor preview)
+      if (window.self !== window.top) {
+        document.body.classList.add('is-embedded');
+      }
+
+      // Sync experience parameter across back and customize CTAs
+      const urlParams = new URLSearchParams(window.location.search);
+      const exp = urlParams.get('experience') || 'birthday-film';
+      const topCta = document.getElementById('previewTopCta');
+      const floatCta = document.getElementById('previewFloatingCta');
+      const backBtn = document.getElementById('previewBackBtn');
+
+      if (topCta) topCta.href = `./editor.html?experience=${encodeURIComponent(exp)}`;
+      if (floatCta) floatCta.href = `./editor.html?experience=${encodeURIComponent(exp)}`;
+      if (backBtn) backBtn.href = `./create.html?experience=${encodeURIComponent(exp)}`;
+    })();
+  </script>
+
+  <script type="module" src="./birthday.js"></script>
+</body>
+</html>

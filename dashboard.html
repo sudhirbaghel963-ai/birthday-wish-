@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en" class="h-full bg-parchment-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>My Gifts — Velvet & Keepsake</title>
+  <meta name="description" content="Manage and view all your personalized birthday film drafts and paid keepsake gifts." />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+
+  <!-- Google Fonts: Cormorant Garamond, Fraunces, Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            velvet: {
+              950: '#17040d',
+              900: '#2d0a1a',
+              850: '#3d0e23',
+              800: '#4a122c',
+              700: '#6e1b42',
+              600: '#8c2254',
+            },
+            rose: {
+              600: '#c42858',
+              500: '#d4235c',
+              400: '#e84d7a',
+              300: '#f78cae',
+              200: '#fcc5d6',
+              100: '#ffe4ec',
+              50: '#fff5f8',
+            },
+            gold: {
+              600: '#b87c14',
+              500: '#d99b26',
+              400: '#e8a23d',
+              300: '#f5b838',
+              200: '#ffdf85',
+              100: '#fff2d6',
+              50: '#fffbf0',
+            },
+            parchment: {
+              50: '#fffdfa',
+              100: '#fcf7f0',
+              200: '#f7ede0',
+              300: '#ebd9c5',
+              400: '#dec2a7',
+            },
+            ink: {
+              900: '#211317',
+              800: '#38222a',
+              700: '#4d3840',
+              600: '#634b54',
+              500: '#7d636c',
+              400: '#9e858e',
+              300: '#c2adb5',
+            }
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'serif'],
+            elegant: ['Cormorant Garamond', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-full flex flex-col justify-between text-ink-900 font-sans antialiased selection:bg-rose-100 selection:text-rose-500">
+
+  <!-- ============================================================
+       HEADER / NAVBAR
+       ============================================================ -->
+  <header class="sticky top-0 z-40 w-full bg-parchment-50/95 backdrop-blur-md border-b border-parchment-300/80 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Logo -->
+      <a href="./index.html" class="flex items-center gap-3 group focus:outline-none">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-velvet-900 via-velvet-800 to-rose-600 flex items-center justify-center text-gold-300 shadow-md border border-gold-400/30">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-300">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-serif text-xl font-bold tracking-tight text-ink-900 group-hover:text-rose-600 transition-colors leading-none">
+            Velvet &amp; Keepsake
+          </span>
+          <span class="text-[10px] font-medium tracking-widest text-ink-500 uppercase mt-1">Customer Portal</span>
+        </div>
+      </a>
+
+      <!-- Right User Controls -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        
+        <!-- User Email Pill -->
+        <div id="userProfilePill" class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-parchment-300 text-xs font-medium text-ink-700 shadow-2xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span id="userEmailDisplay">Loading...</span>
+        </div>
+
+        <a href="./create.html" class="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-md shadow-rose-600/20 transform hover:-translate-y-0.5">
+          <span>Create New Gift</span>
+          <span class="text-gold-300">✦</span>
+        </a>
+
+        <!-- Logout Button -->
+        <button type="button" id="btnLogout" class="p-2 rounded-full border border-parchment-300 bg-white hover:bg-rose-50 hover:border-rose-200 text-ink-600 hover:text-rose-600 transition-colors text-xs font-semibold" title="Sign Out">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       MAIN DASHBOARD CONTAINER
+       ============================================================ -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    
+    <!-- Hero / Title Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-6 border-b border-parchment-300/80">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200/60 text-rose-600 text-xs font-semibold mb-2">
+          <span>✦</span>
+          <span>Your Keepsake Collection</span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-ink-900">
+          My Gifts
+        </h1>
+        <p class="text-sm text-ink-500 mt-1">
+          Review, continue customizing, or share your cinematic birthday experiences.
+        </p>
+      </div>
+
+      <!-- Quick Filter / Summary Counter -->
+      <div id="statsSummary" class="flex items-center gap-3 text-xs font-medium text-ink-600">
+        <span id="totalGiftsBadge" class="px-3 py-1.5 rounded-full bg-white border border-parchment-300 shadow-2xs">
+          0 Total Gifts
+        </span>
+      </div>
+    </div>
+
+
+    <!-- Loading Skeleton State -->
+    <div id="loadingState" class="space-y-4 py-8">
+      <div class="h-28 bg-white/70 rounded-2xl animate-pulse border border-parchment-200"></div>
+      <div class="h-28 bg-white/70 rounded-2xl animate-pulse border border-parchment-200"></div>
+    </div>
+
+
+    <!-- Empty State (No gifts found) -->
+    <div id="emptyState" class="hidden bg-white rounded-3xl p-10 sm:p-16 text-center border border-parchment-300/80 shadow-md space-y-6 max-w-2xl mx-auto my-6">
+      <div class="w-20 h-20 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-200 shadow-sm text-3xl">
+        🎁
+      </div>
+      <div class="space-y-2">
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ink-900">
+          You haven't created a gift yet
+        </h2>
+        <p class="text-sm text-ink-500 max-w-md mx-auto leading-relaxed">
+          Craft a bespoke 11-scene cinematic birthday film for someone special. Add photos, heartfelt notes, customized dates, and special music in minutes.
+        </p>
+      </div>
+      <div class="pt-2">
+        <a href="./create.html" class="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/25 transform hover:-translate-y-0.5">
+          <span>Create a Birthday Gift</span>
+          <span class="text-gold-300">✦</span>
+        </a>
+      </div>
+    </div>
+
+
+    <!-- Active Gifts List Container -->
+    <div id="giftsGrid" class="hidden space-y-4">
+      <!-- Injected by JavaScript -->
+    </div>
+
+  </main>
+
+
+  <!-- ============================================================
+       QR CODE & SHARE MODAL
+       ============================================================ -->
+  <div id="qrModal" class="fixed inset-0 z-50 bg-velvet-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-parchment-200 relative text-center">
+      <button type="button" id="btnCloseQrModal" class="absolute top-4 right-4 text-ink-400 hover:text-ink-900 p-2 rounded-full hover:bg-parchment-100">
+        ✕
+      </button>
+
+      <div class="space-y-1">
+        <div class="inline-block p-2 rounded-full bg-rose-50 text-rose-600 mb-1">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </div>
+        <h3 class="font-serif text-xl font-bold text-ink-900" id="qrModalTitle">
+          Share Keepsake Gift
+        </h3>
+        <p class="text-xs text-ink-500">Scan this QR code or share the direct link.</p>
+      </div>
+
+      <!-- QR Code Image Box -->
+      <div class="p-4 bg-parchment-50 rounded-2xl border border-parchment-200 inline-block shadow-inner">
+        <img id="qrCodeImage" src="" alt="Gift QR Code" class="w-48 h-48 mx-auto rounded-lg" />
+      </div>
+
+      <!-- Link Copy Box -->
+      <div class="space-y-2">
+        <div class="flex items-center gap-2 p-2 rounded-xl bg-parchment-50 border border-parchment-200 text-xs font-mono text-ink-700">
+          <input type="text" id="qrModalLinkInput" readonly class="bg-transparent border-none w-full text-ellipsis outline-none text-center" />
+        </div>
+        <button type="button" id="btnCopyModalLink" class="w-full py-2.5 px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors">
+          Copy Public Link
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+  <footer class="w-full py-6 text-center text-xs text-ink-400 border-t border-parchment-300/60 bg-parchment-50/50">
+    <p>&copy; 2026 Velvet &amp; Keepsake. All rights reserved.</p>
+  </footer>
+
+
+  <!-- ============================================================
+       SCRIPT: SUPABASE DASHBOARD LOGIC
+       ============================================================ -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) 
+      || 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
+    const SUPABASE_ANON_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) 
+      || 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true
+      }
+    });
+
+    let currentSession = null;
+    let myGifts = [];
+
+    // 1. Session Protection Check
+    async function initDashboard() {
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (!session || !session.user) {
+        window.location.replace('./login.html?redirect=./dashboard.html');
+        return;
+      }
+
+      currentSession = session;
+      document.getElementById('userProfilePill')?.classList.remove('hidden');
+      document.getElementById('userEmailDisplay').textContent = session.user.email;
+
+      // Claim local drafts if available
+      await claimLocalDrafts(session.user.id);
+
+      // Fetch user's gifts
+      await fetchUserGifts();
+    }
+
+    // 2. Claim Unclaimed Local Drafts
+    async function claimLocalDrafts(userId) {
+      const localDraftId = localStorage.getItem('gift_draft_id');
+      if (localDraftId) {
+        try {
+          await supabase
+            .from('gifts')
+            .update({ owner_id: userId })
+            .eq('id', localDraftId)
+            .is('owner_id', null);
+        } catch (err) {
+          console.warn('Error claiming local draft:', err);
+        }
+      }
+    }
+
+    // 3. Fetch Gifts Owned By Current User
+    async function fetchUserGifts() {
+      const loadingState = document.getElementById('loadingState');
+      const emptyState = document.getElementById('emptyState');
+      const giftsGrid = document.getElementById('giftsGrid');
+
+      loadingState.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+      giftsGrid.classList.add('hidden');
+
+      try {
+        const { data, error } = await supabase
+          .from('gifts')
+          .select('*')
+          .eq('owner_id', currentSession.user.id)
+          .order('updated_at', { ascending: false });
+
+        loadingState.classList.add('hidden');
+
+        if (error) {
+          console.error('Error fetching gifts:', error);
+          emptyState.classList.remove('hidden');
+          return;
+        }
+
+        myGifts = data || [];
+        updateSummaryBadge(myGifts);
+
+        if (myGifts.length === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          renderGiftsGrid(myGifts);
+          giftsGrid.classList.remove('hidden');
+        }
+
+      } catch (err) {
+        console.error('Fetch exception:', err);
+        loadingState.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+      }
+    }
+
+    function updateSummaryBadge(gifts) {
+      const badge = document.getElementById('totalGiftsBadge');
+      if (!badge) return;
+      const paid = gifts.filter(g => g.status === 'paid').length;
+      const drafts = gifts.length - paid;
+      badge.textContent = `${gifts.length} Gifts (${paid} Paid · ${drafts} Drafts)`;
+    }
+
+    // 4. Render Gifts Cards
+    function renderGiftsGrid(gifts) {
+      const container = document.getElementById('giftsGrid');
+      if (!container) return;
+
+      container.innerHTML = gifts.map(g => renderGiftCard(g)).join('');
+
+      // Bind Event Listeners
+      container.querySelectorAll('.btn-copy-link').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const url = btn.getAttribute('data-url');
+          if (url) {
+            navigator.clipboard.writeText(url);
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<span>Copied! ✓</span>`;
+            setTimeout(() => { btn.innerHTML = originalHtml; }, 1500);
+          }
+        });
+      });
+
+      container.querySelectorAll('.btn-show-qr').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const url = btn.getAttribute('data-url');
+          const title = btn.getAttribute('data-title');
+          openQrModal(url, title);
+        });
+      });
+
+      container.querySelectorAll('.btn-delete-draft').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const gid = btn.getAttribute('data-id');
+          if (confirm('Are you sure you want to delete this draft? This cannot be undone.')) {
+            await deleteDraft(gid);
+          }
+        });
+      });
+    }
+
+    function renderGiftCard(gift) {
+      const isPaid = gift.status === 'paid';
+      const recName = gift.content?.recipientName || 'Elena';
+      const isGlass = gift.experience_id === 'birthday-film-glass' || gift.theme_id === 'glass';
+      const expTitle = isGlass ? 'The Birthday Film (Glass Edition)' : 'The Birthday Film (Warm Paper)';
+      const updatedDate = new Date(gift.updated_at || gift.created_at).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+
+      const publicUrl = isPaid && gift.slug 
+        ? `${window.location.origin}/gift.html?slug=${gift.slug}` 
+        : `${window.location.origin}/preview.html?draftId=${gift.id}`;
+
+      // Status Badge
+      const statusBadge = isPaid
+        ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">
+             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+             <span>Paid &amp; Finalized</span>
+           </span>`
+        : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200 shadow-2xs">
+             <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+             <span>In-Progress Draft</span>
+           </span>`;
+
+      // Actions
+      let actionsHtml = '';
+      if (isPaid) {
+        actionsHtml = `
+          <div class="flex flex-wrap items-center gap-2">
+            <a href="./gift.html?slug=${gift.slug}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all">
+              <span>View Gift</span>
+              <span>↗</span>
+            </a>
+            <button type="button" class="btn-copy-link inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-parchment-50 text-ink-700 text-xs font-semibold border border-parchment-300 shadow-2xs transition-colors" data-url="${publicUrl}">
+              <span>Copy Link</span>
+            </button>
+            <button type="button" class="btn-show-qr inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-parchment-50 text-ink-700 text-xs font-semibold border border-parchment-300 shadow-2xs transition-colors" data-url="${publicUrl}" data-title="${recName}'s Keepsake">
+              <span>QR Code</span>
+            </button>
+          </div>
+          <div class="text-[11px] text-ink-400 italic flex items-center gap-1">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>This gift is finalized and can't be edited further.</span>
+          </div>
+        `;
+      } else {
+        actionsHtml = `
+          <div class="flex flex-wrap items-center gap-2">
+            <a href="./editor.html?draftId=${gift.id}&experience=${gift.experience_id || 'birthday-film'}&theme=${gift.theme_id || 'paper'}" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white text-xs sm:text-sm font-semibold shadow-md shadow-rose-600/20 transition-all transform hover:-translate-y-0.5">
+              <span>Continue Editing</span>
+              <span class="text-gold-300">→</span>
+            </a>
+            <a href="./preview.html?draftId=${gift.id}" target="_blank" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-full bg-white hover:bg-parchment-50 text-ink-700 text-xs font-semibold border border-parchment-300 shadow-2xs transition-colors">
+              <span>Preview</span>
+              <span>↗</span>
+            </a>
+            <button type="button" class="btn-delete-draft text-ink-400 hover:text-rose-600 p-2 rounded-full hover:bg-rose-50 transition-colors" data-id="${gift.id}" title="Delete Draft">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="bg-white rounded-3xl p-6 sm:p-7 border border-parchment-300/80 shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row md:items-center justify-between gap-6">
+          
+          <!-- Left: Gift Details -->
+          <div class="space-y-3 flex-1">
+            <div class="flex flex-wrap items-center gap-2.5">
+              ${statusBadge}
+              <span class="text-xs font-medium text-ink-500">
+                Updated ${updatedDate}
+              </span>
+            </div>
+
+            <div>
+              <h2 class="font-serif text-2xl font-bold text-ink-900 leading-snug">
+                ${recName}'s Birthday Experience
+              </h2>
+              <div class="flex items-center gap-2 mt-1 text-xs text-ink-600">
+                <span class="inline-block w-2 h-2 rounded-full ${isGlass ? 'bg-purple-500' : 'bg-rose-500'}"></span>
+                <span class="font-medium">${expTitle}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Actions -->
+          <div class="flex flex-col md:items-end gap-3 flex-shrink-0">
+            ${actionsHtml}
+          </div>
+
+        </div>
+      `;
+    }
+
+    // 5. Delete Draft Handler
+    async function deleteDraft(draftId) {
+      try {
+        const { error } = await supabase
+          .from('gifts')
+          .delete()
+          .eq('id', draftId)
+          .eq('status', 'draft');
+
+        if (!error) {
+          // If deleted draft matches local draft id, remove it
+          if (localStorage.getItem('gift_draft_id') === draftId) {
+            localStorage.removeItem('gift_draft_id');
+          }
+          await fetchUserGifts();
+        } else {
+          alert('Could not delete draft: ' + error.message);
+        }
+      } catch (err) {
+        alert('An error occurred while deleting draft.');
+      }
+    }
+
+    // 6. QR Code Modal
+    function openQrModal(url, title) {
+      const modal = document.getElementById('qrModal');
+      const img = document.getElementById('qrCodeImage');
+      const input = document.getElementById('qrModalLinkInput');
+      const titleEl = document.getElementById('qrModalTitle');
+
+      titleEl.textContent = title || 'Share Keepsake Gift';
+      input.value = url;
+      img.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
+      modal.classList.remove('hidden');
+    }
+
+    document.getElementById('btnCloseQrModal')?.addEventListener('click', () => {
+      document.getElementById('qrModal')?.classList.add('hidden');
+    });
+
+    document.getElementById('btnCopyModalLink')?.addEventListener('click', () => {
+      const input = document.getElementById('qrModalLinkInput');
+      if (input && input.value) {
+        navigator.clipboard.writeText(input.value);
+        const btn = document.getElementById('btnCopyModalLink');
+        btn.textContent = 'Copied to Clipboard! ✓';
+        setTimeout(() => { btn.textContent = 'Copy Public Link'; }, 1500);
+      }
+    });
+
+    // 7. Logout Handler
+    document.getElementById('btnLogout')?.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.replace('./login.html');
+    });
+
+    // Boot
+    initDashboard();
+  </script>
+</body>
+</html>

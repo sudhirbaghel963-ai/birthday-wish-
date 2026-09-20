@@ -34,7 +34,522 @@ gsap.registerPlugin({
   },
 });
 
+/* ============================================================
+   GIFT_DATA — Single source of truth for all customizable film content.
+   ============================================================ */
+const defaultGiftData = {
+  recipientName: "Elena",
+  themeId: "paper", // "paper" | "glass"
+  theme: {
+    primaryColor: "#d4235c",
+    accentColor: "#e8a23d",
+    rose: "#d4235c",
+    roseLift: "#e83a72",
+    roseDeep: "#9c0f42",
+    roseMid: "#c41f52",
+    wine: "#6e0a31",
+    gold1: "#f5b838",
+    gold2: "#e8a23d"
+  },
+  scenes: {
+    scene1_act1: {
+      eyebrow: "a little something, for you",
+      hint: "pull & release",
+      wishEyebrow: "and… make it count",
+      wishHero: "Happy Birthday",
+      wishSub: "here’s to a year that blooms",
+      kEyebrow: "make a wish…",
+      kSub: "to someone worth celebrating"
+    },
+    scene2_giftBox: {
+      badge: "Special Delivery",
+      eyebrow: "Special Delivery",
+      title: "A surprise awaits you...",
+      subtitleTop: "A surprise awaits you...",
+      subtitle: "crafted with love, just for you",
+      cardTitle: "Unwrapped with Love",
+      cardText: "Every moment with you is a gift to cherish. May this year bring endless smiles, sweet surprises, and warm happiness!",
+      boxColor: null
+    },
+    scene3_pinLock: {
+      pin: "1234",
+      instruction: "enter the code to unlock it",
+      hint: "hint: our favourite number"
+    },
+    scene4_curtain: {
+      badge: "Special Surprise",
+      curtainColor: null
+    },
+    scene5_cakeCountdown: {
+      birthDate: "2006-01-01T00:00:00Z",
+      badge: "Milestone Moment",
+      headline: "Happy Birthday, Beautiful 🎂",
+      title: "Happy Birthday, Beautiful 🎂",
+      subtitle: "The world has been sweeter since you arrived ♥",
+      wishLine: "make a wish…",
+      wishTitle: "Make a wish… 🌠",
+      wishSub: "May all your sweetest dreams take flight",
+      cakeColor: null
+    },
+    scene6_wallOfUs: {
+      eyebrow: "a few frames from the reel",
+      photos: [null, null, null, null, null, null],
+      captions: [
+        "the trip we almost didn't survive",
+        "3am phone calls about nothing",
+        "that one inside joke, still funny",
+        "dancing in the kitchen out of tune",
+        "the sunset we wished would freeze in time",
+        "laughing until our stomachs hurt"
+      ],
+      headline: "So Many Moments",
+      subtext: "and this is just the highlight reel."
+    },
+    scene7_memoryReel: {
+      clips: [null, null, null, null, null],
+      captions: [
+        "the year we became inseparable",
+        "every ridiculous plan that somehow worked out",
+        "places that only make sense with you",
+        "the quiet moments that meant the most",
+        "every chapter better than the last"
+      ],
+      headline: "Frame by Frame",
+      subtext: "you're in almost all of my favorites."
+    },
+    scene8_balloonPop: {
+      headline: "Pop the Wishes 🎈",
+      subtitle: "Tap each balloon to reveal a little wish",
+      closing: "wishes released 🎈",
+      messages: [
+        "May your smiles be endless! 😊",
+        "Wishing you all the success! 🌟",
+        "Stay as amazing as you are! 💙",
+        "Dream big and fly high! 🚀",
+        "Health and happiness always! 🍀",
+        "Lots and lots of love! ❤️"
+      ]
+    },
+    scene9_letter: {
+      eyebrow: "a note for you",
+      message: "Dear troublemaker,\n\nThank you for every ridiculous memory and the ones we haven't made yet.\n\nHappy Birthday. I mean it."
+    },
+    scene10_fireworks: {
+      headline: "Here's To You",
+      subtext: "may this year be loud, lucky, and full of ridiculous stories we'll tell for years."
+    },
+    scene11_finalToast: {
+      eyebrow: "and so, once more —",
+      heroLine: "Happy Birthday, {recipientName}",
+      subtext: "here’s to another year of us being a little bit unstoppable together."
+    }
+  },
+  music: {
+    trackType: "default", // "default" | "custom"
+    customTrackUrl: null,
+    startSeconds: 27
+  },
+  photos: [null, null, null, null, null, null]
+};
+
+function deepMergeGiftData(target, source) {
+  if (!source || typeof source !== 'object') return target;
+  const output = { ...target };
+  for (const key of Object.keys(source)) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      output[key] = deepMergeGiftData(target[key] || {}, source[key]);
+    } else if (source[key] !== undefined) {
+      output[key] = source[key];
+    }
+  }
+  return output;
+}
+
+window.GIFT_DATA = deepMergeGiftData(defaultGiftData, window.GIFT_DATA || {});
+
 const $ = (id) => document.getElementById(id);
+
+function applyGiftDataTheme(theme, explicitThemeId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const exp = urlParams.get('experience');
+  const urlTheme = urlParams.get('theme');
+  const detectedThemeId = explicitThemeId 
+    || (window.GIFT_DATA && window.GIFT_DATA.themeId) 
+    || (exp === 'birthday-film-glass' || urlTheme === 'glass' ? 'glass' : 'paper');
+
+  const currentThemeId = detectedThemeId === 'glass' ? 'glass' : 'paper';
+  if (window.GIFT_DATA) window.GIFT_DATA.themeId = currentThemeId;
+
+  document.documentElement.setAttribute('data-theme', currentThemeId);
+  if (document.body) {
+    document.body.classList.remove('theme-paper', 'theme-glass');
+    document.body.classList.add('theme-' + currentThemeId);
+  }
+
+  if (!theme) return;
+  const root = document.documentElement.style;
+  const rose = theme.primaryColor || theme.rose || '#d4235c';
+  const gold = theme.accentColor || theme.gold2 || (currentThemeId === 'glass' ? '#f3b749' : '#e8a23d');
+
+  root.setProperty('--rose', rose);
+  root.setProperty('--rose-lift', theme.roseLift || shade(rose, 25));
+  root.setProperty('--rose-deep', theme.roseDeep || shade(rose, -35));
+  root.setProperty('--rose-mid', theme.roseMid || shade(rose, -15));
+  root.setProperty('--gold-1', theme.gold1 || (currentThemeId === 'glass' ? '#fce18b' : '#f5b838'));
+  root.setProperty('--gold-2', gold);
+  if (theme.wine) root.setProperty('--wine', theme.wine);
+
+  if (typeof buildScene === 'function' && W > 0 && H > 0) {
+    buildScene();
+  }
+
+  const s2BoxColor = window.GIFT_DATA?.scenes?.scene2_giftBox?.boxColor;
+  if (s2BoxColor) {
+    updateScene2BoxColor(s2BoxColor);
+  }
+  const s4CurtainColor = window.GIFT_DATA?.scenes?.scene4_curtain?.curtainColor;
+  if (s4CurtainColor) {
+    updateScene4CurtainColor(s4CurtainColor);
+  }
+  const s5CakeColor = window.GIFT_DATA?.scenes?.scene5_cakeCountdown?.cakeColor;
+  if (s5CakeColor) {
+    updateScene5CakeColor(s5CakeColor);
+  }
+}
+
+function hexToRgb(hex) {
+  if (!hex) return { r: 212, g: 35, b: 92 };
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const num = parseInt(hex, 16);
+  if (isNaN(num)) return { r: 212, g: 35, b: 92 };
+  return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map(x => Math.max(0, Math.min(255, Math.round(x))).toString(16).padStart(2, '0')).join('');
+}
+
+function adjustColorLightness(hex, percent) {
+  const rgb = hexToRgb(hex);
+  const factor = percent / 100;
+  if (factor > 0) {
+    return rgbToHex(
+      rgb.r + (255 - rgb.r) * factor,
+      rgb.g + (255 - rgb.g) * factor,
+      rgb.b + (255 - rgb.b) * factor
+    );
+  } else {
+    return rgbToHex(
+      rgb.r * (1 + factor),
+      rgb.g * (1 + factor),
+      rgb.b * (1 + factor)
+    );
+  }
+}
+
+function updateScene2BoxColor(customHex) {
+  const isGlass = document.documentElement.getAttribute('data-theme') === 'glass' || (window.GIFT_DATA && window.GIFT_DATA.themeId === 'glass');
+  const base = customHex || (isGlass ? '#d4235c' : '#d81e57');
+  const light = adjustColorLightness(base, 24);
+  const dark = adjustColorLightness(base, -28);
+  const deepDark = adjustColorLightness(base, -48);
+  const strokeDark = adjustColorLightness(base, -55);
+
+  // 1. Update boxFaceLeft (preview.html)
+  const boxFaceLeft = $('boxFaceLeft');
+  if (boxFaceLeft) {
+    const stops = boxFaceLeft.querySelectorAll('stop');
+    if (stops.length >= 3) {
+      stops[0].setAttribute('stop-color', light);
+      stops[1].setAttribute('stop-color', base);
+      stops[2].setAttribute('stop-color', dark);
+    }
+  }
+
+  // 2. Update boxFaceRight (preview.html)
+  const boxFaceRight = $('boxFaceRight');
+  if (boxFaceRight) {
+    const stops = boxFaceRight.querySelectorAll('stop');
+    if (stops.length >= 3) {
+      stops[0].setAttribute('stop-color', base);
+      stops[1].setAttribute('stop-color', dark);
+      stops[2].setAttribute('stop-color', deepDark);
+    }
+  }
+
+  // 3. Update boxGrad (gift.html)
+  const boxGrad = $('boxGrad');
+  if (boxGrad) {
+    const stops = boxGrad.querySelectorAll('stop');
+    if (stops.length >= 3) {
+      stops[0].setAttribute('stop-color', light);
+      stops[1].setAttribute('stop-color', base);
+      stops[2].setAttribute('stop-color', dark);
+    }
+  }
+
+  // 4. Update lidGrad (gift.html)
+  const lidGrad = $('lidGrad');
+  if (lidGrad) {
+    const stops = lidGrad.querySelectorAll('stop');
+    if (stops.length >= 3) {
+      stops[0].setAttribute('stop-color', adjustColorLightness(base, 32));
+      stops[1].setAttribute('stop-color', adjustColorLightness(base, 8));
+      stops[2].setAttribute('stop-color', dark);
+    }
+  }
+
+  // 5. Update SVG strokes & CSS custom property
+  const sc2El = document.getElementById('scene2');
+  if (sc2El) {
+    sc2El.style.setProperty('--box-color', base);
+    sc2El.style.setProperty('--box-color-light', light);
+    sc2El.style.setProperty('--box-color-dark', dark);
+    sc2El.querySelectorAll('.gift-svg rect[stroke]').forEach(el => {
+      el.setAttribute('stroke', strokeDark);
+    });
+  }
+}
+
+function updateScene4CurtainColor(customHex) {
+  const isGlass = document.documentElement.getAttribute('data-theme') === 'glass' || (window.GIFT_DATA && window.GIFT_DATA.themeId === 'glass');
+  const base = customHex || (isGlass ? '#3b051b' : '#6e0a31');
+  const wine = adjustColorLightness(base, -20);
+  const deep = adjustColorLightness(base, -10);
+  const bright = adjustColorLightness(base, 15);
+
+  const sc4El = document.getElementById('scene4');
+  if (sc4El) {
+    sc4El.style.setProperty('--curtain-color', bright);
+    sc4El.style.setProperty('--curtain-color-deep', deep);
+    sc4El.style.setProperty('--curtain-color-wine', wine);
+  }
+}
+
+function updateScene5CakeColor(customHex) {
+  const isGlass = document.documentElement.getAttribute('data-theme') === 'glass' || (window.GIFT_DATA && window.GIFT_DATA.themeId === 'glass');
+  const base = customHex || (isGlass ? '#d4235c' : '#e85987');
+  const top0 = adjustColorLightness(base, 25);
+  const top1 = base;
+  const top2 = adjustColorLightness(base, -15);
+  const drip = adjustColorLightness(base, 25);
+  const bot0 = adjustColorLightness(base, -5);
+  const bot1 = adjustColorLightness(base, -25);
+  const bot2 = adjustColorLightness(base, -40);
+
+  const sc5El = document.getElementById('scene5');
+  if (sc5El) {
+    sc5El.style.setProperty('--cake-top-0', top0);
+    sc5El.style.setProperty('--cake-top-1', top1);
+    sc5El.style.setProperty('--cake-top-2', top2);
+    sc5El.style.setProperty('--cake-drip', drip);
+    sc5El.style.setProperty('--cake-bot-0', bot0);
+    sc5El.style.setProperty('--cake-bot-1', bot1);
+    sc5El.style.setProperty('--cake-bot-2', bot2);
+  }
+}
+
+function populateStaticContent(data) {
+  const gd = data || window.GIFT_DATA;
+  if (!gd) return;
+
+  const sc = gd.scenes || {};
+
+  // --- Scene 1 ---
+  const s1 = sc.scene1_act1 || {};
+  const elEyebrow = $('eyebrow'); if (elEyebrow && s1.eyebrow) elEyebrow.textContent = s1.eyebrow;
+  const elHint = $('hint'); if (elHint && s1.hint) elHint.textContent = s1.hint;
+  const elWEyebrow = $('wEyebrow'); if (elWEyebrow && s1.wishEyebrow) elWEyebrow.textContent = s1.wishEyebrow;
+  const elWHero = $('wHero'); if (elWHero && s1.wishHero) elWHero.textContent = s1.wishHero;
+  const elWSub = $('wSub'); if (elWSub && s1.wishSub) elWSub.textContent = s1.wishSub;
+  const elKEyebrow = $('kEyebrow'); if (elKEyebrow && s1.kEyebrow) elKEyebrow.textContent = s1.kEyebrow;
+  const elKSub = $('kSub'); if (elKSub && s1.kSub) elKSub.textContent = s1.kSub;
+
+  // --- Scene 2 ---
+  const s2 = sc.scene2_giftBox || {};
+  const gBadge = document.querySelector('#scene2 .gift-badge'); if (gBadge && (s2.badge || s2.eyebrow)) gBadge.textContent = s2.badge || s2.eyebrow;
+  const gTitle = document.querySelector('#scene2 .gift-title'); if (gTitle && (s2.title || s2.subtitleTop)) gTitle.textContent = s2.title || s2.subtitleTop;
+  const gSub = document.querySelector('#scene2 .gift-subtitle'); if (gSub && s2.subtitle) gSub.textContent = s2.subtitle;
+  const gCardTitle = document.querySelector('#scene2 .gift-card-title'); if (gCardTitle && s2.cardTitle) gCardTitle.textContent = s2.cardTitle;
+  const gCardText = document.querySelector('#scene2 .gift-card-text'); if (gCardText && s2.cardText) gCardText.textContent = s2.cardText;
+  if (s2.boxColor) {
+    updateScene2BoxColor(s2.boxColor);
+  }
+
+  // --- Scene 3 ---
+  const s3 = sc.scene3_pinLock || {};
+  if (s3.pin) CORRECT_PIN = String(s3.pin);
+  const pInstruction = $('pinInstruction'); if (pInstruction && s3.instruction) pInstruction.textContent = s3.instruction;
+  const pPill = $('pinStatusPill'); if (pPill && s3.hint) pPill.textContent = s3.hint;
+
+  // --- Scene 4 ---
+  const s4 = sc.scene4_curtain || {};
+  if (s4.curtainColor) {
+    updateScene4CurtainColor(s4.curtainColor);
+  }
+
+  // --- Scene 5 ---
+  const s5 = sc.scene5_cakeCountdown || {};
+  if (s5.birthDate) BIRTHDATE_STR = s5.birthDate;
+  const cBadge = document.querySelector('#scene5 .cake-badge'); if (cBadge && s5.badge) cBadge.textContent = s5.badge;
+  const cTitle = document.querySelector('#scene5 .cake-title'); if (cTitle && (s5.headline || s5.title)) cTitle.textContent = s5.headline || s5.title;
+  const cSub = document.querySelector('#scene5 .cake-subtitle'); if (cSub && s5.subtitle) cSub.textContent = s5.subtitle;
+  const cWishTitle = document.querySelector('#scene5 .cake-wish-title'); if (cWishTitle && (s5.wishTitle || s5.wishLine)) cWishTitle.textContent = s5.wishTitle || s5.wishLine;
+  const cWishSub = document.querySelector('#scene5 .cake-wish-sub'); if (cWishSub && s5.wishSub) cWishSub.textContent = s5.wishSub;
+  if (s5.cakeColor) {
+    updateScene5CakeColor(s5.cakeColor);
+  }
+
+  // --- Scene 6 ---
+  const s6 = sc.scene6_wallOfUs || {};
+  const memEyebrow = $('memoryEyebrow'); if (memEyebrow && s6.eyebrow) memEyebrow.textContent = s6.eyebrow;
+  if (Array.isArray(s6.captions)) {
+    s6.captions.forEach((cap, i) => {
+      const frame = $(`mFrame${i}`);
+      if (frame) {
+        const capEl = frame.querySelector('.frame-caption');
+        if (capEl) capEl.textContent = cap;
+      }
+    });
+  }
+  const memTitle = document.querySelector('#scene6 .memory-closing-title'); if (memTitle && s6.headline) memTitle.textContent = s6.headline;
+  const memSub = document.querySelector('#scene6 .memory-closing-sub'); if (memSub && s6.subtext) memSub.textContent = s6.subtext;
+
+  // Update Photos in Scene 6 if available
+  const s6Photos = (s6 && Array.isArray(s6.photos)) ? s6.photos : (Array.isArray(gd.photos) ? gd.photos : null);
+  if (s6Photos) {
+    s6Photos.forEach((photoUrl, i) => {
+      const frame = $(`mFrame${i}`);
+      if (frame) {
+        const photoEl = frame.querySelector('.frame-photo');
+        if (photoEl) {
+          let existingImg = photoEl.querySelector('.user-photo-img');
+          if (photoUrl) {
+            if (!existingImg) {
+              existingImg = document.createElement('img');
+              existingImg.className = 'user-photo-img';
+              existingImg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;border-radius:inherit;';
+              photoEl.appendChild(existingImg);
+            }
+            existingImg.src = photoUrl;
+            const icon = photoEl.querySelector('.photo-icon');
+            if (icon) icon.style.opacity = '0';
+          } else if (existingImg) {
+            existingImg.remove();
+            const icon = photoEl.querySelector('.photo-icon');
+            if (icon) icon.style.opacity = '1';
+          }
+        }
+      }
+    });
+  }
+
+  // --- Scene 7 ---
+  const s7 = sc.scene7_memoryReel || {};
+  if (Array.isArray(s7.captions)) {
+    s7.captions.forEach((cap, i) => {
+      const frame = $(`fFrame${i}`);
+      if (frame) {
+        const capEl = frame.querySelector('.frame-caption');
+        if (capEl) capEl.textContent = cap;
+      }
+    });
+  }
+  const fTitle = document.querySelector('#scene7 .film-headline-title'); if (fTitle && s7.headline) fTitle.textContent = s7.headline;
+  const fSub = document.querySelector('#scene7 .film-headline-sub'); if (fSub && s7.subtext) fSub.textContent = s7.subtext;
+
+  // Update Video Clips in Scene 7 if available
+  const s7Clips = (s7 && Array.isArray(s7.clips)) ? s7.clips : (Array.isArray(gd.clips) ? gd.clips : null);
+  if (s7Clips) {
+    s7Clips.forEach((clipUrl, i) => {
+      const frame = $(`fFrame${i}`);
+      if (frame) {
+        const cellEl = frame.querySelector('.frame-celluloid');
+        if (cellEl) {
+          let existingVideo = cellEl.querySelector('.user-clip-video');
+          if (clipUrl) {
+            if (!existingVideo) {
+              existingVideo = document.createElement('video');
+              existingVideo.className = 'user-clip-video';
+              existingVideo.setAttribute('autoplay', '');
+              existingVideo.setAttribute('muted', '');
+              existingVideo.setAttribute('loop', '');
+              existingVideo.setAttribute('playsinline', '');
+              existingVideo.muted = true;
+              existingVideo.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;border-radius:inherit;';
+              cellEl.appendChild(existingVideo);
+            }
+            if (existingVideo.src !== clipUrl) {
+              existingVideo.src = clipUrl;
+              existingVideo.play().catch(() => {});
+            }
+            const icon = cellEl.querySelector('.frame-icon');
+            if (icon) icon.style.opacity = '0';
+          } else if (existingVideo) {
+            existingVideo.remove();
+            const icon = cellEl.querySelector('.frame-icon');
+            if (icon) icon.style.opacity = '1';
+          }
+        }
+      }
+    });
+  }
+
+  // --- Scene 8 ---
+  const s8 = sc.scene8_balloonPop || sc.scene8_constellation || {};
+  const bTitle = $('balloonTitle'); if (bTitle && s8.headline) bTitle.textContent = s8.headline;
+  const bSub = $('balloonSubtitle'); if (bSub && s8.subtitle) bSub.textContent = s8.subtitle;
+  const bClosing = $('balloonClosingText'); if (bClosing && s8.closing) bClosing.textContent = s8.closing;
+
+  // --- Scene 9 ---
+  const s9 = sc.scene9_letter || {};
+  const lEyebrow = document.querySelector('#scene9 .letter-eyebrow'); if (lEyebrow && s9.eyebrow) lEyebrow.textContent = s9.eyebrow;
+  if (s9.message) {
+    LETTER_TEXT = s9.message;
+    const tw = $('typewriterText');
+    if (tw && tw.innerHTML) tw.innerHTML = s9.message.replace(/\n/g, '<br>');
+  }
+
+  // --- Scene 10 ---
+  const s10 = sc.scene10_fireworks || {};
+  const fwTitle = document.querySelector('#scene10 .fireworks-title'); if (fwTitle && s10.headline) fwTitle.textContent = s10.headline;
+  const fwSub = document.querySelector('#scene10 .fireworks-sub'); if (fwSub && s10.subtext) fwSub.textContent = s10.subtext;
+
+  // --- Scene 11 ---
+  const s11 = sc.scene11_finalToast || {};
+  const tEyebrow = $('toastEyebrow'); if (tEyebrow && s11.eyebrow) tEyebrow.textContent = s11.eyebrow;
+  const tHero = $('toastHero');
+  if (tHero) {
+    const rawHero = s11.heroLine || "Happy Birthday, {recipientName}";
+    const recName = gd.recipientName || "Elena";
+    tHero.textContent = rawHero.replace(/\{recipientName\}/gi, recName);
+  }
+  const tSub = $('toastSub'); if (tSub && s11.subtext) tSub.textContent = s11.subtext;
+
+  // --- Dynamic Music Sync ---
+  if (gd.music) {
+    const m = gd.music;
+    const startSec = typeof m.startSeconds === 'number' ? m.startSeconds : 27;
+    if (typeof AUDIO_CONFIG !== 'undefined') {
+      AUDIO_CONFIG.startTime = startSec;
+      AUDIO_CONFIG.loopStartTime = startSec;
+    }
+    const bg = $('bgMusic');
+    if (bg) {
+      const targetSrc = (m.trackType === 'custom' && m.customTrackUrl) ? m.customTrackUrl : 'assets/bg-music.mp3';
+      const currentSrc = bg.getAttribute('src') || '';
+      if (targetSrc && currentSrc !== targetSrc && !currentSrc.endsWith(targetSrc)) {
+        const wasPlaying = !bg.paused;
+        bg.src = targetSrc;
+        bg.currentTime = startSec;
+        if (wasPlaying) {
+          bg.play().catch(() => {});
+        }
+      }
+    }
+  }
+}
 
 const canvas = $('tree');
 const ctx    = canvas.getContext('2d');
@@ -254,18 +769,38 @@ function buildScene(){
   rx = ry * 1.16;
   groundY = H * 0.93;
 
+  const isGlass = (document.documentElement.getAttribute('data-theme') === 'glass') || (window.GIFT_DATA && window.GIFT_DATA.themeId === 'glass');
+
   bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-  bgGrad.addColorStop(0, '#fff3e9');
-  bgGrad.addColorStop(0.46, '#ffe7d6');
-  bgGrad.addColorStop(0.78, '#fcd9c4');
-  bgGrad.addColorStop(1, '#f3c4b5');
-  glowGrad = ctx.createRadialGradient(cx, cy, ry * 0.1, cx, cy, ry * 1.55);
-  glowGrad.addColorStop(0, 'rgba(255,219,170,0.6)');
-  glowGrad.addColorStop(0.5, 'rgba(255,170,150,0.2)');
-  glowGrad.addColorStop(1, 'rgba(255,170,150,0)');
-  groundGrad = ctx.createRadialGradient(cx, H * 1.02, ry * 0.2, cx, H * 1.02, ry * 1.6);
-  groundGrad.addColorStop(0, 'rgba(255,205,165,0.5)');
-  groundGrad.addColorStop(1, 'rgba(255,205,165,0)');
+  if (isGlass) {
+    bgGrad.addColorStop(0, '#150921');     // Deep midnight amethyst (--paper-0)
+    bgGrad.addColorStop(0.45, '#0d0417');  // Rich plum shadow (--paper-1)
+    bgGrad.addColorStop(0.80, '#090311');
+    bgGrad.addColorStop(1, '#06020c');     // Obsidian void (--paper-2)
+
+    glowGrad = ctx.createRadialGradient(cx, cy, ry * 0.1, cx, cy, ry * 1.55);
+    glowGrad.addColorStop(0, 'rgba(212, 35, 92, 0.38)'); // Luminous electric rose glow
+    glowGrad.addColorStop(0.5, 'rgba(138, 43, 226, 0.16)'); // Ambient violet
+    glowGrad.addColorStop(1, 'rgba(21, 9, 33, 0)');
+
+    groundGrad = ctx.createRadialGradient(cx, H * 1.02, ry * 0.2, cx, H * 1.02, ry * 1.6);
+    groundGrad.addColorStop(0, 'rgba(243, 183, 73, 0.22)'); // Warm amber floor glow
+    groundGrad.addColorStop(1, 'rgba(6, 2, 12, 0)');
+  } else {
+    bgGrad.addColorStop(0, '#fff3e9');
+    bgGrad.addColorStop(0.46, '#ffe7d6');
+    bgGrad.addColorStop(0.78, '#fcd9c4');
+    bgGrad.addColorStop(1, '#f3c4b5');
+
+    glowGrad = ctx.createRadialGradient(cx, cy, ry * 0.1, cx, cy, ry * 1.55);
+    glowGrad.addColorStop(0, 'rgba(255,219,170,0.6)');
+    glowGrad.addColorStop(0.5, 'rgba(255,170,150,0.2)');
+    glowGrad.addColorStop(1, 'rgba(255,170,150,0)');
+
+    groundGrad = ctx.createRadialGradient(cx, H * 1.02, ry * 0.2, cx, H * 1.02, ry * 1.6);
+    groundGrad.addColorStop(0, 'rgba(255,205,165,0.5)');
+    groundGrad.addColorStop(1, 'rgba(255,205,165,0)');
+  }
 
   for (let i = 0; i < 11; i++){
     orbs.push({ x: rand(0, W), y: rand(0, H), r: rand(W * 0.05, W * 0.17), vy: rand(-6, -16), drift: rand(-0.3, 0.3), phase: rand(0, 6.28), alpha: rand(0.05, 0.13), sprite: pick(BOKEH) });
@@ -352,14 +887,21 @@ function drawGodRays(t, intensity){
   ctx.globalCompositeOperation = 'lighter';
   const ox = cx, oy = cy - ry * 0.35, R = Math.hypot(W, H) * 1.1;
   const rays = 9, sweep = Math.sin(t * 0.07) * 0.18;
+  const isGlass = (document.documentElement.getAttribute('data-theme') === 'glass') || (window.GIFT_DATA && window.GIFT_DATA.themeId === 'glass');
   for (let i = 0; i < rays; i++){
     const a = -Math.PI / 2 + sweep + (i - (rays - 1) / 2) * 0.2;
     const hw = 0.035 + 0.02 * (0.5 + 0.5 * Math.sin(t * 0.5 + i * 1.7));
     const a1 = a - hw, a2 = a + hw;
     const g = ctx.createLinearGradient(ox, oy, ox + Math.cos(a) * R, oy + Math.sin(a) * R);
-    g.addColorStop(0, `rgba(255,232,190,${0.10 * intensity})`);
-    g.addColorStop(0.5, `rgba(255,214,170,${0.05 * intensity})`);
-    g.addColorStop(1, 'rgba(255,214,170,0)');
+    if (isGlass) {
+      g.addColorStop(0, `rgba(243,183,73,${0.08 * intensity})`);
+      g.addColorStop(0.5, `rgba(212,35,92,${0.04 * intensity})`);
+      g.addColorStop(1, 'rgba(212,35,92,0)');
+    } else {
+      g.addColorStop(0, `rgba(255,232,190,${0.10 * intensity})`);
+      g.addColorStop(0.5, `rgba(255,214,170,${0.05 * intensity})`);
+      g.addColorStop(1, 'rgba(255,214,170,0)');
+    }
     ctx.fillStyle = g;
     ctx.beginPath();
     ctx.moveTo(ox, oy);
@@ -510,7 +1052,26 @@ function treeFrame(now){
   treeRAF = requestAnimationFrame(treeFrame);
 }
 
+function showTreeCanvas(){
+  if (canvas){
+    canvas.classList.remove('is-hidden');
+    canvas.removeAttribute('aria-hidden');
+    canvas.style.display = 'block';
+    canvas.style.opacity = '1';
+  }
+}
+
+function hideTreeCanvas(){
+  treeStop();
+  if (canvas){
+    canvas.classList.add('is-hidden');
+    canvas.setAttribute('aria-hidden', 'true');
+    canvas.style.display = 'none';
+  }
+}
+
 function treeStart(){
+  showTreeCanvas();
   treeStartT = 0; treeLastT = 0; lastPetal = 0; replayArmed = false; window.bdayDone = false;
   cue('grow');
   buildScene();
@@ -518,10 +1079,16 @@ function treeStart(){
 }
 function treeStop(){
   if (treeRAF){ cancelAnimationFrame(treeRAF); treeRAF = 0; }
-  ctx.clearRect(0, 0, W, H);
+  if (ctx && canvas){
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+  }
 }
 
 function drawFinal(){
+  showTreeCanvas();
   buildScene();
   drawBackground(); drawGodRays(0, 1); drawGlow(T.done); drawBokeh(0, 0); drawFloaters(99, 0, false);
   drawBranches(99); drawHearts(99);
@@ -553,6 +1120,7 @@ const kChars = [...line1Chars, ...line2Chars];
 
 /* drifting light motes behind the scene */
 function buildMotes(){
+  stopMotes();
   motes.innerHTML = '';
   for (let i = 0; i < 12; i++){
     const m = document.createElement('span');
@@ -565,6 +1133,14 @@ function buildMotes(){
     gsap.set(m, { opacity: rand(0.25, 0.7) });
     gsap.to(m, { y: -rand(40, 140), x: rand(-30, 30), duration: rand(7, 14), repeat: -1, yoyo: true, ease: 'sine.inOut', delay: -rand(0, 8) });
     gsap.to(m, { opacity: rand(0.1, 0.5), duration: rand(2.5, 5), repeat: -1, yoyo: true, ease: 'sine.inOut' });
+  }
+}
+
+function stopMotes(){
+  if (motes){
+    const children = motes.querySelectorAll('.mote');
+    children.forEach(m => gsap.killTweensOf(m));
+    motes.innerHTML = '';
   }
 }
 
@@ -871,22 +1447,130 @@ function enter(){
 }
 
 function armReplay(){
-  replay.hidden = false;
-  replay.classList.add('has-next');
-  requestAnimationFrame(() => replay.classList.add('is-shown'));
-
   if (nextScene1){
     nextScene1.hidden = false;
     requestAnimationFrame(() => nextScene1.classList.add('is-shown'));
   }
 }
 
-/* back to Act 1, ready to be drawn again */
+/* back to Act 1, ready to be drawn again — comprehensively resets all scenes */
 function resetAll(){
+  currentSceneNum = 1;
+  sceneEntryTime = Date.now();
+  sceneTransitioning = false;
+
+  // 1. Reset Scene 11
+  if (scene11){
+    scene11.classList.remove('is-active');
+    scene11.setAttribute('aria-hidden', 'true');
+  }
+  if (typeof resetScene11 === 'function'){
+    resetScene11();
+  }
+
+  // 2. Reset Scene 10
+  if (scene10){
+    scene10.classList.remove('is-active');
+    scene10.setAttribute('aria-hidden', 'true');
+  }
+  if (typeof resetScene10 === 'function'){
+    resetScene10();
+  }
+
+  // 3. Reset Scene 9
+  if (scene9){
+    scene9.classList.remove('is-active');
+    scene9.setAttribute('aria-hidden', 'true');
+  }
+  if (typeof resetScene9 === 'function'){
+    resetScene9();
+  }
+
+  // 4. Reset Scene 8
+  if (scene8){
+    scene8.classList.remove('is-active');
+    scene8.setAttribute('aria-hidden', 'true');
+  }
+  if (typeof resetBalloonScene === 'function'){
+    resetBalloonScene();
+  }
+
+  // 5. Reset Scene 7
+  if (scene7){
+    scene7.classList.remove('is-active');
+    scene7.setAttribute('aria-hidden', 'true');
+  }
+  if (typeof resetScene7 === 'function'){
+    resetScene7();
+  }
+
+  // 6. Reset Scene 6
+  if (scene6){
+    scene6.classList.remove('is-active');
+    scene6.setAttribute('aria-hidden', 'true');
+  }
+  if (typeof resetScene6 === 'function'){
+    resetScene6();
+  }
+
+  // 7. Reset Scene 5
+  if (scene5){
+    scene5.classList.remove('is-active', 'candles-out');
+    scene5.setAttribute('aria-hidden', 'true');
+    stopMic();
+    if (statsInterval){
+      clearInterval(statsInterval);
+      statsInterval = 0;
+    }
+  }
+  if (typeof relightCake === 'function'){
+    relightCake();
+  }
+
+  // 8. Reset Scene 4
+  if (scene4){
+    scene4.classList.remove('is-active', 'curtains-open');
+    scene4.setAttribute('aria-hidden', 'true');
+  }
+  if (typeof closeCurtains === 'function'){
+    closeCurtains();
+  }
+
+  // 9. Reset Scene 3
+  if (scene3){
+    scene3.classList.remove('is-active', 'pin-unlocked');
+    scene3.setAttribute('aria-hidden', 'true');
+    stopClock();
+  }
+  if (typeof resetPinScene === 'function'){
+    resetPinScene();
+  }
+
+  // 10. Reset Scene 2
+  giftOpened = false;
+  if (scene2){
+    scene2.classList.remove('is-active', 'gift-open');
+    scene2.setAttribute('aria-hidden', 'true');
+  }
+  if (nextScene2){
+    nextScene2.classList.remove('is-shown');
+    nextScene2.hidden = true;
+  }
+
+  // 11. Reset Act 1
+  stopMotes();
+  if (!reduceMotion) buildMotes();
   treeStop();
+  showTreeCanvas();
   showWish(false);
-  window.bdayDone = false; replayArmed = false;
-  replay.classList.remove('is-shown', 'has-next'); replay.hidden = true;
+  if (canvas) canvas.style.opacity = '1';
+  if (wishEl) wishEl.style.opacity = '1';
+  window.bdayDone = false;
+  replayArmed = false;
+  if (replay){
+    replay.classList.remove('is-shown', 'has-next');
+    replay.hidden = true;
+  }
   if (nextScene1){
     nextScene1.classList.remove('is-shown');
     nextScene1.hidden = true;
@@ -930,7 +1614,7 @@ if (reduceMotion){
   buildMotes();
   document.fonts && document.fonts.ready.then(() => { refreshRig(); setDraw(0); });
   enter();
-  replay.addEventListener('click', resetAll);
+  if (replay) replay.addEventListener('click', resetAll);
 }
 
 /* ============================================================
@@ -1025,7 +1709,6 @@ function openGiftBox(){
 }
 
 if (giftBoxWrap){
-  giftBoxWrap.addEventListener('click', openGiftBox);
   giftBoxWrap.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' '){
       e.preventDefault();
@@ -1033,15 +1716,27 @@ if (giftBoxWrap){
     }
   });
 }
+if (scene2){
+  scene2.addEventListener('click', () => {
+    if (!giftOpened){
+      openGiftBox();
+    } else {
+      goToScene(3);
+    }
+  });
+}
 if (nextScene2){
-  nextScene2.addEventListener('click', () => goToScene(3));
+  nextScene2.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToScene(3);
+  });
 }
 
 /* ============================================================
    SCENE 3 — SECRET PIN KEEPSAKE CARD CONTROLLER
    ============================================================ */
-// Plain JS constant for the 4-digit PIN (can be hand-edited anytime)
-const CORRECT_PIN = '1234';
+// Plain JS variable for the 4-digit PIN (can be updated dynamically via GIFT_DATA)
+let CORRECT_PIN = (window.GIFT_DATA && window.GIFT_DATA.scenes && window.GIFT_DATA.scenes.scene3_pinLock && window.GIFT_DATA.scenes.scene3_pinLock.pin) || '1234';
 
 const scene3            = $('scene3');
 const pinCard           = $('pinCard');
@@ -1052,9 +1747,6 @@ const pinStatusPill     = $('pinStatusPill');
 const pinInstruction    = $('pinInstruction');
 const pinInputArea      = $('pinInputArea');
 const pinKeypad         = $('pinKeypad');
-const pinSuccessContent = $('pinSuccessContent');
-const nextScene3        = $('nextScene3');
-const pinRelockBtn      = $('pinRelockBtn');
 
 let enteredPin  = '';
 let pinLocked   = true;
@@ -1102,6 +1794,7 @@ function playDeleteSound(){
 }
 
 function playErrorBuzzSound(){
+  duckMusic(500);
   try {
     const ctx = getAudioCtx();
     if (!ctx) return;
@@ -1120,6 +1813,7 @@ function playErrorBuzzSound(){
 }
 
 function playSuccessChime(){
+  duckMusic(1100);
   try {
     const ctx = getAudioCtx();
     if (!ctx) return;
@@ -1199,20 +1893,13 @@ function verifyEnteredPin(){
     // Correct PIN!
     playSuccessChime();
     pinLocked = false;
+    if (pinCard) pinCard.classList.add('is-unlocked');
+    if (pinInstruction) pinInstruction.textContent = 'unlocked with love ♥';
     
     setTimeout(() => {
-      if (pinCard) pinCard.classList.add('is-unlocked');
-      if (pinInstruction) pinInstruction.textContent = 'unlocked with love ♥';
-      if (pinSuccessContent) {
-        pinSuccessContent.hidden = false;
-        pinSuccessContent.setAttribute('aria-hidden', 'false');
-      }
-      if (nextScene3) {
-        nextScene3.hidden = false;
-        requestAnimationFrame(() => nextScene3.classList.add('is-shown'));
-      }
+      goToScene(4);
       isVerifying = false;
-    }, reduceMotion ? 50 : 650);
+    }, reduceMotion ? 50 : 700);
 
   } else {
     // Wrong PIN
@@ -1241,28 +1928,34 @@ function resetPinScene(){
   pinLocked = true;
   isVerifying = false;
   if (pinCard) pinCard.classList.remove('is-unlocked');
-  if (pinInstruction) pinInstruction.textContent = 'enter the code to unlock it';
+  const s3 = (window.GIFT_DATA && window.GIFT_DATA.scenes && window.GIFT_DATA.scenes.scene3_pinLock) || {};
+  if (pinInstruction) pinInstruction.textContent = s3.instruction || 'enter the code to unlock it';
   if (pinStatusPill){
     pinStatusPill.className = 'pin-status-pill pin-hint';
-    pinStatusPill.textContent = 'hint: our favourite number';
-  }
-  if (pinSuccessContent){
-    pinSuccessContent.hidden = true;
-    pinSuccessContent.setAttribute('aria-hidden', 'true');
-  }
-  if (nextScene3){
-    nextScene3.classList.remove('is-shown');
-    nextScene3.hidden = true;
+    pinStatusPill.textContent = s3.hint || 'hint: our favourite number';
   }
   updatePinDots();
 }
 
 function playScene3(){
   if (!scene3) return;
+  hideTreeCanvas();
   resetPinScene();
   scene3.classList.add('is-active');
   scene3.setAttribute('aria-hidden', 'false');
   startClock();
+
+  if (reduceMotion){
+    if (pinCard) gsap.set(pinCard, { opacity: 1, y: 0, scale: 1 });
+    return;
+  }
+
+  if (pinCard){
+    gsap.fromTo(pinCard,
+      { opacity: 0, y: 20, scale: 0.96 },
+      { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: 'power2.out', delay: 0.15 }
+    );
+  }
 }
 
 /* Keypad Clicks */
@@ -1290,11 +1983,12 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-if (pinRelockBtn){
-  pinRelockBtn.addEventListener('click', resetPinScene);
-}
-if (nextScene3){
-  nextScene3.addEventListener('click', () => goToScene(4));
+if (scene3){
+  scene3.addEventListener('click', (e) => {
+    if (e.target && e.target.closest && e.target.closest('.keypad-btn')) {
+      return;
+    }
+  });
 }
 
 /* ============================================================
@@ -1302,43 +1996,43 @@ if (nextScene3){
    ============================================================ */
 const scene4          = $('scene4');
 const openCurtainsBtn = $('openCurtainsBtn');
-const nextScene4      = $('nextScene4');
 
 function openCurtains(){
-  if (!scene4) return;
+  if (!scene4 || scene4.classList.contains('curtains-open')) return;
   scene4.classList.add('curtains-open');
 
-  // Fade in Scene 4's Next button once reveal content finishes animating in (~1.6s)
+  // Curtain-open motion acts as direct entry transition into Scene 5 (Cake & Countdown)
   const delay = reduceMotion ? 100 : 1600;
   setTimeout(() => {
-    if (nextScene4 && scene4.classList.contains('curtains-open')){
-      nextScene4.hidden = false;
-      requestAnimationFrame(() => nextScene4.classList.add('is-shown'));
-    }
+    goToScene(5);
   }, delay);
 }
 
 function closeCurtains(){
   if (!scene4) return;
   scene4.classList.remove('curtains-open');
-  if (nextScene4){
-    nextScene4.classList.remove('is-shown');
-    nextScene4.hidden = true;
-  }
 }
 
 if (openCurtainsBtn){
-  openCurtainsBtn.addEventListener('click', openCurtains);
+  openCurtainsBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openCurtains();
+  });
 }
-if (nextScene4){
-  nextScene4.addEventListener('click', () => goToScene(5));
+if (scene4){
+  scene4.addEventListener('click', () => {
+    const isCurtainsOpen = scene4.classList.contains('curtains-open');
+    if (!isCurtainsOpen){
+      openCurtains();
+    }
+  });
 }
 
 /* ============================================================
    SCENE 5 — BIRTHDAY CAKE & LIFETIME COUNTDOWN CONTROLLER
    ============================================================ */
-// Birthdate configuration (defaults to 20 years ago: 2006-01-01)
-const BIRTHDATE_STR = '2006-01-01T00:00:00Z';
+// Birthdate configuration (defaults to 20 years ago or from GIFT_DATA)
+let BIRTHDATE_STR = (window.GIFT_DATA && window.GIFT_DATA.scenes && window.GIFT_DATA.scenes.scene5_cakeCountdown && window.GIFT_DATA.scenes.scene5_cakeCountdown.birthDate) || '2006-01-01T00:00:00Z';
 
 const scene5          = $('scene5');
 const statYears       = $('statYears');
@@ -1557,16 +2251,31 @@ function relightCake(){
   }
   if (nextScene5){
     nextScene5.classList.remove('is-shown');
+    nextScene5.hidden = true;
   }
 }
 
 function playScene5(){
+  hideTreeCanvas();
   calculateLifetimeStats();
   if (statsInterval) clearInterval(statsInterval);
   statsInterval = setInterval(calculateLifetimeStats, 60000);
 
   // Reset blown state for fresh viewing if needed
   relightCake();
+
+  const cakeCard = document.querySelector('.cake-card');
+  if (reduceMotion){
+    if (cakeCard) gsap.set(cakeCard, { opacity: 1, y: 0, scale: 1 });
+    return;
+  }
+
+  if (cakeCard){
+    gsap.fromTo(cakeCard,
+      { opacity: 0, y: 22, scale: 0.96 },
+      { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: 'power2.out', delay: 0.15 }
+    );
+  }
 }
 
 // Event Listeners for Scene 5
@@ -1600,8 +2309,23 @@ if (cakeRelightBtn){
   });
 }
 
+if (scene5){
+  scene5.addEventListener('click', (e) => {
+    if (e.target && e.target.closest && e.target.closest('#cakeMicBtn, #cakeRelightBtn')) {
+      return;
+    }
+    if (!cakeBlown){
+      blowCandles();
+    } else {
+      goToScene(6);
+    }
+  });
+}
 if (nextScene5){
-  nextScene5.addEventListener('click', () => goToScene(6));
+  nextScene5.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToScene(6);
+  });
 }
 
 /* ============================================================
@@ -1617,6 +2341,34 @@ const memoryTwinePath  = $('memoryTwinePath');
 const memoryClosing    = $('memoryClosing');
 const nextScene6       = $('nextScene6');
 const memoryFrames     = memoryBoard ? Array.from(memoryBoard.querySelectorAll('.memory-frame')) : [];
+let scene6Timeline     = null;
+
+function resetScene6(){
+  if (scene6Timeline){
+    scene6Timeline.kill();
+    scene6Timeline = null;
+  }
+  memoryFrames.forEach(f => {
+    f.classList.remove('has-ambient');
+    const tilt = parseFloat(f.dataset.tilt || 0);
+    gsap.set(f, { opacity: 0, x: 0, y: 0, rotation: tilt, scale: 1 });
+  });
+  if (memoryWipe) gsap.set(memoryWipe, { opacity: 0 });
+  if (memoryEyebrow) gsap.set(memoryEyebrow, { opacity: 0, y: -12 });
+  if (memoryTwinePath) {
+    memoryTwinePath.removeAttribute('d');
+    memoryTwinePath.style.strokeDasharray = 'none';
+    memoryTwinePath.style.strokeDashoffset = '0';
+  }
+  if (memoryClosing){
+    const inner = memoryClosing.querySelector('.memory-closing-inner');
+    if (inner) gsap.set(inner, { opacity: 0, rotateX: -80, y: 20 });
+  }
+  if (nextScene6){
+    nextScene6.classList.remove('is-shown');
+    nextScene6.hidden = true;
+  }
+}
 
 function updateTwinePath(){
   if (!memoryTwineSvg || !memoryTwinePath || !memoryBoardWrap) return 0;
@@ -1706,6 +2458,8 @@ function revealClosingHeadline(){
 
 function playScene6(){
   if (!scene6) return;
+  hideTreeCanvas();
+  resetScene6();
 
   // Initialize frame base tilts and hide initial ambient motion
   memoryFrames.forEach(f => {
@@ -1730,13 +2484,14 @@ function playScene6(){
   }
 
   // Master timeline for Scene 6
-  const tl = gsap.timeline();
+  scene6Timeline = gsap.timeline();
+  const tl = scene6Timeline;
 
   // 1. Soft Light Wipe Transition entering Scene 6
   if (memoryWipe){
     tl.fromTo(memoryWipe,
-      { opacity: 0, scale: 1.1 },
-      { opacity: 0.92, scale: 1.0, duration: 0.45, ease: 'power2.in' }
+      { opacity: 0, scale: 1.08 },
+      { opacity: 0.92, scale: 1.0, duration: 0.55, ease: 'power1.inOut' }
     )
     .to(memoryWipe, {
       opacity: 0,
@@ -1751,8 +2506,8 @@ function playScene6(){
   if (memoryEyebrow){
     tl.fromTo(memoryEyebrow,
       { opacity: 0, y: -12 },
-      { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
-      '-=0.3'
+      { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' },
+      '-=0.35'
     );
   }
 
@@ -1811,27 +2566,52 @@ function playScene6(){
 }
 
 // Window resize listener to keep twine aligned if dimensions change
+let twineResizeRAF = 0;
 window.addEventListener('resize', () => {
-  if (scene6 && scene6.classList.contains('is-active')){
-    const len = updateTwinePath();
-    if (len && memoryTwinePath){
-      memoryTwinePath.style.strokeDasharray = 'none';
-      memoryTwinePath.style.strokeDashoffset = '0';
+  if (twineResizeRAF) return;
+  twineResizeRAF = requestAnimationFrame(() => {
+    twineResizeRAF = 0;
+    if (scene6 && scene6.classList.contains('is-active')){
+      const len = updateTwinePath();
+      if (len && memoryTwinePath){
+        memoryTwinePath.style.strokeDasharray = 'none';
+        memoryTwinePath.style.strokeDashoffset = '0';
+      }
     }
-  }
+  });
 });
 
+if (scene6){
+  scene6.addEventListener('click', () => {
+    if (nextScene6 && nextScene6.classList.contains('is-shown')){
+      goToScene(7);
+    } else {
+      revealClosingHeadline();
+    }
+  });
+}
 if (nextScene6){
-  nextScene6.addEventListener('click', () => goToScene(7));
+  nextScene6.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToScene(7);
+  });
 }
 
 /* ============================================================
    MASTER SCENE ORCHESTRATOR
    Chain: Act 1 -> Scene 2 (Gift Box) -> Scene 3 (PIN Lock) -> Scene 4 (Curtains) -> Scene 5 (Cake) -> Scene 6 (Memory Wall) -> Scene 7 (Confetti Cannon)
    ============================================================ */
-function goToScene(sceneNum){
-  if (sceneNum === 2){
-    // Hide Scene 1 controls
+let currentSceneNum = 1;
+let sceneTransitioning = false;
+let sceneEntryTime = Date.now();
+
+function deactivateAllScenesExcept(targetScene){
+  // Scene 1 / Act 1
+  if (targetScene !== 1){
+    stopMotes();
+    treeStop();
+    showWish(false);
+    hideTreeCanvas();
     if (replay){
       replay.classList.remove('is-shown', 'has-next');
       replay.hidden = true;
@@ -1840,117 +2620,294 @@ function goToScene(sceneNum){
       nextScene1.classList.remove('is-shown');
       nextScene1.hidden = true;
     }
-    showWish(false);
+  }
 
-    // Stop tree frame loop to conserve resources
-    if (treeRAF){
-      cancelAnimationFrame(treeRAF);
-      treeRAF = 0;
+  // Scene 2
+  if (targetScene !== 2){
+    giftOpened = false;
+    if (scene2){
+      scene2.classList.remove('is-active', 'gift-open');
+      scene2.setAttribute('aria-hidden', 'true');
     }
+    if (nextScene2){
+      nextScene2.classList.remove('is-shown');
+      nextScene2.hidden = true;
+    }
+  }
 
-    // Activate Scene 2 (Gift Box)
+  // Scene 3
+  if (targetScene !== 3){
+    if (scene3){
+      scene3.classList.remove('is-active', 'pin-unlocked');
+      scene3.setAttribute('aria-hidden', 'true');
+    }
+    stopClock();
+    resetPinScene();
+  }
+
+  // Scene 4
+  if (targetScene !== 4){
+    if (scene4){
+      scene4.classList.remove('is-active', 'curtains-open');
+      scene4.setAttribute('aria-hidden', 'true');
+    }
+    closeCurtains();
+  }
+
+  // Scene 5
+  if (targetScene !== 5){
+    if (scene5){
+      scene5.classList.remove('is-active', 'candles-out');
+      scene5.setAttribute('aria-hidden', 'true');
+    }
+    stopMic();
+    if (statsInterval){
+      clearInterval(statsInterval);
+      statsInterval = 0;
+    }
+    if (nextScene5){
+      nextScene5.classList.remove('is-shown');
+      nextScene5.hidden = true;
+    }
+    relightCake();
+  }
+
+  // Scene 6
+  if (targetScene !== 6){
+    if (scene6){
+      scene6.classList.remove('is-active');
+      scene6.setAttribute('aria-hidden', 'true');
+    }
+    resetScene6();
+  }
+
+  // Scene 7
+  if (targetScene !== 7){
+    if (scene7){
+      scene7.classList.remove('is-active');
+      scene7.setAttribute('aria-hidden', 'true');
+    }
+    resetScene7();
+  }
+
+  // Scene 8
+  if (targetScene !== 8){
+    if (scene8){
+      scene8.classList.remove('is-active');
+      scene8.setAttribute('aria-hidden', 'true');
+    }
+    resetBalloonScene();
+  }
+
+  // Scene 9
+  if (targetScene !== 9){
+    if (scene9){
+      scene9.classList.remove('is-active');
+      scene9.setAttribute('aria-hidden', 'true');
+    }
+    resetScene9();
+  }
+
+  // Scene 10
+  if (targetScene !== 10){
+    if (scene10){
+      scene10.classList.remove('is-active');
+      scene10.setAttribute('aria-hidden', 'true');
+    }
+    resetScene10();
+  }
+
+  // Scene 11
+  if (targetScene !== 11){
+    if (scene11){
+      scene11.classList.remove('is-active');
+      scene11.setAttribute('aria-hidden', 'true');
+    }
+    resetScene11();
+  }
+}
+
+function goToScene(sceneNum, force = false){
+  if (sceneTransitioning && !force) return;
+
+  sceneTransitioning = true;
+  currentSceneNum = sceneNum;
+  sceneEntryTime = Date.now();
+  const guardTime = reduceMotion ? 100 : 800;
+  setTimeout(() => { sceneTransitioning = false; }, guardTime);
+
+  // Toggle night-mode on music button
+  if (musicToggleBtn){
+    const nightScenes = [7, 8, 10];
+    musicToggleBtn.classList.toggle('night-mode', nightScenes.includes(sceneNum));
+  }
+
+  // Deactivate and clean all other scenes
+  deactivateAllScenesExcept(sceneNum);
+
+  if (sceneNum === 1){
+    resetAll();
+  } else if (sceneNum === 2){
     if (scene2){
       scene2.classList.add('is-active');
       scene2.setAttribute('aria-hidden', 'false');
 
-      if (reduceMotion){
-        openGiftBox();
+      if (!reduceMotion){
+        if (giftHeader){
+          gsap.fromTo(giftHeader,
+            { opacity: 0, y: -18 },
+            { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out', delay: 0.1 }
+          );
+        }
+        if (giftBoxWrap){
+          gsap.fromTo(giftBoxWrap,
+            { opacity: 0, scale: 0.92, y: 22 },
+            { opacity: 1, scale: 1, y: 0, duration: 1.0, ease: 'power2.out', delay: 0.2 }
+          );
+        }
       }
     }
   } else if (sceneNum === 3){
-    // Hide Scene 2 and hand off to Scene 3 (Secret PIN Lock)
-    if (scene2){
-      scene2.classList.remove('is-active');
-      scene2.setAttribute('aria-hidden', 'true');
-    }
     playScene3();
   } else if (sceneNum === 4){
-    // Hide Scene 3 and activate Scene 4 (Curtain Reveal)
-    if (scene3){
-      scene3.classList.remove('is-active');
-      scene3.setAttribute('aria-hidden', 'true');
-      stopClock();
-    }
     if (scene4){
       scene4.classList.add('is-active');
       scene4.setAttribute('aria-hidden', 'false');
-
+      closeCurtains();
       if (reduceMotion){
         openCurtains();
       }
     }
   } else if (sceneNum === 5){
-    // Hide Scene 4 and activate Scene 5 (Cake & Countdown)
-    if (scene4){
-      scene4.classList.remove('is-active');
-      scene4.setAttribute('aria-hidden', 'true');
-    }
     if (scene5){
       scene5.classList.add('is-active');
       scene5.setAttribute('aria-hidden', 'false');
       playScene5();
     }
   } else if (sceneNum === 6){
-    // Hide Scene 5 and activate Scene 6 (Memory Wall)
-    if (scene5){
-      scene5.classList.remove('is-active');
-      scene5.setAttribute('aria-hidden', 'true');
-      stopMic();
-      if (statsInterval){
-        clearInterval(statsInterval);
-        statsInterval = 0;
-      }
-    }
     if (scene6){
       scene6.classList.add('is-active');
       scene6.setAttribute('aria-hidden', 'false');
       playScene6();
     }
   } else if (sceneNum === 7){
-    // Hide Scene 6 and activate Scene 7 (Vintage Film-Strip)
-    if (scene6){
-      scene6.classList.remove('is-active');
-      scene6.setAttribute('aria-hidden', 'true');
-    }
     if (scene7){
       scene7.classList.add('is-active');
       scene7.setAttribute('aria-hidden', 'false');
       playScene7();
     }
   } else if (sceneNum === 8){
-    // Hide Scene 7 and activate Scene 8 (Constellation of Us)
-    if (scene7){
-      scene7.classList.remove('is-active');
-      scene7.setAttribute('aria-hidden', 'true');
-      if (filmScrollTween) { filmScrollTween.kill(); filmScrollTween = null; }
-      if (filmAmbientTween) { filmAmbientTween.kill(); filmAmbientTween = null; }
-    }
     if (scene8){
       scene8.classList.add('is-active');
       scene8.setAttribute('aria-hidden', 'false');
       playScene8();
     }
   } else if (sceneNum === 9){
-    // Hide Scene 8 and activate Scene 9 (The Handwritten Letter)
-    if (scene8){
-      scene8.classList.remove('is-active');
-      scene8.setAttribute('aria-hidden', 'true');
-      if (constellationTimeline) { constellationTimeline.kill(); constellationTimeline = null; }
-    }
     if (scene9){
       scene9.classList.add('is-active');
       scene9.setAttribute('aria-hidden', 'false');
       playScene9();
     }
   } else if (sceneNum === 10){
-    console.log('TODO: goToScene(10) — Scene 10 (Fireworks) coming soon!');
-    if (scene9){
-      scene9.classList.remove('is-active');
-      scene9.setAttribute('aria-hidden', 'true');
-      if (letterTimeline) { letterTimeline.kill(); letterTimeline = null; }
+    if (scene10){
+      scene10.classList.add('is-active');
+      scene10.setAttribute('aria-hidden', 'false');
+      playScene10();
+    }
+  } else if (sceneNum === 11){
+    if (scene11){
+      scene11.classList.add('is-active');
+      scene11.setAttribute('aria-hidden', 'false');
+      playScene11();
     }
   }
 }
+
+function handleGlobalTap(e){
+  if (sceneTransitioning) return;
+
+  // Ignore interactions on specific controls
+  if (e && e.target && e.target.closest){
+    if (e.target.closest('#replay, #btnReplayAll, .keypad-btn, #cakeMicBtn, #cakeRelightBtn, #musicToggleBtn')) {
+      return;
+    }
+  }
+
+  // Prevent accidental tap immediately upon entering a scene (within 400ms)
+  if (Date.now() - sceneEntryTime < 400) return;
+
+  if (currentSceneNum === 1){
+    // Act 1: If tree is blooming / wish shown / replay armed, tap anywhere goes to Scene 2
+    if (replayArmed || window.bdayDone || (nextScene1 && nextScene1.classList.contains('is-shown'))){
+      goToScene(2);
+    }
+  } else if (currentSceneNum === 2){
+    if (!giftOpened){
+      openGiftBox();
+    } else {
+      goToScene(3);
+    }
+  } else if (currentSceneNum === 3){
+    return;
+  } else if (currentSceneNum === 4){
+    const isCurtainsOpen = scene4 && scene4.classList.contains('curtains-open');
+    if (!isCurtainsOpen){
+      openCurtains();
+    } else {
+      goToScene(5);
+    }
+  } else if (currentSceneNum === 5){
+    if (!cakeBlown){
+      blowCandles();
+    } else {
+      goToScene(6);
+    }
+  } else if (currentSceneNum === 6){
+    if (nextScene6 && nextScene6.classList.contains('is-shown')){
+      goToScene(7);
+    } else {
+      revealClosingHeadline();
+    }
+  } else if (currentSceneNum === 7){
+    if (nextScene7 && nextScene7.classList.contains('is-shown')){
+      goToScene(8);
+    } else {
+      revealClimaxHeadline();
+    }
+  } else if (currentSceneNum === 8){
+    const closingBlock = $('balloonClosingBlock');
+    if (closingBlock && !closingBlock.hidden){
+      goToScene(9);
+    }
+  } else if (currentSceneNum === 9){
+    handleScene9Tap(e);
+  } else if (currentSceneNum === 10){
+    if (fwSettled || (nextScene10 && nextScene10.classList.contains('is-shown'))){
+      goToScene(11);
+    }
+  } else if (currentSceneNum === 11){
+    // Permanent resting state — no tap-anywhere advance
+    return;
+  }
+}
+
+// Global window tap and keydown listeners for "tap anywhere to next"
+window.addEventListener('pointerup', (e) => {
+  if (currentSceneNum === 1){
+    if (e && e.target && e.target.closest && e.target.closest('#archery')) return;
+    if (replayArmed || window.bdayDone || (nextScene1 && nextScene1.classList.contains('is-shown'))){
+      goToScene(2);
+    }
+  }
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowRight'){
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if (currentSceneNum === 3 && pinLocked) return;
+    handleGlobalTap(e);
+  }
+});
 
 /* ============================================================
    SCENE 7 — VINTAGE FILM-STRIP CONTROLLER
@@ -1967,20 +2924,59 @@ const nextScene7          = $('nextScene7');
 let filmScrollTween = null;
 let filmAmbientTween = null;
 
+function pauseScene7Videos(){
+  if (!scene7) return;
+  const videos = scene7.querySelectorAll('.user-clip-video');
+  videos.forEach(v => {
+    try { v.pause(); } catch(e){}
+  });
+}
+
+function playScene7Videos(){
+  if (!scene7) return;
+  const videos = scene7.querySelectorAll('.user-clip-video');
+  videos.forEach(v => {
+    try {
+      v.muted = true;
+      v.play().catch(() => {});
+    } catch(e){}
+  });
+}
+
+function resetScene7(){
+  if (filmScrollTween) { filmScrollTween.kill(); filmScrollTween = null; }
+  if (filmAmbientTween) { filmAmbientTween.kill(); filmAmbientTween = null; }
+  pauseScene7Videos();
+  if (filmClimaxHeadline){
+    filmClimaxHeadline.classList.remove('is-burned-in');
+  }
+  if (projectorFlash){
+    gsap.set(projectorFlash, { opacity: 0 });
+  }
+  if (filmStrip){
+    gsap.set(filmStrip, { y: 60 });
+  }
+  filmFrames.forEach(f => f.classList.remove('is-focused'));
+  if (nextScene7){
+    nextScene7.classList.remove('is-shown');
+    nextScene7.hidden = true;
+  }
+}
+
 function triggerProjectorFlicker(onDone){
   if (!projectorFlash || reduceMotion){
     if (onDone) onDone();
     return;
   }
-  // Authentic 24fps cinema projector shutter flicker
+  // Authentic 24fps cinema projector lamp warmup & shutter flicker (1.20s total)
   const tl = gsap.timeline({ onComplete: onDone });
   tl.set(projectorFlash, { opacity: 0 })
-    .to(projectorFlash, { opacity: 0.85, duration: 0.08, ease: 'power1.in' })
-    .to(projectorFlash, { opacity: 0.12, duration: 0.06 })
-    .to(projectorFlash, { opacity: 0.7, duration: 0.09 })
-    .to(projectorFlash, { opacity: 0.05, duration: 0.07 })
-    .to(projectorFlash, { opacity: 0.45, duration: 0.08 })
-    .to(projectorFlash, { opacity: 0, duration: 0.22, ease: 'power2.out' });
+    .to(projectorFlash, { opacity: 0.85, duration: 0.20, ease: 'power2.inOut' })
+    .to(projectorFlash, { opacity: 0.15, duration: 0.16 })
+    .to(projectorFlash, { opacity: 0.70, duration: 0.18 })
+    .to(projectorFlash, { opacity: 0.10, duration: 0.14 })
+    .to(projectorFlash, { opacity: 0.40, duration: 0.16 })
+    .to(projectorFlash, { opacity: 0, duration: 0.36, ease: 'power2.out' });
 }
 
 function checkFrameFocus(){
@@ -2037,19 +3033,9 @@ function startAmbientFilmDrift(){
 
 function playScene7(){
   if (!scene7) return;
-
-  if (filmScrollTween) { filmScrollTween.kill(); filmScrollTween = null; }
-  if (filmAmbientTween) { filmAmbientTween.kill(); filmAmbientTween = null; }
-
-  if (filmClimaxHeadline){
-    filmClimaxHeadline.classList.remove('is-burned-in');
-  }
-  if (nextScene7){
-    nextScene7.classList.remove('is-shown');
-    nextScene7.hidden = true;
-  }
-
-  filmFrames.forEach(f => f.classList.remove('is-focused'));
+  hideTreeCanvas();
+  resetScene7();
+  playScene7Videos();
 
   if (reduceMotion){
     const f4 = $('fFrame4');
@@ -2086,157 +3072,239 @@ function playScene7(){
   });
 }
 
+if (scene7){
+  scene7.addEventListener('click', () => {
+    if (nextScene7 && nextScene7.classList.contains('is-shown')){
+      goToScene(8);
+    } else {
+      revealClimaxHeadline();
+    }
+  });
+}
 if (nextScene7){
-  nextScene7.addEventListener('click', () => goToScene(8));
+  nextScene7.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToScene(8);
+  });
 }
 
 /* ============================================================
-   SCENE 8 — CONSTELLATION OF US CONTROLLER
+   SCENE 8 — BALLOON POP (POP THE WISHES) CONTROLLER
    ============================================================ */
 const scene8               = $('scene8');
-const constellationVeil    = $('constellationVeil');
-const constellationClosing = $('constellationClosing');
-const nextScene8           = $('nextScene8');
+const balloonToastMsg      = $('balloonToastMsg');
+const balloonsGrid         = $('balloonsGrid');
+const balloonCounterText   = $('balloonCounterText');
+const balloonClosingBlock  = $('balloonClosingBlock');
+const nextScene8           = $('nextScene8') || $('btnNextToScene9');
+const balloonResetBtn      = $('balloonResetBtn');
 
-const timelineItems = [
-  $('timelineItem0'),
-  $('timelineItem1'),
-  $('timelineItem2'),
-  $('timelineItem3'),
-  $('timelineItem4'),
-  $('timelineItem5')
-];
+let balloonToastTimer = null;
+let balloonsPoppedCount = 0;
 
-let constellationTimeline = null;
-
-function resetConstellationScene(){
-  if (constellationTimeline){
-    constellationTimeline.kill();
-    constellationTimeline = null;
+function getBalloonPalette() {
+  const isGlass = document.documentElement.getAttribute('data-theme') === 'glass' || (window.GIFT_DATA && window.GIFT_DATA.themeId === 'glass');
+  if (isGlass) {
+    return [
+      '#e03368', // Rose lift
+      '#f5b838', // Gold 1
+      '#d4235c', // Rose
+      '#841940', // Wine
+      '#fce18b', // Light gold
+      '#ff7597'  // Pink highlight
+    ];
   }
+  return [
+    '#e85987', // Rose lift
+    '#f5b838', // Gold 1
+    '#d4235c', // Rose
+    '#6e0a31', // Wine
+    '#e8a23d', // Gold 2
+    '#f472b6'  // Warm petal
+  ];
+}
 
-  timelineItems.forEach(item => {
-    if (item){
-      item.classList.remove('is-revealed', 'is-highlighted', 'is-pulsing');
-    }
-  });
+function showBalloonToast(msg) {
+  const toast = $('balloonToastMsg');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
 
-  if (constellationClosing){
-    const inner = constellationClosing.querySelector('.constellation-closing-inner');
-    if (inner){
-      gsap.set(inner, { opacity: 0, rotateX: -80, y: 15 });
-    }
-  }
+  if (balloonToastTimer) clearTimeout(balloonToastTimer);
+  balloonToastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3200);
+}
 
-  if (nextScene8){
-    nextScene8.classList.remove('is-shown');
-    nextScene8.hidden = true;
+function createBurstParticles(container, color) {
+  if (reduceMotion) return;
+  const particleCount = 8;
+  for (let i = 0; i < particleCount; i++) {
+    const p = document.createElement('div');
+    p.className = 'balloon-particle';
+    p.style.backgroundColor = color;
+    p.style.left = '50%';
+    p.style.top = '40%';
+
+    const angle = (i * (360 / particleCount)) * (Math.PI / 180);
+    const distance = 35 + Math.random() * 25;
+    p.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+    p.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 650);
   }
 }
 
-function playScene8(){
-  if (!scene8) return;
-  resetConstellationScene();
-
-  const closingInner = constellationClosing ? constellationClosing.querySelector('.constellation-closing-inner') : null;
-
-  if (reduceMotion){
-    timelineItems.forEach(item => {
-      if (item) item.classList.add('is-revealed');
-    });
-    if (constellationVeil){
-      gsap.set(constellationVeil, { opacity: 0 });
-    }
-    if (closingInner){
-      gsap.set(closingInner, { opacity: 1, rotateX: 0, y: 0 });
-    }
-    if (nextScene8){
-      nextScene8.hidden = false;
-      nextScene8.classList.add('is-shown');
-    }
-    return;
+function resetBalloonScene() {
+  if (balloonToastTimer) {
+    clearTimeout(balloonToastTimer);
+    balloonToastTimer = null;
   }
+  const toast = $('balloonToastMsg');
+  if (toast) toast.classList.remove('show');
 
-  constellationTimeline = gsap.timeline();
-
-  // 1. Fade veil out into deep nocturnal velvet sky
-  if (constellationVeil){
-    constellationTimeline.fromTo(constellationVeil,
-      { opacity: 0.9, scale: 1 },
-      { opacity: 0, scale: 1.05, duration: 0.9, ease: 'power2.out' }
-    );
+  const closingBlock = $('balloonClosingBlock');
+  if (closingBlock) {
+    closingBlock.hidden = true;
   }
+  balloonsPoppedCount = 0;
+  const counterText = $('balloonCounterText');
+  if (counterText) counterText.textContent = 'Popped 0/6';
+}
 
-  // 2. Progressive sequential reveal: 6 timeline items appear step-by-step down the central spine
-  timelineItems.forEach((item, idx) => {
-    const delay = idx === 0 ? '+=0.2' : '+=0.7';
-    constellationTimeline.add(() => {
-      if (item){
-        item.classList.add('is-revealed');
+function renderBalloons() {
+  const grid = $('balloonsGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  resetBalloonScene();
+
+  const gd = window.GIFT_DATA || {};
+  const s8 = gd.scenes?.scene8_balloonPop || gd.scenes?.scene8_constellation || {};
+  const defaultMessages = [
+    "May your smiles be endless! 😊",
+    "Wishing you all the success! 🌟",
+    "Stay as amazing as you are! 💙",
+    "Dream big and fly high! 🚀",
+    "Health and happiness always! 🍀",
+    "Lots and lots of love! ❤️"
+  ];
+  const messages = (Array.isArray(s8.messages) && s8.messages.length === 6)
+    ? s8.messages
+    : (Array.isArray(s8.captions) && s8.captions.length === 6 ? s8.captions : defaultMessages);
+
+  const palette = getBalloonPalette();
+
+  messages.forEach((msg, index) => {
+    const slot = document.createElement('div');
+    slot.className = 'balloon-slot';
+
+    const color = palette[index % palette.length];
+
+    const balloon = document.createElement('div');
+    balloon.className = 'balloon';
+    balloon.style.backgroundColor = color;
+    balloon.style.animationDelay = (index * 0.42) + 's';
+    balloon.setAttribute('role', 'button');
+    balloon.setAttribute('tabindex', '0');
+    balloon.setAttribute('aria-label', `Pop balloon ${index + 1}`);
+
+    balloon.innerHTML = `
+      <div class="balloon-glare" aria-hidden="true"></div>
+      <div class="balloon-knot" style="background-color: ${color}" aria-hidden="true"></div>
+      <div class="balloon-string" aria-hidden="true"></div>
+    `;
+
+    const handlePop = (e) => {
+      if (e) e.stopPropagation();
+      if (balloon.classList.contains('popping') || balloon.style.display === 'none') return;
+      popBalloon(balloon, slot, msg, color, messages.length);
+    };
+
+    balloon.addEventListener('click', handlePop);
+    balloon.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handlePop(e);
       }
-    }, delay);
+    });
+
+    slot.appendChild(balloon);
+    grid.appendChild(slot);
   });
-
-  // 3. Unison Constellation Pulse across all star dots
-  constellationTimeline.add(() => {
-    timelineItems.forEach(item => {
-      if (item) item.classList.add('is-pulsing');
-    });
-    if (timelineItems[5]){
-      timelineItems[5].classList.add('is-highlighted');
-    }
-  }, '+=0.5');
-
-  constellationTimeline.add(() => {
-    timelineItems.forEach(item => {
-      if (item) item.classList.remove('is-pulsing');
-    });
-    if (timelineItems[5]){
-      timelineItems[5].classList.remove('is-highlighted');
-    }
-  }, '+=0.8');
-
-  // 4. 3D Hinge Reveal of Closing Headline
-  if (closingInner){
-    constellationTimeline.fromTo(closingInner,
-      { opacity: 0, rotateX: -80, y: 20 },
-      { opacity: 1, rotateX: 0, y: 0, duration: 1.0, ease: 'back.out(1.3)' },
-      '+=0.2'
-    );
-  }
-
-  // 5. Reveal Next Pill Button
-  constellationTimeline.add(() => {
-    if (nextScene8 && scene8 && scene8.classList.contains('is-active')){
-      nextScene8.hidden = false;
-      requestAnimationFrame(() => nextScene8.classList.add('is-shown'));
-    }
-  }, '+=0.35');
 }
 
-// Interactive Timeline Item Hover / Tap feedback
-timelineItems.forEach(item => {
-  if (!item) return;
+function popBalloon(balloonEl, slotEl, message, color, totalCount) {
 
-  const triggerHighlight = () => {
-    if (!item.classList.contains('is-revealed')) return;
-    item.classList.add('is-highlighted');
-  };
+  if (reduceMotion) {
+    balloonEl.style.display = 'none';
+  } else {
+    balloonEl.classList.add('popping');
+    createBurstParticles(slotEl, color);
+    setTimeout(() => {
+      balloonEl.style.display = 'none';
+    }, 170);
+  }
 
-  const clearHighlight = () => {
-    item.classList.remove('is-highlighted');
-  };
+  showBalloonToast(message);
 
-  item.addEventListener('pointerenter', triggerHighlight);
-  item.addEventListener('pointerleave', clearHighlight);
-  item.addEventListener('click', () => {
-    triggerHighlight();
-    setTimeout(clearHighlight, 700);
-  });
+  balloonsPoppedCount++;
+  const counterText = $('balloonCounterText');
+  if (counterText) counterText.textContent = `Popped ${balloonsPoppedCount}/${totalCount}`;
+
+  if (balloonsPoppedCount >= totalCount) {
+    const closingBlock = $('balloonClosingBlock');
+    if (closingBlock) {
+      setTimeout(() => {
+        closingBlock.hidden = false;
+        const btnNext = $('nextScene8') || $('btnNextToScene9');
+        if (btnNext) {
+          btnNext.classList.add('is-shown');
+        }
+      }, reduceMotion ? 100 : 450);
+    }
+  }
+}
+
+function playScene8() {
+  if (!scene8) return;
+  hideTreeCanvas();
+  renderBalloons();
+}
+
+// Event Listeners for Scene 8 Action buttons
+document.addEventListener('DOMContentLoaded', () => {
+  const resetBtn = $('balloonResetBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderBalloons();
+    });
+  }
+
+  const btnNext = $('nextScene8') || $('btnNextToScene9');
+  if (btnNext) {
+    btnNext.addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToScene(9);
+    });
+  }
 });
 
-if (nextScene8){
-  nextScene8.addEventListener('click', () => goToScene(9));
+// Also attach immediately in case DOM is already ready
+const resetBtnNow = $('balloonResetBtn');
+if (resetBtnNow) {
+  resetBtnNow.addEventListener('click', (e) => {
+    e.stopPropagation();
+    renderBalloons();
+  });
+}
+const btnNextNow = $('nextScene8') || $('btnNextToScene9');
+if (btnNextNow) {
+  btnNextNow.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToScene(9);
+  });
 }
 
 /* ============================================================
@@ -2254,18 +3322,28 @@ const letterCardScroll   = $('letterCardScroll');
 const typewriterText     = $('typewriterText');
 const nextScene9         = $('nextScene9');
 
-const LETTER_TEXT =
+let LETTER_TEXT =
+  (window.GIFT_DATA && window.GIFT_DATA.scenes && window.GIFT_DATA.scenes.scene9_letter && window.GIFT_DATA.scenes.scene9_letter.message) ||
   "Dear troublemaker,\n\nThank you for every ridiculous memory and the ones we haven't made yet.\n\nHappy Birthday. I mean it.";
 
 let typeWriterStarted    = false;
 let typeWriterTimeoutId  = null;
+let letterTimeline       = null;
+let letterOpened         = false;
+let envelopeOpeningTime  = 0;
 
 function resetScene9(){
   if (typeWriterTimeoutId){
     clearTimeout(typeWriterTimeoutId);
     typeWriterTimeoutId = null;
   }
+  if (letterTimeline){
+    letterTimeline.kill();
+    letterTimeline = null;
+  }
   typeWriterStarted = false;
+  letterOpened = false;
+  envelopeOpeningTime = 0;
 
   // Reset envelope
   if (envelopeWrapper){
@@ -2361,7 +3439,9 @@ function startTypewriter(){
 
 function openEnvelope(){
   // Guard: while typing or opening transition is in progress, ignore taps
-  if (typeWriterStarted) return;
+  if (letterOpened || typeWriterStarted) return;
+  letterOpened = true;
+  envelopeOpeningTime = Date.now();
   typeWriterStarted = true;
 
   if (reduceMotion){
@@ -2370,6 +3450,7 @@ function openEnvelope(){
     }
     if (letterContainer){
       letterContainer.classList.remove('is-hidden');
+      letterContainer.classList.add('is-breathing');
     }
     if (typewriterText){
       typewriterText.innerHTML = LETTER_TEXT.replace(/\n/g, '<br>');
@@ -2382,7 +3463,8 @@ function openEnvelope(){
     return;
   }
 
-  const tl = gsap.timeline();
+  letterTimeline = gsap.timeline();
+  const tl = letterTimeline;
 
   // 1. Flap opens slightly and heart flares
   if (envelopeFlap){
@@ -2433,8 +3515,64 @@ function openEnvelope(){
   }
 }
 
+function completeLetterImmediately(){
+  if (typeWriterTimeoutId){
+    clearTimeout(typeWriterTimeoutId);
+    typeWriterTimeoutId = null;
+  }
+  if (letterTimeline){
+    letterTimeline.progress(1);
+  }
+  if (envelopeWrapper){
+    envelopeWrapper.classList.add('is-hidden');
+  }
+  if (letterContainer){
+    letterContainer.classList.remove('is-hidden');
+    letterContainer.classList.add('is-breathing');
+    gsap.set(letterContainer, { opacity: 1, y: 0, scale: 1 });
+  }
+  if (typewriterText){
+    typewriterText.innerHTML = LETTER_TEXT.replace(/\n/g, '<br>');
+  }
+  if (letterCardScroll){
+    letterCardScroll.scrollTop = letterCardScroll.scrollHeight;
+  }
+  const cursor = scene9 ? scene9.querySelector('.typewriter-cursor') : null;
+  if (cursor && cursor.parentNode){
+    cursor.remove();
+  }
+  typeWriterStarted = false;
+  if (nextScene9){
+    nextScene9.hidden = false;
+    requestAnimationFrame(() => nextScene9.classList.add('is-shown'));
+  }
+}
+
+function handleScene9Tap(e){
+  if (sceneTransitioning) return;
+  if (!scene9 || !scene9.classList.contains('is-active')) return;
+
+  if (!letterOpened){
+    openEnvelope();
+    return;
+  }
+
+  // If envelope just opened in the last 400ms, ignore accidental rapid double-tap
+  if (Date.now() - envelopeOpeningTime < 400) return;
+
+  // If next hint is already shown (letter finished), advance to Scene 10
+  if (nextScene9 && nextScene9.classList.contains('is-shown')){
+    goToScene(10);
+    return;
+  }
+
+  // Otherwise, fast-forward typing immediately and reveal next hint
+  completeLetterImmediately();
+}
+
 function playScene9(){
   if (!scene9) return;
+  hideTreeCanvas();
   resetScene9();
 
   if (reduceMotion){
@@ -2448,33 +3586,47 @@ function playScene9(){
   if (letterVeil){
     gsap.fromTo(letterVeil,
       { opacity: 0.95, scale: 1 },
-      { opacity: 0, scale: 1.05, duration: 0.95, ease: 'power2.out' }
+      { opacity: 0, scale: 1.04, duration: 1.30, ease: 'power2.out' }
     );
   }
 }
 
 // User tap-to-open interaction on envelope
 if (envelope){
-  envelope.addEventListener('click', openEnvelope);
+  envelope.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handleScene9Tap(e);
+  });
   envelope.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' '){
       e.preventDefault();
-      openEnvelope();
+      handleScene9Tap(e);
     }
   });
 }
 if (envelopeHint){
-  envelopeHint.addEventListener('click', openEnvelope);
+  envelopeHint.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handleScene9Tap(e);
+  });
 }
 
-// Wire Scene 9 Next button to Scene 10 placeholder
+if (scene9){
+  scene9.addEventListener('click', handleScene9Tap);
+}
+
 if (nextScene9){
-  nextScene9.addEventListener('click', () => goToScene(10));
+  nextScene9.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToScene(10);
+  });
 }
 
-// Wire up Act 1 Next button to Scene 2
 if (nextScene1){
-  nextScene1.addEventListener('click', () => goToScene(2));
+  nextScene1.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToScene(2);
+  });
 }
 
 // Global exposure for testing or debugging
@@ -2482,6 +3634,951 @@ window.openGiftBox   = openGiftBox;
 window.playScene3    = playScene3;
 window.openCurtains  = openCurtains;
 window.closeCurtains = closeCurtains;
+
+/* ============================================================
+   SCENE 10 — FIREWORKS FINALE CONTROLLER (DIWALI SKY DISPLAY)
+   ============================================================ */
+const scene10              = $('scene10');
+const fireworksVeil        = $('fireworksVeil');
+const fireworksCanvas      = $('fireworksCanvas');
+const fireworksClosing     = $('fireworksClosing');
+const fireworksClosingInner= $('fireworksClosingInner');
+const nextScene10          = $('nextScene10');
+
+const ctx10 = fireworksCanvas ? fireworksCanvas.getContext('2d') : null;
+let fwW = 0, fwH = 0, fwDpr = 1;
+let fwRafId = 0;
+let fwRockets = [];
+let fwParticles = [];
+let fwSparkles = [];
+let fwFlashes = [];
+let fwHeartParticles = [];
+let fwSettled = false;
+let fwShowTimeouts = [];
+let fwAmbientTimeout = 0;
+
+const FW_PALETTE = {
+  rose:     '#d4235c', // var(--rose)
+  roseLift: '#ff5f86', // var(--rose-lift)
+  gold1:    '#ffcf6a', // var(--gold-1)
+  gold2:    '#e8a23d', // var(--gold-2)
+  cream:    '#fff8ee',
+  white:    '#ffffff'
+};
+
+function resizeFireworks(){
+  if (!fireworksCanvas || !ctx10) return;
+  fwW = window.innerWidth || 360;
+  fwH = window.innerHeight || 640;
+  fwDpr = Math.min(window.devicePixelRatio || 1, 2);
+  fireworksCanvas.width = fwW * fwDpr;
+  fireworksCanvas.height = fwH * fwDpr;
+  fireworksCanvas.style.width = `${fwW}px`;
+  fireworksCanvas.style.height = `${fwH}px`;
+  ctx10.setTransform(fwDpr, 0, 0, fwDpr, 0, 0);
+}
+
+// Parametric heart formula established in Act 1:
+// x = 16 * sin^3(t)
+// y = -(13 * cos(t) - 5 * cos(2t) - 2 * cos(3t) - cos(4t))
+function getHeartCoord(t, centerX, centerY, scale){
+  const hx = 16 * Math.pow(Math.sin(t), 3);
+  const hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+  return {
+    x: centerX + hx * scale,
+    y: centerY + hy * scale
+  };
+}
+
+function spawnSparkle(x, y, color, size, duration){
+  fwSparkles.push({
+    x: x + (Math.random() - 0.5) * 6,
+    y: y + (Math.random() - 0.5) * 6,
+    vx: (Math.random() - 0.5) * 1.2,
+    vy: (Math.random() - 0.5) * 1.2 + 0.4,
+    color,
+    size: size || (1.2 + Math.random() * 2.2),
+    alpha: 1,
+    decay: 1 / (duration || 26)
+  });
+}
+
+function triggerSkyFlash(x, y, color){
+  fwFlashes.push({
+    x,
+    y,
+    radius: Math.max(fwW, fwH) * 0.82,
+    color: color || 'rgba(255, 207, 106, 0.32)',
+    alpha: 0.52,
+    decay: 0.05
+  });
+}
+
+function launchFireworkRocket(targetX, targetY, colors, isFinale, isWillow){
+  if (!ctx10) return;
+  const startX = fwW * (0.35 + Math.random() * 0.3);
+  const startY = fwH + 10;
+  const dx = targetX - startX;
+  const dy = targetY - startY;
+  const distance = Math.hypot(dx, dy);
+  const speed = isFinale ? 14 : 12.5;
+  const duration = Math.max(25, distance / speed);
+
+  fwRockets.push({
+    x: startX,
+    y: startY,
+    prevX: startX,
+    prevY: startY,
+    startX,
+    startY,
+    targetX,
+    targetY,
+    colors,
+    isFinale: !!isFinale,
+    isWillow: !!isWillow,
+    progress: 0,
+    step: 1 / duration,
+    trailColor: isFinale ? FW_PALETTE.gold1 : (colors[0] || FW_PALETTE.gold1)
+  });
+}
+
+function explodeDiwaliShell(rocket){
+  const x = rocket.targetX;
+  const y = rocket.targetY;
+  const isFinale = rocket.isFinale;
+  const isWillow = rocket.isWillow;
+
+  if (isFinale){
+    // Climax Grand Golden Diwali Shell: Fills the entire sky then settles into the golden heart
+    triggerSkyFlash(x, y, 'rgba(255, 220, 140, 0.45)');
+
+    const TOTAL_HEART = 180;
+    const heartScale = Math.min(fwW * 0.46, fwH * 0.28) / 16;
+    const heartCenterY = fwH * 0.30;
+
+    for (let i = 0; i < TOTAL_HEART; i++){
+      const t = (i / TOTAL_HEART) * Math.PI * 2;
+      const targetPos = getHeartCoord(t, fwW * 0.5, heartCenterY, heartScale);
+      const jitterX = (Math.random() - 0.5) * 6;
+      const jitterY = (Math.random() - 0.5) * 6;
+
+      const angle = Math.random() * Math.PI * 2;
+      // High initial Diwali velocity spreading across the entire screen
+      const speed = 4.0 + Math.random() * 11.5;
+      const color = i % 3 === 0 ? FW_PALETTE.gold1 : (i % 3 === 1 ? FW_PALETTE.gold2 : FW_PALETTE.cream);
+
+      fwHeartParticles.push({
+        x,
+        y,
+        prevX: x,
+        prevY: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        targetX: targetPos.x + jitterX,
+        targetY: targetPos.y + jitterY,
+        color,
+        size: 2.4 + Math.random() * 2.2,
+        phase: Math.random() * Math.PI * 2,
+        isSettled: false,
+        coalesceProgress: 0,
+        alpha: 1
+      });
+    }
+
+    // Outer glittering golden cloud for screen-filling majesty
+    for (let j = 0; j < 90; j++){
+      const a = Math.random() * Math.PI * 2;
+      const spd = 6.0 + Math.random() * 14.0;
+      fwParticles.push({
+        x,
+        y,
+        prevX: x,
+        prevY: y,
+        vx: Math.cos(a) * spd,
+        vy: Math.sin(a) * spd,
+        color: Math.random() < 0.65 ? FW_PALETTE.gold1 : FW_PALETTE.roseLift,
+        size: 2.2 + Math.random() * 2.4,
+        alpha: 1,
+        drag: 0.97,
+        gravity: 0.055,
+        decay: 0.012 + Math.random() * 0.014,
+        isWillow: true
+      });
+    }
+
+    triggerClosingFinale();
+    return;
+  }
+
+  // Giant Diwali Shell (Peony, Chrysanthemum, or Kamuro Willow)
+  const count = isWillow ? 210 : 175;
+  const colors = rocket.colors || [FW_PALETTE.roseLift, FW_PALETTE.gold1];
+  const flashColor = isWillow ? 'rgba(255, 207, 106, 0.38)' : 'rgba(255, 95, 134, 0.34)';
+  triggerSkyFlash(x, y, flashColor);
+
+  for (let i = 0; i < count; i++){
+    const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.25;
+    // Multi-tier layered speeds creating deep spherical shells spanning the whole screen
+    const tier = Math.random();
+    const speed = tier < 0.3
+      ? (3.5 + Math.random() * 4.5)
+      : tier < 0.75
+      ? (8.0 + Math.random() * 5.5)
+      : (13.0 + Math.random() * 4.5);
+
+    const color = colors[i % colors.length];
+
+    fwParticles.push({
+      x,
+      y,
+      prevX: x,
+      prevY: y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      color,
+      size: isWillow ? (2.0 + Math.random() * 2.2) : (2.4 + Math.random() * 2.4),
+      alpha: 1,
+      drag: isWillow ? 0.978 : 0.970,
+      gravity: isWillow ? 0.048 : 0.055,
+      decay: isWillow ? (0.007 + Math.random() * 0.008) : (0.012 + Math.random() * 0.014),
+      isWillow: !!isWillow
+    });
+  }
+
+  // Large center spark burst
+  for (let s = 0; s < 40; s++){
+    spawnSparkle(x, y, FW_PALETTE.cream, 3.0, 35);
+  }
+}
+
+function triggerClosingFinale(){
+  if (fwSettled) return;
+  fwSettled = true;
+
+  // Reveal closing headline with 3D hinge animation after heart particles coalesce
+  setTimeout(() => {
+    if (!scene10 || !scene10.classList.contains('is-active')) return;
+
+    if (fireworksClosingInner){
+      gsap.fromTo(fireworksClosingInner,
+        { opacity: 0, rotateX: -80, y: 20 },
+        { opacity: 1, rotateX: 0, y: 0, duration: 1.05, ease: 'back.out(1.3)' }
+      );
+    }
+
+    // Fade in shared Next pill
+    setTimeout(() => {
+      if (nextScene10 && scene10 && scene10.classList.contains('is-active')){
+        nextScene10.hidden = false;
+        requestAnimationFrame(() => nextScene10.classList.add('is-shown'));
+      }
+    }, 450);
+
+    // Continue celebratory Diwali background sky shots
+    scheduleAmbientFirework();
+  }, 1300);
+}
+
+function scheduleAmbientFirework(){
+  if (!scene10 || !scene10.classList.contains('is-active')) return;
+  clearTimeout(fwAmbientTimeout);
+
+  fwAmbientTimeout = setTimeout(() => {
+    if (!scene10 || !scene10.classList.contains('is-active') || reduceMotion) return;
+
+    const sideLeft = Math.random() < 0.5;
+    const targetX = fwW * (sideLeft ? (0.16 + Math.random() * 0.22) : (0.62 + Math.random() * 0.22));
+    const targetY = fwH * (0.18 + Math.random() * 0.24);
+    const isWillow = Math.random() < 0.55;
+    const colors = isWillow
+      ? [FW_PALETTE.gold1, FW_PALETTE.gold2]
+      : (Math.random() < 0.5 ? [FW_PALETTE.roseLift, FW_PALETTE.gold1] : [FW_PALETTE.rose, FW_PALETTE.gold2]);
+
+    launchFireworkRocket(targetX, targetY, colors, false, isWillow);
+
+    scheduleAmbientFirework();
+  }, 3200 + Math.random() * 2200);
+}
+
+// Full automated Diwali Fireworks Choreography: explodes immediately on scene load!
+function startDiwaliShow(){
+  fwShowTimeouts.forEach(t => clearTimeout(t));
+  fwShowTimeouts = [];
+
+  const queue = (fn, delay) => {
+    const id = setTimeout(() => {
+      if (scene10 && scene10.classList.contains('is-active') && !reduceMotion){
+        fn();
+      }
+    }, delay);
+    fwShowTimeouts.push(id);
+  };
+
+  // Wave 1: Immediate dual aerial burst illuminating left and right sky
+  queue(() => {
+    launchFireworkRocket(fwW * 0.28, fwH * 0.26, [FW_PALETTE.roseLift, FW_PALETTE.gold1], false, false);
+  }, 180);
+
+  queue(() => {
+    launchFireworkRocket(fwW * 0.72, fwH * 0.22, [FW_PALETTE.rose, FW_PALETTE.gold2], false, false);
+  }, 650);
+
+  // Wave 2: Twin Golden Kamuro (Willows) filling the sky with cascading gold rain
+  queue(() => {
+    launchFireworkRocket(fwW * 0.38, fwH * 0.20, [FW_PALETTE.gold1, FW_PALETTE.gold2], false, true);
+    launchFireworkRocket(fwW * 0.62, fwH * 0.18, [FW_PALETTE.gold1, FW_PALETTE.cream], false, true);
+  }, 1500);
+
+  // Wave 3: Grand Triple Diwali Barrage spanning the entire screen width
+  queue(() => {
+    launchFireworkRocket(fwW * 0.20, fwH * 0.28, [FW_PALETTE.roseLift, FW_PALETTE.gold1], false, false);
+    launchFireworkRocket(fwW * 0.50, fwH * 0.16, [FW_PALETTE.gold1, FW_PALETTE.rose], false, true);
+    launchFireworkRocket(fwW * 0.80, fwH * 0.26, [FW_PALETTE.rose, FW_PALETTE.gold2], false, false);
+  }, 2650);
+
+  // Wave 4: Grand Finale Climax Firework that coalesces into the golden heart
+  queue(() => {
+    launchFireworkRocket(fwW * 0.50, fwH * 0.28, [FW_PALETTE.gold1, FW_PALETTE.gold2], true, false);
+  }, 3950);
+}
+
+function renderFireworksFrame(){
+  if (!ctx10) return;
+  ctx10.clearRect(0, 0, fwW, fwH);
+
+  // 1. Screen Flashes (Atmospheric sky illumination on detonation)
+  for (let f = fwFlashes.length - 1; f >= 0; f--){
+    const fl = fwFlashes[f];
+    fl.alpha -= fl.decay;
+    if (fl.alpha <= 0){
+      fwFlashes.splice(f, 1);
+      continue;
+    }
+    const grad = ctx10.createRadialGradient(fl.x, fl.y, 10, fl.x, fl.y, fl.radius);
+    grad.addColorStop(0, fl.color.replace(/[\d\.]+\)$/, `${fl.alpha})`));
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx10.save();
+    ctx10.fillStyle = grad;
+    ctx10.fillRect(0, 0, fwW, fwH);
+    ctx10.restore();
+  }
+
+  // 2. Rockets in Flight (Blazing whistling trails)
+  for (let i = fwRockets.length - 1; i >= 0; i--){
+    const r = fwRockets[i];
+    r.progress += r.step;
+    r.prevX = r.x;
+    r.prevY = r.y;
+
+    const t = Math.min(1, r.progress);
+    const easeT = 1 - Math.pow(1 - t, 2.2);
+    r.x = r.startX + (r.targetX - r.startX) * easeT;
+    r.y = r.startY + (r.targetY - r.startY) * easeT;
+
+    // Golden sparks shed by ascending rocket
+    spawnSparkle(r.x, r.y, r.trailColor, 2.2, 18);
+
+    // Glowing blazing head (concentric glow passes without GPU blur stall)
+    ctx10.save();
+    ctx10.beginPath();
+    ctx10.moveTo(r.prevX, r.prevY);
+    ctx10.lineTo(r.x, r.y);
+    ctx10.strokeStyle = r.trailColor;
+    ctx10.lineCap = 'round';
+
+    // Outer glow stroke
+    ctx10.lineWidth = (r.isFinale ? 5.5 : 4.0) * 2.2;
+    ctx10.globalAlpha = 0.35;
+    ctx10.stroke();
+
+    // Core stroke
+    ctx10.lineWidth = r.isFinale ? 5.5 : 4.0;
+    ctx10.globalAlpha = 1.0;
+    ctx10.stroke();
+
+    ctx10.beginPath();
+    ctx10.arc(r.x, r.y, r.isFinale ? 4.5 : 3.5, 0, Math.PI * 2);
+    ctx10.fillStyle = FW_PALETTE.white;
+    ctx10.fill();
+    ctx10.restore();
+
+    if (r.progress >= 1){
+      explodeDiwaliShell(r);
+      fwRockets.splice(i, 1);
+    }
+  }
+
+  // 3. Screen-filling Burst Particles with Glowing Streak Tails
+  for (let i = fwParticles.length - 1; i >= 0; i--){
+    const p = fwParticles[i];
+    p.prevX = p.x;
+    p.prevY = p.y;
+    p.vx *= p.drag;
+    p.vy *= p.drag;
+    p.vy += p.gravity;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.alpha -= p.decay;
+
+    // Shedding micro-glitter as it flies
+    if (p.isWillow && Math.random() < 0.45 && p.alpha > 0.25){
+      spawnSparkle(p.x, p.y, FW_PALETTE.cream, 1.8, 24);
+    } else if (Math.random() < 0.22 && p.alpha > 0.35){
+      spawnSparkle(p.x, p.y, p.color, 1.5, 18);
+    }
+
+    if (p.alpha <= 0){
+      fwParticles.splice(i, 1);
+      continue;
+    }
+
+    ctx10.save();
+    const baseWidth = p.size * (0.8 + p.alpha * 0.5);
+
+    // Blazing streak tail with concentric dual-pass (halo + core)
+    ctx10.beginPath();
+    ctx10.moveTo(p.prevX, p.prevY);
+    ctx10.lineTo(p.x, p.y);
+    ctx10.strokeStyle = p.color;
+    ctx10.lineCap = 'round';
+
+    // Outer halo
+    ctx10.lineWidth = baseWidth * 2.4;
+    ctx10.globalAlpha = Math.max(0, p.alpha * 0.28);
+    ctx10.stroke();
+
+    // Inner core streak
+    ctx10.lineWidth = baseWidth;
+    ctx10.globalAlpha = Math.max(0, p.alpha);
+    ctx10.stroke();
+
+    // Bright spark head
+    ctx10.beginPath();
+    ctx10.arc(p.x, p.y, p.size * 0.7, 0, Math.PI * 2);
+    ctx10.fillStyle = FW_PALETTE.white;
+    ctx10.fill();
+    ctx10.restore();
+  }
+
+  // 4. Micro Sparkles (Twinkling star embers)
+  for (let i = fwSparkles.length - 1; i >= 0; i--){
+    const s = fwSparkles[i];
+    s.x += s.vx;
+    s.y += s.vy;
+    s.alpha -= s.decay;
+
+    if (s.alpha <= 0){
+      fwSparkles.splice(i, 1);
+      continue;
+    }
+
+    ctx10.save();
+    ctx10.globalAlpha = Math.max(0, s.alpha);
+    ctx10.fillStyle = s.color;
+    ctx10.beginPath();
+    ctx10.arc(s.x, s.y, s.size * s.alpha, 0, Math.PI * 2);
+    ctx10.fill();
+    ctx10.restore();
+  }
+
+  // 5. Finale Heart Particles (Coalescence and Shimmering)
+  if (fwHeartParticles.length > 0){
+    const now = performance.now() * 0.003;
+
+    // Soft warm gold radial bloom behind the settled heart
+    if (fwSettled){
+      const heartCenterY = fwH * 0.30;
+      const bloomRadius = Math.min(fwW * 0.48, fwH * 0.30);
+      const grad = ctx10.createRadialGradient(fwW * 0.5, heartCenterY, 5, fwW * 0.5, heartCenterY, bloomRadius);
+      grad.addColorStop(0, 'rgba(255, 207, 106, 0.28)');
+      grad.addColorStop(0.5, 'rgba(212, 35, 92, 0.14)');
+      grad.addColorStop(1, 'rgba(36, 10, 22, 0)');
+      ctx10.save();
+      ctx10.fillStyle = grad;
+      ctx10.beginPath();
+      ctx10.arc(fwW * 0.5, heartCenterY, bloomRadius, 0, Math.PI * 2);
+      ctx10.fill();
+      ctx10.restore();
+    }
+
+    for (let i = 0; i < fwHeartParticles.length; i++){
+      const hp = fwHeartParticles[i];
+
+      if (!hp.isSettled){
+        hp.coalesceProgress = Math.min(1, hp.coalesceProgress + 0.02);
+        // Initial grand dispersion across screen
+        if (hp.coalesceProgress < 0.28){
+          hp.prevX = hp.x;
+          hp.prevY = hp.y;
+          hp.x += hp.vx;
+          hp.y += hp.vy;
+          hp.vx *= 0.96;
+          hp.vy *= 0.96;
+        } else {
+          // Inward pull towards target heart point
+          const pull = (hp.coalesceProgress - 0.28) / 0.72;
+          const easePull = pull * pull * (3 - 2 * pull);
+          hp.prevX = hp.x;
+          hp.prevY = hp.y;
+          hp.x += (hp.targetX - hp.x) * (0.05 + easePull * 0.09);
+          hp.y += (hp.targetY - hp.y) * (0.05 + easePull * 0.09);
+
+          if (Math.hypot(hp.targetX - hp.x, hp.targetY - hp.y) < 2.0 && hp.coalesceProgress >= 0.94){
+            hp.isSettled = true;
+            hp.x = hp.targetX;
+            hp.y = hp.targetY;
+          }
+        }
+      } else {
+        // Settled heart shimmer: breathing celestial starlight
+        const shimmerOffset = Math.sin(now * 2 + hp.phase) * 1.3;
+        hp.currentX = hp.targetX + Math.cos(hp.phase) * shimmerOffset;
+        hp.currentY = hp.targetY + Math.sin(hp.phase) * shimmerOffset;
+        hp.currentAlpha = 0.82 + Math.sin(now * 3 + hp.phase) * 0.18;
+      }
+
+      const drawX = hp.isSettled ? hp.currentX : hp.x;
+      const drawY = hp.isSettled ? hp.currentY : hp.y;
+      const drawAlpha = hp.isSettled ? hp.currentAlpha : 1;
+
+      ctx10.save();
+
+      if (!hp.isSettled && hp.prevX !== undefined){
+        ctx10.beginPath();
+        ctx10.moveTo(hp.prevX, hp.prevY);
+        ctx10.lineTo(drawX, drawY);
+        ctx10.strokeStyle = hp.color;
+        ctx10.lineWidth = hp.size;
+        ctx10.lineCap = 'round';
+        ctx10.globalAlpha = drawAlpha;
+        ctx10.stroke();
+      }
+
+      ctx10.fillStyle = hp.color;
+      // Outer soft glow halo
+      ctx10.globalAlpha = drawAlpha * (hp.isSettled ? 0.35 : 0.25);
+      ctx10.beginPath();
+      ctx10.arc(drawX, drawY, hp.size * (hp.isSettled ? 2.2 : 1.8), 0, Math.PI * 2);
+      ctx10.fill();
+
+      // Core particle
+      ctx10.globalAlpha = drawAlpha;
+      ctx10.beginPath();
+      ctx10.arc(drawX, drawY, hp.size, 0, Math.PI * 2);
+      ctx10.fill();
+      ctx10.restore();
+    }
+  }
+
+  fwRafId = requestAnimationFrame(renderFireworksFrame);
+}
+
+function resetScene10(){
+  if (fwRafId){
+    cancelAnimationFrame(fwRafId);
+    fwRafId = 0;
+  }
+  clearTimeout(fwAmbientTimeout);
+  fwShowTimeouts.forEach(t => clearTimeout(t));
+  fwShowTimeouts = [];
+
+  fwRockets = [];
+  fwParticles = [];
+  fwSparkles = [];
+  fwFlashes = [];
+  fwHeartParticles = [];
+  fwSettled = false;
+
+  if (ctx10 && fwW && fwH){
+    ctx10.clearRect(0, 0, fwW, fwH);
+  }
+
+  if (fireworksClosingInner){
+    gsap.set(fireworksClosingInner, { opacity: 0, rotateX: -80, y: 20 });
+  }
+  if (nextScene10){
+    nextScene10.classList.remove('is-shown');
+    nextScene10.hidden = true;
+  }
+}
+
+function playScene10(){
+  if (!scene10) return;
+  hideTreeCanvas();
+  resetScene10();
+  resizeFireworks();
+
+  // 1. Themed transition: warm page-of-light dissolving into night sky
+  if (fireworksVeil){
+    if (reduceMotion){
+      gsap.set(fireworksVeil, { opacity: 0 });
+    } else {
+      gsap.fromTo(fireworksVeil,
+        { opacity: 1, scale: 1 },
+        { opacity: 0, scale: 1.06, duration: 1.25, ease: 'power2.out' }
+      );
+    }
+  }
+
+  // 2. Reduced-motion branch: render settled finale immediately
+  if (reduceMotion){
+    const TOTAL_HEART = 180;
+    const heartScale = Math.min(fwW * 0.46, fwH * 0.28) / 16;
+    const heartCenterY = fwH * 0.30;
+    for (let i = 0; i < TOTAL_HEART; i++){
+      const t = (i / TOTAL_HEART) * Math.PI * 2;
+      const targetPos = getHeartCoord(t, fwW * 0.5, heartCenterY, heartScale);
+      const color = i % 3 === 0 ? FW_PALETTE.gold1 : (i % 3 === 1 ? FW_PALETTE.gold2 : FW_PALETTE.cream);
+      fwHeartParticles.push({
+        targetX: targetPos.x,
+        targetY: targetPos.y,
+        currentX: targetPos.x,
+        currentY: targetPos.y,
+        color,
+        size: 2.6,
+        phase: Math.random() * Math.PI * 2,
+        isSettled: true,
+        currentAlpha: 0.9
+      });
+    }
+    fwSettled = true;
+    renderFireworksFrame();
+
+    if (fireworksClosingInner){
+      gsap.set(fireworksClosingInner, { opacity: 1, rotateX: 0, y: 0 });
+    }
+    if (nextScene10){
+      nextScene10.hidden = false;
+      nextScene10.classList.add('is-shown');
+    }
+    return;
+  }
+
+  // 3. Normal mode: start render loop & start the grand Diwali show automatically!
+  renderFireworksFrame();
+  startDiwaliShow();
+}
+
+// Optional interactive tap: clicking/tapping anywhere launches an extra screen-filling Diwali shell!
+if (scene10){
+  scene10.addEventListener('click', (e) => {
+    if (fwSettled || (nextScene10 && nextScene10.classList.contains('is-shown'))){
+      goToScene(11);
+      return;
+    }
+    const targetX = e.clientX || fwW * 0.5;
+    const targetY = e.clientY || fwH * 0.3;
+    const isWillow = Math.random() < 0.5;
+    const colors = isWillow
+      ? [FW_PALETTE.gold1, FW_PALETTE.gold2]
+      : (Math.random() < 0.5 ? [FW_PALETTE.roseLift, FW_PALETTE.gold1] : [FW_PALETTE.rose, FW_PALETTE.gold2]);
+    launchFireworkRocket(targetX, targetY, colors, false, isWillow);
+  });
+}
+
+if (nextScene10){
+  nextScene10.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goToScene(11);
+  });
+}
+
+let fwResizeRAF = 0;
+window.addEventListener('resize', () => {
+  if (fwResizeRAF) return;
+  fwResizeRAF = requestAnimationFrame(() => {
+    fwResizeRAF = 0;
+    if (scene10 && scene10.classList.contains('is-active')){
+      resizeFireworks();
+    }
+  });
+});
+
+/* ============================================================
+   SCENE 11 — THE FINAL TOAST CONTROLLER (CLOSING SCENE)
+   ============================================================ */
+const scene11              = $('scene11');
+const toastVeil            = $('toastVeil');
+const toastStage           = $('toastStage');
+const glassLeft            = $('glassLeft');
+const glassRight           = $('glassRight');
+const clinkBurst           = $('clinkBurst');
+const toastLightWash       = $('toastLightWash');
+const toastWish            = $('toastWish');
+const toastEyebrow         = $('toastEyebrow');
+const toastHeroWrap        = $('toastHeroWrap');
+const toastHero            = $('toastHero');
+const toastRule            = $('toastRule');
+const toastSub             = $('toastSub');
+const btnReplayAll         = $('btnReplayAll');
+const toastParticles       = $('toastParticles');
+
+let toastTimeline          = null;
+let toastParticlesActive   = false;
+
+function startToastParticles(){
+  if (!toastParticles || toastParticlesActive || reduceMotion) return;
+  toastParticlesActive = true;
+
+  const PETAL_TEMPLATES = [
+    // 1. Blossom Petal
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 C7 7, 5 13, 12 22 C19 13, 17 7, 12 2 Z" fill="currentColor"/></svg>',
+    // 2. Mini Heart
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>',
+    // 3. Gold sparkle
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="currentColor"/></svg>'
+  ];
+
+  const COLORS = [
+    '#e85a83', // Rose lift
+    '#c41f52', // Deep rose
+    '#ffd074', // Gold 1
+    '#e8a23d', // Gold 2
+    '#f59e0b', // Amber
+    '#ffb8c6'  // Soft pink
+  ];
+
+  function spawnFallingPetal(isInitial){
+    if (!toastParticles || !toastParticlesActive) return;
+
+    const el = document.createElement('div');
+    el.className = 'toast-petal';
+    const tmpl = PETAL_TEMPLATES[Math.floor(Math.random() * PETAL_TEMPLATES.length)];
+    el.innerHTML = tmpl;
+    el.style.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+
+    const size = 12 + Math.random() * 12; // 12px - 24px
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+
+    const winW = window.innerWidth || 360;
+    const winH = window.innerHeight || 640;
+    const startX = Math.random() * winW;
+    const startY = isInitial ? Math.random() * winH : -30;
+    const endY = winH + 40;
+
+    const duration = 10 + Math.random() * 8; // 10s - 18s gentle descent
+    const lifeDuration = isInitial ? duration * ((endY - startY) / (endY + 30)) : duration;
+    const swayAmount = 25 + Math.random() * 45;
+    const swayDuration = 2.5 + Math.random() * 2.5;
+    const targetRot = (180 + Math.random() * 360) * (Math.random() < 0.5 ? 1 : -1);
+    const maxOp = 0.55 + Math.random() * 0.35;
+
+    gsap.set(el, {
+      x: startX,
+      y: startY,
+      opacity: 0,
+      scale: 0.4 + Math.random() * 0.6,
+      rotation: Math.random() * 360
+    });
+
+    toastParticles.appendChild(el);
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        el.remove();
+        if (toastParticlesActive && !reduceMotion){
+          spawnFallingPetal(false);
+        }
+      }
+    });
+
+    // Fade in then drift down
+    tl.to(el, { opacity: maxOp, duration: 1.2, ease: 'power1.out' }, 0)
+      .to(el, { y: endY, rotation: targetRot, duration: lifeDuration, ease: 'none' }, 0)
+      .to(el, {
+        x: `+=${(Math.random() < 0.5 ? 1 : -1) * swayAmount}`,
+        duration: swayDuration,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1
+      }, 0);
+  }
+
+  // Pre-spawn 14 falling petals
+  for (let i = 0; i < 14; i++){
+    spawnFallingPetal(true);
+  }
+}
+
+function resetScene11(){
+  if (toastTimeline){
+    toastTimeline.kill();
+    toastTimeline = null;
+  }
+  toastParticlesActive = false;
+  if (toastParticles){
+    toastParticles.innerHTML = '';
+  }
+
+  // Reset glasses
+  if (glassLeft){
+    gsap.set(glassLeft, { clearProps: 'all' });
+  }
+  if (glassRight){
+    gsap.set(glassRight, { clearProps: 'all' });
+  }
+  if (clinkBurst){
+    gsap.set(clinkBurst, { clearProps: 'all' });
+  }
+  if (toastLightWash){
+    gsap.set(toastLightWash, { clearProps: 'all' });
+  }
+
+  // Reset text
+  if (toastEyebrow){
+    gsap.set(toastEyebrow, { clearProps: 'all' });
+  }
+  if (toastHero){
+    gsap.set(toastHero, { clearProps: 'all' });
+  }
+  if (toastHeroWrap){
+    gsap.set(toastHeroWrap, { clearProps: 'all' });
+  }
+  if (toastRule){
+    gsap.set(toastRule, { clearProps: 'all' });
+  }
+  if (toastSub){
+    gsap.set(toastSub, { clearProps: 'all' });
+  }
+
+  // Reset replay button
+  if (btnReplayAll){
+    btnReplayAll.classList.remove('is-shown');
+  }
+}
+
+function playScene11(){
+  if (!scene11) return;
+  hideTreeCanvas();
+  resetScene11();
+
+  if (reduceMotion){
+    if (toastVeil) gsap.set(toastVeil, { opacity: 0 });
+    if (glassLeft) gsap.set(glassLeft, { opacity: 1, x: 0, rotation: 12 });
+    if (glassRight) gsap.set(glassRight, { opacity: 1, x: 0, rotation: -12 });
+    if (toastEyebrow) gsap.set(toastEyebrow, { opacity: 1, y: 0, filter: 'blur(0px)' });
+    if (toastHero) gsap.set(toastHero, { clipPath: 'inset(0 -10% -28% -10%)', opacity: 1 });
+    if (toastRule) gsap.set(toastRule, { opacity: 1, y: 0, scaleX: 1 });
+    if (toastSub) gsap.set(toastSub, { opacity: 1, y: 0, filter: 'blur(0px)' });
+    if (btnReplayAll){
+      btnReplayAll.classList.add('is-shown');
+    }
+    return;
+  }
+
+  // Master timeline for Scene 11
+  toastTimeline = gsap.timeline();
+  const tl = toastTimeline;
+
+  // 1. Warm daylight dawn transition veil fading out from night
+  if (toastVeil){
+    tl.fromTo(toastVeil,
+      { opacity: 0.95 },
+      { opacity: 0, duration: 1.25, ease: 'power2.out' },
+      0
+    );
+  }
+
+  // 2. Glasses glide inward from left and right
+  if (glassLeft && glassRight){
+    tl.fromTo(glassLeft,
+      { x: -140, rotation: -20, opacity: 0 },
+      { x: 0, rotation: 14, opacity: 1, duration: 0.95, ease: 'power2.out' },
+      0.35
+    );
+    tl.fromTo(glassRight,
+      { x: 140, rotation: 20, opacity: 0 },
+      { x: 0, rotation: -14, opacity: 1, duration: 0.95, ease: 'power2.out' },
+      0.35
+    );
+
+    // Clink moment (at t = 1.25s): tiny bounce together
+    tl.to(glassLeft, {
+      x: 6, rotation: 16, duration: 0.12, ease: 'power2.in',
+      yoyo: true, repeat: 1
+    }, 1.25);
+    tl.to(glassRight, {
+      x: -6, rotation: -16, duration: 0.12, ease: 'power2.in',
+      yoyo: true, repeat: 1
+    }, 1.25);
+  }
+
+  // 3. Contact Spark Burst & Light Wash at t = 1.28s
+  if (clinkBurst){
+    tl.fromTo(clinkBurst,
+      { scale: 0, opacity: 0 },
+      { scale: 1.4, opacity: 1, duration: 0.22, ease: 'back.out(2)' },
+      1.28
+    )
+    .to(clinkBurst, {
+      scale: 1.8, opacity: 0, duration: 0.35, ease: 'power2.out'
+    }, 1.50);
+  }
+
+  if (toastLightWash){
+    tl.fromTo(toastLightWash,
+      { opacity: 0 },
+      { opacity: 0.7, duration: 0.18, ease: 'power1.out' },
+      1.28
+    )
+    .to(toastLightWash, {
+      opacity: 0, duration: 0.8, ease: 'power2.out'
+    }, 1.46);
+  }
+
+  // 4. Reveal the Closing Wish Block (echo of Act 1)
+  // Eyebrow line: "and so, once more —"
+  if (toastEyebrow){
+    tl.to(toastEyebrow, {
+      opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8, ease: 'power2.out'
+    }, 1.8);
+  }
+
+  // Hero line: "Happy Birthday, [Best Friend's Name]" with write-in clipPath
+  if (toastHero){
+    tl.fromTo(toastHero,
+      { clipPath: 'inset(0 100% -28% -10%)' },
+      { clipPath: 'inset(0 -10% -28% -10%)', duration: 1.3, ease: 'power3.inOut' },
+      2.1
+    );
+  }
+
+  // Underline rule
+  if (toastRule){
+    tl.to(toastRule, {
+      opacity: 1, y: 0, scaleX: 1, duration: 0.8, ease: 'power2.out'
+    }, 3.0);
+  }
+
+  // Subtext: "here's to another year of us being a little bit unstoppable together."
+  if (toastSub){
+    tl.to(toastSub, {
+      opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power2.out'
+    }, 3.3);
+  }
+
+  // 5. Permanent Resting State: Falling Petals/Confetti start
+  tl.add(() => {
+    startToastParticles();
+  }, 3.8);
+
+  // 6. "Replay from the Start" pill fades in
+  if (btnReplayAll){
+    tl.add(() => {
+      btnReplayAll.classList.add('is-shown');
+    }, 4.2);
+  }
+}
+
+// User tap interaction on "Replay from the Start" button
+if (btnReplayAll){
+  btnReplayAll.addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetAll();
+  });
+}
+
 /* ============================================================
    GLOBAL AMBIENT PARTICLES (Shared across all scenes)
    ============================================================ */
@@ -2511,7 +4608,8 @@ const DOT_COLORS = [
 function startAmbientParticles(){
   if (!ambientContainer || reduceMotion) return;
 
-  const TOTAL_PARTICLES = 20; // 15-25 subtle density
+  const isMobile = (window.innerWidth || 360) < 600;
+  const TOTAL_PARTICLES = isMobile ? 10 : 20; // 10 on mobile, 20 on desktop
 
   function spawnParticle(isInitial){
     if (!ambientContainer) return;
@@ -2626,18 +4724,226 @@ function startAmbientParticles(){
 // Start once on script load
 startAmbientParticles();
 
+/* ============================================================
+   GLOBAL BACKGROUND MUSIC CONTROLLER
+   - Single shared audio element running across all 11 scenes
+   - Starts at 0:27 on first user interaction
+   - Loops continuously back to 0:27 (not 0:00)
+   - Persistent mute/unmute toggle in bottom-left corner
+   - Smooth ducking during scenes with sound effects
+   - Fails silently if blocked or file missing
+   ============================================================ */
+const AUDIO_CONFIG = {
+  src: 'assets/bg-music.mp3',
+  startTime: 27,
+  loopStartTime: 27,
+  defaultVolume: 0.45,
+  duckVolume: 0.18
+};
+
+const bgMusic        = $('bgMusic');
+const musicToggleBtn = $('musicToggleBtn');
+
+let musicStarted = false;
+let isMuted      = false;
+let duckTimeout  = 0;
+
+function initAndPlayMusic(){
+  if (!bgMusic || musicStarted) return;
+  musicStarted = true;
+
+  bgMusic.volume = AUDIO_CONFIG.defaultVolume;
+  bgMusic.muted = isMuted;
+
+  // Set start time to 27s
+  try {
+    if (bgMusic.readyState >= 1) { // HAVE_METADATA or higher
+      bgMusic.currentTime = AUDIO_CONFIG.startTime;
+    } else {
+      bgMusic.addEventListener('loadedmetadata', () => {
+        bgMusic.currentTime = AUDIO_CONFIG.startTime;
+      }, { once: true });
+    }
+  } catch(e){}
+
+  const playPromise = bgMusic.play();
+  if (playPromise !== undefined){
+    playPromise.then(() => {
+      if (musicToggleBtn && !isMuted){
+        musicToggleBtn.classList.add('is-playing');
+      }
+    }).catch(() => {
+      // Fail silently if browser blocks or file not ready yet
+      musicStarted = false;
+    });
+  }
+}
+
+// Continuous loop back to 27 seconds (not 0:00)
+if (bgMusic){
+  bgMusic.addEventListener('timeupdate', () => {
+    // If playback approaches within 0.25s of the end, seamlessly loop back to loopStartTime (27s)
+    if (bgMusic.duration && bgMusic.currentTime >= bgMusic.duration - 0.25){
+      bgMusic.currentTime = AUDIO_CONFIG.loopStartTime;
+      if (!bgMusic.paused){
+        bgMusic.play().catch(() => {});
+      }
+    }
+  });
+
+  bgMusic.addEventListener('ended', () => {
+    bgMusic.currentTime = AUDIO_CONFIG.loopStartTime;
+    bgMusic.play().catch(() => {});
+  });
+
+  bgMusic.addEventListener('play', () => {
+    if (musicToggleBtn && !isMuted){
+      musicToggleBtn.classList.add('is-playing');
+    }
+  });
+
+  bgMusic.addEventListener('pause', () => {
+    if (musicToggleBtn){
+      musicToggleBtn.classList.remove('is-playing');
+    }
+  });
+}
+
+// First interaction trigger across the entire film (one-time)
+function handleFirstMusicInteraction(){
+  window.removeEventListener('pointerdown', handleFirstMusicInteraction);
+  window.removeEventListener('keydown', handleFirstMusicInteraction);
+  initAndPlayMusic();
+}
+
+window.addEventListener('pointerdown', handleFirstMusicInteraction, { passive: true });
+window.addEventListener('keydown', handleFirstMusicInteraction, { passive: true });
+
+// Toggle Mute / Unmute
+function toggleMusicMute(e){
+  if (e){
+    e.stopPropagation();
+  }
+
+  // If music hasn't started yet, clicking the toggle should initiate playback
+  if (!musicStarted){
+    initAndPlayMusic();
+    return;
+  }
+
+  isMuted = !isMuted;
+  if (bgMusic){
+    bgMusic.muted = isMuted;
+    // Also if unmuting while paused, resume playback
+    if (!isMuted && bgMusic.paused){
+      bgMusic.play().catch(() => {});
+    }
+  }
+
+  if (musicToggleBtn){
+    musicToggleBtn.classList.toggle('is-muted', isMuted);
+    musicToggleBtn.classList.toggle('is-playing', !isMuted && bgMusic && !bgMusic.paused);
+    musicToggleBtn.setAttribute('aria-pressed', isMuted ? 'true' : 'false');
+    musicToggleBtn.setAttribute('aria-label', isMuted ? 'Unmute background music' : 'Mute background music');
+  }
+}
+
+if (musicToggleBtn){
+  musicToggleBtn.addEventListener('click', toggleMusicMute);
+}
+
+// Gentle ducking during sound effects
+function duckMusic(durationMs = 900, duckLevel = AUDIO_CONFIG.duckVolume){
+  if (!bgMusic || isMuted || bgMusic.paused) return;
+  clearTimeout(duckTimeout);
+  gsap.to(bgMusic, {
+    volume: duckLevel,
+    duration: 0.2,
+    ease: 'power1.out',
+    onComplete: () => {
+      duckTimeout = setTimeout(() => {
+        if (!isMuted && bgMusic && !bgMusic.paused){
+          gsap.to(bgMusic, {
+            volume: AUDIO_CONFIG.defaultVolume,
+            duration: 0.45,
+            ease: 'power1.in'
+          });
+        }
+      }, durationMs);
+    }
+  });
+}
+
+// Dynamic update helper for editor live preview
+function updateGiftData(newData, targetScene){
+  if (!newData) return;
+  window.GIFT_DATA = newData;
+  applyGiftDataTheme(newData.theme, newData.themeId);
+  populateStaticContent(newData);
+  if (targetScene && typeof goToScene === 'function'){
+    goToScene(targetScene);
+  }
+}
+
+// Initial populate on load
+if (window.GIFT_DATA){
+  applyGiftDataTheme(window.GIFT_DATA.theme, window.GIFT_DATA.themeId);
+  populateStaticContent(window.GIFT_DATA);
+}
+
+// Listen to postMessage from parent iframe (Editor)
+window.addEventListener('message', (event) => {
+  if (!event.data || typeof event.data !== 'object') return;
+  if (event.data.type === 'GIFT_DATA_UPDATE' || event.data.type === 'UPDATE_GIFT_DATA'){
+    updateGiftData(event.data.giftData, event.data.targetScene);
+  } else if (event.data.type === 'GOTO_SCENE'){
+    if (typeof goToScene === 'function'){
+      goToScene(event.data.sceneNum, true);
+    }
+  }
+});
+
+// Notify parent iframe that preview is loaded and ready
+if (window.parent && window.parent !== window){
+  try {
+    window.parent.postMessage({ type: 'PREVIEW_READY' }, '*');
+  } catch (err){}
+}
+
 // Global exposure for testing or debugging
 window.openGiftBox            = openGiftBox;
 window.playScene3             = playScene3;
+window.resetPinScene          = resetPinScene;
 window.openCurtains           = openCurtains;
 window.closeCurtains          = closeCurtains;
 window.playScene5             = playScene5;
 window.blowCandles            = blowCandles;
 window.relightCake            = relightCake;
 window.playScene6             = playScene6;
+window.resetScene6            = resetScene6;
 window.playScene7             = playScene7;
+window.resetScene7            = resetScene7;
+window.pauseScene7Videos      = pauseScene7Videos;
+window.playScene7Videos       = playScene7Videos;
 window.playScene8             = playScene8;
+window.resetBalloonScene       = resetBalloonScene;
+window.renderBalloons          = renderBalloons;
 window.playScene9             = playScene9;
+window.resetScene9            = resetScene9;
+window.playScene10            = playScene10;
+window.resetScene10           = resetScene10;
+window.playScene11            = playScene11;
+window.resetScene11           = resetScene11;
+window.resetAll               = resetAll;
+window.deactivateAllScenesExcept = deactivateAllScenesExcept;
 window.openEnvelope           = openEnvelope;
 window.startAmbientParticles  = startAmbientParticles;
 window.goToScene              = goToScene;
+window.hideTreeCanvas         = hideTreeCanvas;
+window.showTreeCanvas         = showTreeCanvas;
+window.bgMusic                = bgMusic;
+window.toggleMusicMute        = toggleMusicMute;
+window.duckMusic              = duckMusic;
+window.updateGiftData         = updateGiftData;
+window.applyGiftDataTheme     = applyGiftDataTheme;
+window.populateStaticContent  = populateStaticContent;

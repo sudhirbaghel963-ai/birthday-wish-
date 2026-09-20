@@ -1,0 +1,728 @@
+/* ============================================================
+   THEME: GLASSMORPHISM ("Glass Edition")
+   Swappable theme layer for the 11-Scene Birthday Film.
+   Applied via [data-theme="glass"] on <html> or .theme-glass on <body>.
+   ============================================================ */
+
+:root[data-theme="glass"],
+body.theme-glass {
+  /* --- Dark Jewel & Midnight Glass Backdrops --- */
+  --paper-0:  #150921;   /* Deep midnight amethyst */
+  --paper-1:  #0d0417;   /* Rich plum shadow */
+  --paper-2:  #06020c;   /* Obsidian void */
+
+  /* --- Luminous Electric Rose / Magenta Flood --- */
+  --rose-deep: #7a0833;
+  --rose:      #d4235c;
+  --rose-lift: #ff4785;
+  --rose-mid:  #c2185b;
+  --wine:      #3b051b;
+
+  /* --- Accents / Luminous Typography --- */
+  --gold-1:    #fce18b;   /* Shimmering crystal gold */
+  --gold-2:    #f3b749;   /* Warm amber flame */
+  --ink:       #f5edff;   /* Luminous frosted white/lilac ink */
+  --ink-soft:  #c4b5fd;   /* Soft translucent lavender */
+  --cream:     #0c0517;   /* Dark base foundation */
+
+  /* --- Glassmorphism Surfaces & Specular Borders --- */
+  --glass-bg:           rgba(255, 255, 255, 0.08);
+  --glass-bg-card:      rgba(22, 9, 32, 0.78);
+  --glass-bg-box:       rgba(255, 255, 255, 0.06);
+  --glass-border:       rgba(255, 255, 255, 0.18);
+  --glass-border-gold:  rgba(243, 183, 73, 0.35);
+  --glass-border-rose:  rgba(212, 35, 92, 0.4);
+  --glass-blur:         blur(16px) saturate(180%);
+  --glass-blur-heavy:   blur(24px) saturate(190%);
+  --glass-shadow:       0 12px 40px 0 rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.22);
+  --glass-shadow-glow:  0 12px 40px 0 rgba(0, 0, 0, 0.6), 0 0 25px rgba(212, 35, 92, 0.25), inset 0 1px 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* ============================================================
+   GLOBAL BODY & SCENE CONTAINER (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] body,
+body.theme-glass {
+  background: #08030e;
+  color: var(--ink);
+}
+
+/* ============================================================
+   ACT 1 & SCENE 1 — THE INVITATION (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .hero__bg,
+.theme-glass .hero__bg {
+  background: radial-gradient(130% 95% at 50% 25%, #2a0e3d 0%, #170724 45%, #0d0417 80%, #06020c 100%) !important;
+}
+
+[data-theme="glass"] .hero__bg::after,
+.theme-glass .hero__bg::after {
+  background: radial-gradient(circle, rgba(212, 35, 92, 0.35), rgba(138, 43, 226, 0.2) 46%, transparent 70%) !important;
+  filter: blur(12px) !important;
+}
+
+[data-theme="glass"] .hero__eyebrow,
+.theme-glass .hero__eyebrow {
+  color: var(--ink-soft) !important;
+  text-shadow: 0 0 16px rgba(196, 181, 253, 0.4), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-theme="glass"] .hero__hint,
+.theme-glass .hero__hint {
+  color: #fed7aa !important;
+  text-shadow: 0 0 12px rgba(254, 215, 170, 0.35) !important;
+}
+
+[data-theme="glass"] .hero__sub,
+.theme-glass .hero__sub,
+[data-theme="glass"] .hint,
+.theme-glass .hint {
+  color: var(--ink-soft) !important;
+  text-shadow: 0 0 10px rgba(196, 181, 253, 0.5) !important;
+}
+
+/* Frosted Glass Pill Buttons (Next, Continue, Action Buttons) */
+[data-theme="glass"] .tap-next-hint,
+.theme-glass .tap-next-hint,
+[data-theme="glass"] .next-scene-btn,
+.theme-glass .next-scene-btn,
+[data-theme="glass"] .btn-open-curtain,
+.theme-glass .btn-open-curtain {
+  background: rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+  color: #fff8f1 !important;
+}
+
+[data-theme="glass"] .tap-next-hint:hover,
+.theme-glass .tap-next-hint:hover,
+[data-theme="glass"] .next-scene-btn:hover,
+.theme-glass .next-scene-btn:hover,
+[data-theme="glass"] .btn-open-curtain:hover,
+.theme-glass .btn-open-curtain:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: var(--gold-1) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(243, 183, 73, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
+  color: var(--gold-1) !important;
+}
+
+/* ============================================================
+   SCENE 2 — SURPRISE GIFT BOX (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene2,
+.theme-glass .scene2 {
+  background: radial-gradient(circle at 50% 35%, #250a2e 0%, #15061c 55%, #08020d 100%) !important;
+}
+
+[data-theme="glass"] .gift-subtitle,
+.theme-glass .gift-subtitle {
+  color: var(--ink-soft) !important;
+  text-shadow: 0 0 10px rgba(196, 181, 253, 0.4) !important;
+}
+
+[data-theme="glass"] .gift-tap-hint,
+.theme-glass .gift-tap-hint {
+  color: #fed7aa !important;
+  text-shadow: 0 0 10px rgba(254, 215, 170, 0.4) !important;
+}
+
+[data-theme="glass"] .gift-badge,
+.theme-glass .gift-badge {
+  background: rgba(212, 35, 92, 0.2) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #fed7aa !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Frosted Glass Revealed Gift Card */
+[data-theme="glass"] .gift-card-inner,
+.theme-glass .gift-card-inner,
+[data-theme="glass"] .gift-reveal-card,
+.theme-glass .gift-reveal-card {
+  background: var(--glass-bg-card) !important;
+  backdrop-filter: var(--glass-blur-heavy) !important;
+  -webkit-backdrop-filter: var(--glass-blur-heavy) !important;
+  border: 1px solid var(--glass-border-gold) !important;
+  box-shadow: var(--glass-shadow-glow) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme="glass"] .gift-card-title,
+.theme-glass .gift-card-title {
+  color: #fff8f1 !important;
+  text-shadow: 0 0 14px rgba(255, 223, 112, 0.5) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #ffd7e5 50%, #f472b6 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+[data-theme="glass"] .gift-card-text,
+.theme-glass .gift-card-text {
+  color: #f5edff !important;
+  text-shadow: 0 0 8px rgba(196, 181, 253, 0.3) !important;
+}
+
+/* ============================================================
+   SCENE 3 — PIN LOCK (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene3,
+.theme-glass .scene3,
+[data-theme="glass"] .pin-stage,
+.theme-glass .pin-stage {
+  background: radial-gradient(circle at 50% 40%, #200829 0%, #110317 60%, #06010a 100%) !important;
+}
+
+[data-theme="glass"] .pin-card,
+.theme-glass .pin-card {
+  background: var(--glass-bg-card) !important;
+  backdrop-filter: var(--glass-blur-heavy) !important;
+  -webkit-backdrop-filter: var(--glass-blur-heavy) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-glow) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme="glass"] .pin-clock,
+.theme-glass .pin-clock {
+  color: #fff8f1 !important;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.5), 0 0 30px rgba(243, 183, 73, 0.4) !important;
+}
+
+[data-theme="glass"] .pin-subtitle,
+.theme-glass .pin-subtitle {
+  color: var(--ink-soft) !important;
+  text-shadow: 0 0 8px rgba(196, 181, 253, 0.3) !important;
+}
+
+[data-theme="glass"] .pin-instruction,
+.theme-glass .pin-instruction {
+  color: var(--ink-soft) !important;
+  text-shadow: 0 0 8px rgba(196, 181, 253, 0.3) !important;
+}
+
+[data-theme="glass"] .pin-lock-badge,
+.theme-glass .pin-lock-badge {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border-gold) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+  color: var(--gold-1) !important;
+}
+
+[data-theme="glass"] .pin-status-pill.pin-hint,
+.theme-glass .pin-status-pill.pin-hint {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: var(--ink-soft) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="glass"] .pin-status-pill.pin-error,
+.theme-glass .pin-status-pill.pin-error {
+  background: rgba(212, 35, 92, 0.28) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 71, 133, 0.5) !important;
+  color: #ffb3c6 !important;
+  box-shadow: 0 0 16px rgba(212, 35, 92, 0.4) !important;
+}
+
+/* Keypad Frosted Buttons */
+[data-theme="glass"] .keypad-btn,
+.theme-glass .keypad-btn,
+[data-theme="glass"] .pin-key,
+.theme-glass .pin-key {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #fff8f1 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+[data-theme="glass"] .keypad-btn:hover,
+.theme-glass .keypad-btn:hover,
+[data-theme="glass"] .pin-key:hover,
+.theme-glass .pin-key:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: var(--gold-1) !important;
+  color: var(--gold-1) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 14px rgba(243, 183, 73, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-theme="glass"] .keypad-btn:active,
+.theme-glass .keypad-btn:active,
+[data-theme="glass"] .pin-key:active,
+.theme-glass .pin-key:active {
+  background: rgba(212, 35, 92, 0.3) !important;
+  transform: scale(0.94) !important;
+}
+
+[data-theme="glass"] .keypad-del,
+.theme-glass .keypad-del {
+  color: var(--ink-soft) !important;
+}
+
+[data-theme="glass"] .pin-dot,
+.theme-glass .pin-dot {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-theme="glass"] .pin-dot.is-filled,
+.theme-glass .pin-dot.is-filled {
+  background: var(--gold-1) !important;
+  box-shadow: 0 0 12px var(--gold-1), 0 0 20px rgba(243, 183, 73, 0.8) !important;
+  border-color: #fff !important;
+}
+
+/* ============================================================
+   SCENE 4 — VELVET CURTAIN & STAGE (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene4,
+.theme-glass .scene4,
+[data-theme="glass"] .stage-background,
+.theme-glass .stage-background {
+  background: radial-gradient(circle at 50% 50%, #1e0624 0%, #0d0212 70%, #040108 100%) !important;
+}
+
+[data-theme="glass"] .open-btn,
+.theme-glass .open-btn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border-gold) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(243, 183, 73, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
+  color: #fff8f1 !important;
+}
+
+[data-theme="glass"] .open-btn:hover,
+.theme-glass .open-btn:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: var(--gold-1) !important;
+  color: var(--gold-1) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65), 0 0 28px rgba(243, 183, 73, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ============================================================
+   SCENE 5 — CAKE & LIFETIME COUNTDOWN (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene5,
+.theme-glass .scene5,
+[data-theme="glass"] .cake-stage,
+.theme-glass .cake-stage {
+  background: radial-gradient(circle at 50% 40%, #24082e 0%, #12031a 60%, #07010e 100%) !important;
+}
+
+/* Frosted Glass Cake Card */
+[data-theme="glass"] .cake-card,
+.theme-glass .cake-card {
+  background: var(--glass-bg-card) !important;
+  backdrop-filter: var(--glass-blur-heavy) !important;
+  -webkit-backdrop-filter: var(--glass-blur-heavy) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-glow) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme="glass"] .cake-badge,
+.theme-glass .cake-badge {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border-gold) !important;
+  color: var(--gold-1) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="glass"] .cake-title,
+.theme-glass .cake-title {
+  color: #fff8f1 !important;
+  text-shadow: 0 0 16px rgba(255, 223, 112, 0.6), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-theme="glass"] .cake-subtitle,
+.theme-glass .cake-subtitle {
+  color: var(--ink-soft) !important;
+  text-shadow: 0 0 8px rgba(196, 181, 253, 0.3) !important;
+}
+
+/* 2x2 Frosted Glass Stats Boxes */
+[data-theme="glass"] .cake-stat-box,
+.theme-glass .cake-stat-box {
+  background: var(--glass-bg-box) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+[data-theme="glass"] .cake-stat-val,
+.theme-glass .cake-stat-val {
+  color: #fff8f1 !important;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.5), 0 0 20px rgba(243, 183, 73, 0.3) !important;
+}
+
+[data-theme="glass"] .cake-stat-lbl,
+.theme-glass .cake-stat-lbl {
+  color: var(--ink-soft) !important;
+}
+
+[data-theme="glass"] .cake-plate,
+.theme-glass .cake-plate {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(243, 183, 73, 0.25) !important;
+}
+
+/* Action Controls (Mic button, Relight button, Wish State) */
+[data-theme="glass"] .cake-mic-btn,
+.theme-glass .cake-mic-btn {
+  background: rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: #fff8f1 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme="glass"] .cake-mic-btn:hover,
+.theme-glass .cake-mic-btn:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: var(--gold-1) !important;
+  color: var(--gold-1) !important;
+}
+
+[data-theme="glass"] .cake-prompt-hint,
+.theme-glass .cake-prompt-hint {
+  color: #fed7aa !important;
+  text-shadow: 0 0 10px rgba(254, 215, 170, 0.5) !important;
+}
+
+[data-theme="glass"] .cake-prompt-sub,
+.theme-glass .cake-prompt-sub {
+  color: var(--ink-soft) !important;
+}
+
+[data-theme="glass"] .cake-relight-btn,
+.theme-glass .cake-relight-btn {
+  background: rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: #fff8f1 !important;
+}
+
+[data-theme="glass"] .cake-relight-btn:hover,
+.theme-glass .cake-relight-btn:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: var(--gold-1) !important;
+  color: var(--gold-1) !important;
+}
+
+[data-theme="glass"] .cake-wish-title,
+.theme-glass .cake-wish-title {
+  color: #fff8f1 !important;
+  text-shadow: 0 0 20px rgba(255, 223, 112, 0.8), 0 0 35px rgba(212, 35, 92, 0.4) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #ffd7e5 50%, #f472b6 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+[data-theme="glass"] .cake-wish-sub,
+.theme-glass .cake-wish-sub {
+  color: var(--ink-soft) !important;
+}
+
+/* ============================================================
+   SCENE 6 — WALL OF US / POLAROIDS (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene6,
+.theme-glass .scene6,
+[data-theme="glass"] .memory-stage,
+.theme-glass .memory-stage {
+  background: radial-gradient(circle at 50% 30%, #22072a 0%, #100216 65%, #05010a 100%) !important;
+}
+
+[data-theme="glass"] .memory-eyebrow,
+.theme-glass .memory-eyebrow {
+  color: var(--ink-soft) !important;
+  text-shadow: 0 0 12px rgba(196, 181, 253, 0.4) !important;
+}
+
+[data-theme="glass"] .memory-frame,
+.theme-glass .memory-frame {
+  background: rgba(22, 9, 32, 0.75) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+  color: #fff8f1 !important;
+}
+
+[data-theme="glass"] .memory-frame .frame-caption,
+.theme-glass .memory-frame .frame-caption {
+  color: #f3e8ff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-theme="glass"] .memory-closing-title,
+.theme-glass .memory-closing-title {
+  color: #fff8f1 !important;
+  text-shadow: 0 0 20px rgba(255, 223, 112, 0.7), 0 2px 6px rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-theme="glass"] .memory-closing-sub,
+.theme-glass .memory-closing-sub {
+  color: var(--ink-soft) !important;
+  text-shadow: 0 0 10px rgba(196, 181, 253, 0.4) !important;
+}
+
+/* ============================================================
+   SCENE 7 — MEMORY REEL (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene7,
+.theme-glass .scene7,
+[data-theme="glass"] .film-stage,
+.theme-glass .film-stage {
+  background: radial-gradient(circle at 50% 50%, #1b0622 0%, #0d0213 70%, #040108 100%) !important;
+}
+
+[data-theme="glass"] .film-strip,
+.theme-glass .film-strip {
+  background: rgba(20, 8, 28, 0.8) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65) !important;
+}
+
+/* ============================================================
+   SCENE 8 — BALLOON POP (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene8,
+.theme-glass .scene8 {
+  background: radial-gradient(circle at 50% 40%, #160524 0%, #0a0214 60%, #030009 100%) !important;
+}
+
+[data-theme="glass"] .balloon-toast-msg,
+.theme-glass .balloon-toast-msg {
+  background: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(243, 183, 73, 0.25) !important;
+}
+
+[data-theme="glass"] .balloon-counter-badge,
+.theme-glass .balloon-counter-badge {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+/* ============================================================
+   SCENE 9 — THE LETTER & TYPEWRITER (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene9,
+.theme-glass .scene9,
+[data-theme="glass"] .letter-stage,
+.theme-glass .letter-stage {
+  background: radial-gradient(circle at 50% 40%, #22092b 0%, #110318 60%, #06010a 100%) !important;
+}
+
+[data-theme="glass"] .envelope-wrapper,
+.theme-glass .envelope-wrapper {
+  filter: drop-shadow(0 16px 36px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 20px rgba(212, 35, 92, 0.35)) !important;
+}
+
+[data-theme="glass"] .envelope-back,
+.theme-glass .envelope-back {
+  background: rgba(28, 12, 40, 0.85) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="glass"] .envelope-body,
+.theme-glass .envelope-body {
+  background: rgba(36, 15, 52, 0.9) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: inset 0 -4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="glass"] .envelope-flap,
+.theme-glass .envelope-flap {
+  background: rgba(45, 18, 64, 0.95) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5)) !important;
+}
+
+[data-theme="glass"] .envelope-hint,
+.theme-glass .envelope-hint {
+  color: #fed7aa !important;
+  text-shadow: 0 0 10px rgba(254, 215, 170, 0.4) !important;
+}
+
+/* Frosted Glass Letter Card */
+[data-theme="glass"] .letter-card-container,
+.theme-glass .letter-card-container,
+[data-theme="glass"] .letter-card,
+.theme-glass .letter-card {
+  background: var(--glass-bg-card) !important;
+  backdrop-filter: var(--glass-blur-heavy) !important;
+  -webkit-backdrop-filter: var(--glass-blur-heavy) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-glow) !important;
+  color: #fff8f1 !important;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 35px,
+    rgba(255, 255, 255, 0.08) 35px,
+    rgba(255, 255, 255, 0.08) 36px
+  ) !important;
+}
+
+[data-theme="glass"] .letter-typewriter-text,
+.theme-glass .letter-typewriter-text,
+[data-theme="glass"] .typewriter-text,
+.theme-glass .typewriter-text {
+  color: #f5edff !important;
+  text-shadow: 0 0 8px rgba(196, 181, 253, 0.35) !important;
+}
+
+[data-theme="glass"] .letter-eyebrow,
+.theme-glass .letter-eyebrow,
+[data-theme="glass"] .letter-card .letter-eyebrow,
+.theme-glass .letter-card .letter-eyebrow {
+  color: var(--gold-1) !important;
+  text-shadow: 0 0 10px rgba(243, 183, 73, 0.4) !important;
+}
+
+/* ============================================================
+   ACT 4 — TREE WISH OVERLAY & BLOOM (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .bloom,
+.theme-glass .bloom {
+  background: radial-gradient(circle, #fffdf8 0%, #ffd466 30%, rgba(212, 35, 92, 0.8) 55%, rgba(21, 9, 33, 0) 74%) !important;
+}
+
+[data-theme="glass"] .wish::before,
+.theme-glass .wish::before {
+  background: radial-gradient(84% 98% at 34% 52%, rgba(22, 9, 32, 0.65), rgba(15, 6, 23, 0.28) 52%, transparent 80%) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+[data-theme="glass"] .wish__eyebrow,
+.theme-glass .wish__eyebrow {
+  color: var(--gold-1) !important;
+  text-shadow: 0 0 14px rgba(243, 183, 73, 0.5), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-theme="glass"] .wish__hero,
+.theme-glass .wish__hero {
+  background: linear-gradient(180deg, #ffffff 0%, #ffd466 45%, #ff4785 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  filter: drop-shadow(0 0 22px rgba(255, 212, 102, 0.6)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9)) !important;
+}
+
+[data-theme="glass"] .wish__sub,
+.theme-glass .wish__sub {
+  color: #fed7aa !important;
+  text-shadow: 0 0 12px rgba(254, 215, 170, 0.4), 0 2px 4px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ============================================================
+   SCENE 10 — FIREWORKS FINALE (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene10,
+.theme-glass .scene10,
+[data-theme="glass"] .fireworks-stage,
+.theme-glass .fireworks-stage {
+  background: radial-gradient(circle at 50% 50%, #150522 0%, #0a0214 70%, #030008 100%) !important;
+}
+
+/* ============================================================
+   SCENE 11 — THE FINAL TOAST (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .scene11,
+.theme-glass .scene11 {
+  background: radial-gradient(circle at 50% 38%, #2d0f3a 0%, #190724 45%, #0e0316 75%, #06010c 100%) !important;
+}
+
+[data-theme="glass"] .toast-bg-glow,
+.theme-glass .toast-bg-glow {
+  background: radial-gradient(circle at 50% 45%, rgba(243, 183, 73, 0.3) 0%, rgba(212, 35, 92, 0.18) 50%, transparent 80%) !important;
+}
+
+[data-theme="glass"] .toast-eyebrow,
+.theme-glass .toast-eyebrow {
+  color: var(--ink-soft) !important;
+  text-shadow: 0 0 12px rgba(196, 181, 253, 0.4) !important;
+}
+
+[data-theme="glass"] .toast-hero,
+.theme-glass .toast-hero {
+  color: #fff8f1 !important;
+  text-shadow: 0 0 28px rgba(255, 223, 112, 0.9), 0 0 45px rgba(212, 35, 92, 0.5), 0 2px 8px rgba(0, 0, 0, 0.9) !important;
+}
+
+[data-theme="glass"] .toast-sub,
+.theme-glass .toast-sub {
+  color: #fed7aa !important;
+  text-shadow: 0 0 12px rgba(254, 215, 170, 0.4) !important;
+}
+
+[data-theme="glass"] .toast-replay-pill,
+.theme-glass .toast-replay-pill {
+  background: rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border-gold) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(243, 183, 73, 0.35) !important;
+  color: #fff8f1 !important;
+}
+
+[data-theme="glass"] .toast-replay-pill:hover,
+.theme-glass .toast-replay-pill:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: var(--gold-1) !important;
+  color: var(--gold-1) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), 0 0 28px rgba(243, 183, 73, 0.5) !important;
+}
+
+/* ============================================================
+   GLOBAL MUSIC TOGGLE BUTTON (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .music-toggle-btn,
+.theme-glass .music-toggle-btn {
+  background: rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border-gold) !important;
+  color: var(--gold-1) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
+}
+
+[data-theme="glass"] .music-toggle-btn:hover,
+.theme-glass .music-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: var(--gold-1) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.6), 0 0 16px rgba(243, 183, 73, 0.4) !important;
+}

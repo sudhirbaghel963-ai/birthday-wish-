@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Choose Experience — Velvet & Keepsake</title>
+  <meta name="description" content="Select your bespoke cinematic keepsake experience to preview and personalize." />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            velvet: { 950: '#1c0710', 900: '#2d0a1a', 800: '#4a122c', 700: '#6e1b42' },
+            rose: { 600: '#c41f52', 500: '#d4235c', 400: '#e84d7a', 100: '#ffe4ec', 50: '#fff0f5' },
+            gold: { 500: '#d99b26', 400: '#e8a23d', 300: '#f5b838', 200: '#fad37d', 100: '#fff2d6', 50: '#fffaf0' },
+            parchment: { 50: '#fffdfa', 100: '#fcf7f0', 200: '#f7ede0', 300: '#ebd9c5', 400: '#d9c0a3' },
+            ink: { 900: '#211317', 800: '#3d222b', 700: '#4d3840', 500: '#7d636c', 400: '#a38a93' }
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'serif'],
+            elegant: ['Cormorant Garamond', 'serif'],
+            script: ['Great Vibes', 'cursive'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#fcf7f0] text-ink-900 font-sans min-h-screen flex flex-col justify-between selection:bg-rose-100 selection:text-rose-600">
+
+  <!-- ============================================================
+       NAVIGATION HEADER
+       ============================================================ -->
+  <header class="w-full border-b border-parchment-300/70 bg-parchment-50/90 backdrop-blur-md sticky top-0 z-50 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="./index.html" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-velvet-900 to-rose-600 flex items-center justify-center text-gold-300 shadow-md shadow-rose-900/20 group-hover:scale-105 transition-transform">
+          <span class="font-serif text-lg sm:text-xl leading-none font-bold">V</span>
+        </div>
+        <div>
+          <span class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-ink-900 group-hover:text-rose-600 transition-colors">Velvet &amp; Keepsake</span>
+          <span class="hidden sm:block text-[10px] tracking-widest text-ink-500 uppercase font-semibold">Cinematic Gift Studio</span>
+        </div>
+      </a>
+
+      <!-- Header Action Links -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        <a href="./login.html" id="createAuthLink" class="hidden sm:inline-flex items-center text-xs font-semibold text-ink-700 hover:text-rose-600 px-3 py-1.5 rounded-full border border-parchment-300 bg-white hover:bg-parchment-100 transition-colors shadow-2xs">
+          Sign In
+        </a>
+        <a href="./preview.html" class="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-ink-700 hover:text-rose-600 transition-colors py-1.5 px-3 rounded-full hover:bg-parchment-200/50">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon></svg>
+          <span>Watch Sample Demo</span>
+        </a>
+        <a href="./index.html" class="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-parchment-300 bg-white hover:bg-parchment-100 transition-all text-ink-900 shadow-2xs hover:shadow-xs">
+          ← Home
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       MAIN CONTENT: CHOOSE EXPERIENCE
+       ============================================================ -->
+  <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 w-full">
+    
+    <!-- Hero Header & Step Indicator -->
+    <div class="text-center space-y-4 max-w-3xl mx-auto mb-10 sm:mb-14">
+      
+      <!-- Flow Step Breadcrumb Pill -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-rose-200 text-rose-600 text-xs font-semibold tracking-wide uppercase shadow-xs">
+        <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+        <span>Step 1 of 3: Choose Experience</span>
+      </div>
+
+      <h1 class="font-serif text-3xl sm:text-5xl font-bold text-ink-900 tracking-tight leading-tight">
+        Pick an Experience to <span class="font-script font-normal text-rose-500 text-4xl sm:text-6xl block sm:inline">Personalize</span>
+      </h1>
+
+      <p class="font-elegant italic text-lg sm:text-2xl text-ink-700 max-w-2xl mx-auto leading-relaxed">
+        Every experience is an intimate, browser-based cinematic film crafted with your words, special dates, secret codes, photos, and music.
+      </p>
+
+      <!-- Category Filter Tabs (Extensible) -->
+      <div class="flex items-center justify-center gap-2 pt-3" id="experienceFilters">
+        <button type="button" class="filter-btn active px-4 py-1.5 rounded-full bg-velvet-950 text-white text-xs font-semibold shadow-xs transition-all" data-category="all">
+          All Formats (2)
+        </button>
+        <button type="button" class="filter-btn px-4 py-1.5 rounded-full bg-white border border-parchment-300 hover:border-rose-300 text-ink-700 hover:text-rose-600 text-xs font-semibold shadow-xs transition-all" data-category="birthday">
+          Birthdays (2)
+        </button>
+        <button type="button" class="filter-btn px-4 py-1.5 rounded-full bg-white border border-parchment-300 hover:border-rose-300 text-ink-700 hover:text-rose-600 text-xs font-semibold shadow-xs transition-all" data-category="milestone">
+          Milestones
+        </button>
+      </div>
+
+    </div>
+
+
+    <!-- ============================================================
+         CONFIG-DRIVEN EXPERIENCE LIST / GRID CONTAINER
+         ============================================================ -->
+    <div id="experienceGrid" class="space-y-8 max-w-4xl mx-auto">
+      <!-- Injected via JavaScript from EXPERIENCES config array -->
+    </div>
+
+
+    <!-- ============================================================
+         EXPERIENCE GUARANTEE / FEATURES TRUST BAR
+         ============================================================ -->
+    <div class="mt-14 max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl bg-white border border-parchment-300/80 shadow-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+        
+        <div class="flex items-start gap-3.5">
+          <div class="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-200/60 flex items-center justify-center text-rose-600 flex-shrink-0">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </div>
+          <div>
+            <h4 class="font-serif font-bold text-sm text-ink-900">Try Full Preview Free</h4>
+            <p class="text-xs text-ink-500 mt-0.5 leading-relaxed">Watch the complete film demo and test interactions before paying anything.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3.5">
+          <div class="w-10 h-10 rounded-2xl bg-gold-50 border border-gold-200/60 flex items-center justify-center text-gold-600 flex-shrink-0">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <div>
+            <h4 class="font-serif font-bold text-sm text-ink-900">100% Private &amp; Unlisted</h4>
+            <p class="text-xs text-ink-500 mt-0.5 leading-relaxed">Delivered as a private link with optional 4-digit PIN lock for your recipient only.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3.5">
+          <div class="w-10 h-10 rounded-2xl bg-parchment-100 border border-parchment-300 flex items-center justify-center text-ink-700 flex-shrink-0">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </div>
+          <div>
+            <h4 class="font-serif font-bold text-sm text-ink-900">Works on Every Device</h4>
+            <p class="text-xs text-ink-500 mt-0.5 leading-relaxed">Runs smoothly on iPhone, Android, iPad, and desktop with zero app downloads.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="border-t border-parchment-300/70 bg-parchment-100 py-10 mt-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-500">
+      <div class="flex items-center gap-2">
+        <span class="font-serif font-bold text-ink-900">Velvet &amp; Keepsake</span>
+        <span>·</span>
+        <span>Crafted with love for milestone celebrations</span>
+      </div>
+      <div class="flex items-center gap-6 text-ink-600">
+        <a href="./terms.html" class="hover:text-rose-600 transition-colors">Terms of Service</a>
+        <a href="./privacy.html" class="hover:text-rose-600 transition-colors">Privacy Policy</a>
+        <a href="./index.html#faq" class="hover:text-rose-600 transition-colors">Help &amp; FAQ</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       EXPERIENCE CATALOG CONFIG & RENDER SCRIPT
+       ============================================================ -->
+  <script type="module">
+    /**
+     * EXPERIENCES CONFIGURATION
+     * Extensible data array powering the Choose Experience screen.
+     * To add another experience in the future, simply add an entry here.
+     */
+    const EXPERIENCES = [
+      {
+        id: 'birthday-film',
+        slug: 'birthday-film',
+        themeId: 'paper',
+        name: 'The Birthday Film (Warm Paper Edition)',
+        category: 'birthday',
+        tagline: 'Signature 11-Scene Interactive Birthday Journey',
+        description: 'An intimate, touch-responsive birthday film in warm daylight parchment, rose petals, Cupid’s bow, secret PIN box, interactive candle blowing, polaroid wall, balloon pop wish surprises, handwritten typewriter note, and clinking toast.',
+        badge: 'Signature Experience · Most Popular',
+        price: '₹100',
+        originalPrice: '₹199',
+        duration: '11 Interactive Scenes · ~3–4 min',
+        isAvailable: true,
+        headerGradient: 'from-velvet-950 via-velvet-900 to-rose-700',
+        features: [
+          'Warm daylight parchment & soft rose aesthetic',
+          'Interactive Cupid’s Arrow & Beating Heart opening',
+          'Secret 4-digit PIN keepsake card reveal',
+          'Interactive birthday cake with real candle blow',
+          '6 Polaroid photo slots with custom captions',
+          '5 Celluloid video clip slots with memory notes',
+          'Interactive balloon pop wish surprises',
+          'Hand-folded wax envelope & typewriter letter',
+          'Diwali sky fireworks & golden clinking toast',
+          'Custom background song & trim start point',
+          'Includes instant shareable link + printable QR card'
+        ],
+        scenesBreakdown: [
+          { number: 1, name: 'The Invitation', icon: '🏹' },
+          { number: 2, name: 'Surprise Gift Box', icon: '🎁' },
+          { number: 3, name: 'Secret PIN Lock', icon: '🔒' },
+          { number: 4, name: 'Velvet Curtain', icon: '🎭' },
+          { number: 5, name: 'Cake & Countdown', icon: '🎂' },
+          { number: 6, name: 'Wall of Us', icon: '📷' },
+          { number: 7, name: 'Memory Reel', icon: '🎞️' },
+          { number: 8, name: 'Balloon Pop', icon: '🎈' },
+          { number: 9, name: 'The Letter', icon: '💌' },
+          { number: 10, name: 'Fireworks Finale', icon: '🎆' },
+          { number: 11, name: 'The Final Toast', icon: '🥂' }
+        ],
+        metrics: [
+          { label: 'Aesthetic', value: 'Warm Paper' },
+          { label: 'Avg Creation Time', value: '5 Mins' },
+          { label: 'Hosting & Archive', value: 'Lifetime' }
+        ]
+      },
+      {
+        id: 'birthday-film-glass',
+        slug: 'birthday-film-glass',
+        themeId: 'glass',
+        name: 'The Birthday Film (Glass Edition)',
+        category: 'birthday',
+        tagline: 'Luminous Dark Jewel & Frosted Glassmorphism Journey',
+        description: 'The exact same 11 intimate scenes reimagined with frosted glass surfaces, translucent blurred panels, deep midnight plum backdrops, crystalline glowing motes, and luminous reflections.',
+        badge: 'New Edition · Glassmorphism',
+        price: '₹100',
+        originalPrice: '₹199',
+        duration: '11 Interactive Scenes · ~3–4 min',
+        isAvailable: true,
+        headerGradient: 'from-[#0b0314] via-[#1a082e] to-[#2e0e47]',
+        features: [
+          'Translucent frosted-glass cards with blur & hairline specular borders',
+          'Deep midnight plum & dark jewel ambient lighting',
+          'Interactive Cupid’s Arrow & Beating Heart opening',
+          'Secret 4-digit PIN frosted acrylic keepsake card',
+          'Interactive birthday cake with real candle blow',
+          '6 Translucent polaroid glass slides with custom captions',
+          '5 Glowing celluloid video clip slots with memory notes',
+          'Interactive balloon pop wish surprises',
+          'Frosted vellum envelope & illuminated typewriter letter',
+          'Diwali sky fireworks & golden clinking toast',
+          'Includes instant shareable link + printable QR card'
+        ],
+        scenesBreakdown: [
+          { number: 1, name: 'The Invitation', icon: '🏹' },
+          { number: 2, name: 'Surprise Gift Box', icon: '🎁' },
+          { number: 3, name: 'Secret PIN Lock', icon: '🔒' },
+          { number: 4, name: 'Velvet Curtain', icon: '🎭' },
+          { number: 5, name: 'Cake & Countdown', icon: '🎂' },
+          { number: 6, name: 'Wall of Us', icon: '📷' },
+          { number: 7, name: 'Memory Reel', icon: '🎞️' },
+          { number: 8, name: 'Balloon Pop', icon: '🎈' },
+          { number: 9, name: 'The Letter', icon: '💌' },
+          { number: 10, name: 'Fireworks Finale', icon: '🎆' },
+          { number: 11, name: 'The Final Toast', icon: '🥂' }
+        ],
+        metrics: [
+          { label: 'Aesthetic', value: 'Frosted Glass' },
+          { label: 'Tone', value: 'Midnight Jewel' },
+          { label: 'Hosting & Archive', value: 'Lifetime' }
+        ]
+      },
+      {
+        id: 'milestone-anniversary',
+        slug: 'milestone-anniversary',
+        themeId: 'paper',
+        name: 'The Milestone Anniversary',
+        category: 'milestone',
+        tagline: 'Romantic Chapter-by-Chapter Keepsake Journey',
+        description: 'A dedicated romantic anniversary edition celebrating relationship milestones, first dates, travel chapters, love letters, and a golden champagne tribute.',
+        badge: 'In Studio Production',
+        price: '₹100',
+        originalPrice: '₹199',
+        duration: '14 Interactive Scenes · Coming Soon',
+        isAvailable: false,
+        features: [
+          'Relationship timeline chapter navigation',
+          'Shared song playlist with synchronized lyrics',
+          'Expanded 10-photo travel gallery',
+          'Dual audio voice memo recording attachment',
+          'Luxury embossed physical keepsake card companion'
+        ],
+        scenesBreakdown: [
+          { number: 1, name: 'How We Began', icon: '🌱' },
+          { number: 2, name: 'Favorite Chapters', icon: '📖' },
+          { number: 3, name: 'Golden Milestone', icon: '💍' }
+        ],
+        metrics: [
+          { label: 'Status', value: 'Coming Q4' },
+          { label: 'Format', value: '14 Chapters' },
+          { label: 'Audio', value: 'Voice Memo' }
+        ]
+      }
+    ];
+
+    /**
+     * Render Experience Cards into DOM
+     */
+    function renderExperienceGrid(filter = 'all') {
+      const container = document.getElementById('experienceGrid');
+      if (!container) return;
+
+      const filtered = filter === 'all' 
+        ? EXPERIENCES 
+        : EXPERIENCES.filter(exp => exp.category === filter || (filter === 'birthday' && exp.category === 'birthday') || (filter === 'milestone' && exp.category === 'milestone'));
+
+      container.innerHTML = filtered.map(exp => {
+        if (exp.isAvailable) {
+          // Available Featured Experience Card
+          return `
+            <div class="experience-card bg-white rounded-3xl border-2 border-rose-200/80 shadow-xl shadow-rose-900/5 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-rose-400 group" data-slug="${exp.slug}">
+              
+              <!-- Card Header / Visual Banner -->
+              <div class="relative bg-gradient-to-br ${exp.headerGradient || 'from-velvet-950 via-velvet-900 to-rose-700'} p-6 sm:p-10 text-white overflow-hidden">
+                <!-- Ambient Glow Backgrounds -->
+                <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-gold-400/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-10 -top-10 w-48 h-48 bg-rose-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <div class="relative z-10 space-y-4">
+                  
+                  <div class="flex flex-wrap items-center justify-between gap-3">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-400/20 border border-gold-300/40 text-gold-300 text-xs font-semibold uppercase tracking-wider">
+                      <span>✦</span>
+                      <span>${exp.badge}</span>
+                    </span>
+
+                    <div class="flex items-baseline gap-2">
+                      <span class="text-white/60 line-through text-sm font-medium">${exp.originalPrice}</span>
+                      <span class="font-serif text-3xl font-bold text-white tracking-tight">${exp.price}</span>
+                      <span class="text-white/70 text-xs">/ gift</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 class="font-serif text-2xl sm:text-4xl font-bold text-white tracking-tight group-hover:text-gold-200 transition-colors">
+                      ${exp.name}
+                    </h2>
+                    <p class="font-elegant italic text-base sm:text-xl text-rose-100/90 mt-1">
+                      ${exp.tagline}
+                    </p>
+                  </div>
+
+                  <p class="text-white/80 text-xs sm:text-sm leading-relaxed max-w-2xl">
+                    ${exp.description}
+                  </p>
+
+                  <!-- 11 Scene Badges Grid Preview -->
+                  <div class="pt-2">
+                    <div class="text-[11px] font-semibold uppercase tracking-wider text-gold-300/90 mb-2">
+                      Full 11-Scene Journey Included:
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 sm:gap-2">
+                      ${exp.scenesBreakdown.map(s => `
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white text-[11px] font-medium transition-colors">
+                          <span>${s.icon}</span>
+                          <span>${s.number}. ${s.name}</span>
+                        </span>
+                      `).join('')}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Card Body: Key Highlights & Actions -->
+              <div class="p-6 sm:p-8 bg-parchment-50/60 space-y-6">
+                
+                <!-- Quick Metrics Grid -->
+                <div class="grid grid-cols-3 gap-3 text-center">
+                  ${exp.metrics.map(m => `
+                    <div class="p-3 sm:p-3.5 rounded-2xl bg-white border border-parchment-200/80 shadow-2xs">
+                      <div class="font-serif text-base sm:text-lg font-bold text-ink-900">${m.value}</div>
+                      <div class="text-[10px] sm:text-[11px] text-ink-500 font-medium mt-0.5">${m.label}</div>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <!-- Feature Checkmarks List (Collapsible / 2 Columns) -->
+                <div class="pt-2 border-t border-parchment-200/80">
+                  <div class="text-[11px] font-bold text-ink-700 uppercase tracking-wider mb-3">Included in this experience:</div>
+                  <div class="grid sm:grid-cols-2 gap-2 text-xs text-ink-700">
+                    ${exp.features.map(f => `
+                      <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-[10px] flex-shrink-0">✓</span>
+                        <span>${f}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+
+                <!-- Action Buttons: Preview vs Customize -->
+                <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 border-t border-parchment-200">
+                  <div class="text-xs text-ink-500 text-center sm:text-left">
+                    <span class="font-semibold text-rose-600">No payment required</span> to preview and edit.
+                  </div>
+
+                  <div class="flex items-center gap-2.5 w-full sm:w-auto">
+                    <!-- Preview Experience CTA -->
+                    <a href="./preview.html?experience=${exp.slug}" class="flex-1 sm:flex-initial text-center px-5 sm:px-6 py-3.5 rounded-full border border-ink-900/20 bg-white hover:bg-parchment-100 text-ink-900 font-semibold transition-all text-xs sm:text-sm shadow-xs flex items-center justify-center gap-1.5 hover:border-ink-900">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                      <span>Preview Film Demo</span>
+                    </a>
+
+                    <!-- Start Customizing Directly CTA -->
+                    <button type="button" data-slug="${exp.slug}" data-theme="${exp.themeId}" class="btn-start-personalizing flex-1 sm:flex-initial text-center px-6 sm:px-8 py-3.5 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold transition-all text-xs sm:text-sm shadow-md shadow-rose-900/20 flex items-center justify-center gap-2 transform hover:-translate-y-0.5 cursor-pointer">
+                      <span>Start Personalizing</span>
+                      <span>→</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          `;
+        } else {
+          // Coming Soon Secondary Experience Card
+          return `
+            <div class="experience-card bg-parchment-50/50 rounded-3xl border border-parchment-300/80 shadow-xs overflow-hidden opacity-85 hover:opacity-100 transition-all">
+              <div class="p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                
+                <div class="space-y-2">
+                  <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-parchment-200 text-ink-600 text-[10px] font-bold uppercase tracking-wider">
+                    <span>⏳</span>
+                    <span>${exp.badge}</span>
+                  </div>
+                  <h3 class="font-serif text-xl sm:text-2xl font-bold text-ink-900">${exp.name}</h3>
+                  <p class="text-xs sm:text-sm text-ink-600 max-w-xl">${exp.description}</p>
+                </div>
+
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                  <span class="text-xs font-semibold text-ink-500 bg-white px-4 py-2 rounded-full border border-parchment-300">
+                    ${exp.duration}
+                  </span>
+                </div>
+
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    // Helper to generate UUID
+    function generateUuid() {
+      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // Filter Buttons Interaction
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('bg-velvet-950', 'text-white', 'active');
+          b.classList.add('bg-white', 'text-ink-700', 'border', 'border-parchment-300');
+        });
+        btn.classList.remove('bg-white', 'text-ink-700', 'border', 'border-parchment-300');
+        btn.classList.add('bg-velvet-950', 'text-white', 'active');
+        
+        const cat = btn.getAttribute('data-category');
+        renderExperienceGrid(cat);
+      });
+    });
+
+    const SUPABASE_URL = (import.meta.env && import.meta.env.VITE_SUPABASE_URL) || window.__SUPABASE_URL || 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
+    const SUPABASE_ANON_KEY = (import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || window.__SUPABASE_KEY || 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';
+    
+    let supabase = null;
+    let currentUser = null;
+
+    // Start Personalizing Click Handler
+    async function handleStartPersonalizing(btn) {
+      const slug = btn.getAttribute('data-slug') || 'birthday-film';
+      const themeId = btn.getAttribute('data-theme') || 'paper';
+      const draftId = generateUuid();
+
+      btn.disabled = true;
+      btn.innerHTML = `
+        <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        <span>Creating Draft...</span>
+      `;
+
+      try {
+        localStorage.setItem('vk_current_draft_id', draftId);
+        localStorage.setItem('gift_draft_id', draftId);
+
+        if (supabase && currentUser) {
+          const initialDraft = {
+            id: draftId,
+            owner_id: currentUser.id,
+            experience_id: slug,
+            theme_id: themeId,
+            status: 'draft',
+            content: {
+              recipientName: 'Elena',
+              themeId: themeId,
+              theme: {
+                primaryColor: '#d4235c',
+                accentColor: themeId === 'glass' ? '#f3b749' : '#e8a23d'
+              }
+            },
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+
+          await supabase.from('gifts').insert(initialDraft);
+        }
+      } catch (err) {
+        console.warn('Draft record creation warning:', err);
+      }
+
+      window.location.href = `./editor.html?draftId=${draftId}&experience=${slug}&theme=${themeId}`;
+    }
+
+    // Attach Start Personalizing Delegation
+    document.getElementById('experienceGrid')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-start-personalizing');
+      if (btn) {
+        handleStartPersonalizing(btn);
+      }
+    });
+
+    // Dynamic Supabase Live Pricing Sync
+    async function syncExperiencesFromSupabase() {
+      if (SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes('your-project')) {
+        try {
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/experiences?select=*&order=sort_order.asc`, {
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+              data.forEach(remoteExp => {
+                const local = EXPERIENCES.find(e => e.id === remoteExp.id);
+                if (local) {
+                  if (remoteExp.price) local.price = remoteExp.price;
+                  if (remoteExp.original_price) local.originalPrice = remoteExp.original_price;
+                  if (typeof remoteExp.is_active === 'boolean') local.isAvailable = remoteExp.is_active;
+                  if (remoteExp.name) local.name = remoteExp.name;
+                }
+              });
+              renderExperienceGrid('all');
+            }
+          }
+        } catch (e) {
+          console.warn('Could not fetch live experience pricing, using defaults:', e);
+        }
+      }
+    }
+
+    // Check Auth Session & Enforce Protection
+    async function checkAuthNav() {
+      try {
+        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+        supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true
+          }
+        });
+
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session || !session.user) {
+          // Route is protected - redirect to login
+          window.location.replace('./login.html?redirect=./create.html');
+          return;
+        }
+
+        currentUser = session.user;
+        const authLink = document.getElementById('createAuthLink');
+        if (authLink) {
+          authLink.href = './dashboard.html';
+          authLink.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1"></span><span>My Gifts</span>`;
+        }
+      } catch (e) {
+        console.warn('Auth check error:', e);
+      }
+    }
+
+    // Initial render & live sync
+    renderExperienceGrid('all');
+    syncExperiencesFromSupabase();
+    checkAuthNav();
+  </script>
+
+</body>
+</html>

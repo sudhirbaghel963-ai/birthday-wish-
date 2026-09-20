@@ -1,0 +1,2645 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Customize Your Keepsake Film — Velvet & Keepsake</title>
+  <meta name="description" content="Personalize text, colors, dates, photos, video clips, and music for your bespoke 11-scene birthday film with real-time live preview." />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+
+  <!-- Google Fonts: Cormorant Garamond, Fraunces, Great Vibes, Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            velvet: {
+              950: '#17040d',
+              900: '#2d0a1a',
+              850: '#3d0e23',
+              800: '#4a122c',
+              700: '#6e1b42',
+              600: '#8c2254',
+            },
+            rose: {
+              600: '#c42858',
+              500: '#d4235c',
+              400: '#e84d7a',
+              300: '#f78cae',
+              200: '#fcc5d6',
+              100: '#ffe4ec',
+              50: '#fff5f8',
+            },
+            gold: {
+              600: '#b87c14',
+              500: '#d99b26',
+              400: '#e8a23d',
+              300: '#f5b838',
+              200: '#ffdf85',
+              100: '#fff2d6',
+              50: '#fffbf0',
+            },
+            parchment: {
+              50: '#fffdfa',
+              100: '#fcf7f0',
+              200: '#f7ede0',
+              300: '#ebd9c5',
+              400: '#dec2a7',
+            },
+            ink: {
+              900: '#211317',
+              800: '#38222a',
+              700: '#4d3840',
+              600: '#634b54',
+              500: '#7d636c',
+              400: '#9e858e',
+              300: '#c2adb5',
+            }
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'serif'],
+            elegant: ['Cormorant Garamond', 'serif'],
+            script: ['Great Vibes', 'cursive'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom scrollbar for form panel */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(235, 217, 197, 0.3);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(125, 99, 108, 0.3);
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(212, 35, 92, 0.5);
+    }
+
+    /* Color picker styles */
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    input[type="color"]::-webkit-color-swatch {
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+    }
+
+    /* Range Slider Styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-track {
+      background: rgba(212, 35, 92, 0.15);
+      height: 8px;
+      border-radius: 4px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #d4235c;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      margin-top: -6px;
+      transition: transform 0.1s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+  </style>
+</head>
+<body class="bg-parchment-100 text-ink-900 font-sans antialiased h-screen flex flex-col overflow-hidden selection:bg-rose-100 selection:text-rose-500">
+
+  <!-- ============================================================
+       TOP HEADER / TOOLBAR
+       ============================================================ -->
+  <header class="h-16 border-b border-parchment-300/80 bg-parchment-50/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between z-40 flex-shrink-0">
+    
+    <!-- Left: Back & Brand -->
+    <div class="flex items-center gap-3 sm:gap-4">
+      <a href="./create.html" id="backBtn" class="flex items-center gap-1.5 text-xs font-semibold text-ink-600 hover:text-rose-600 px-3 py-1.5 rounded-full border border-parchment-300 bg-white hover:bg-parchment-100 transition-colors shadow-sm" title="Return to Experience Selection">
+        <span>←</span>
+        <span class="hidden sm:inline">Back</span>
+      </a>
+
+      <div class="h-5 w-px bg-parchment-300 hidden sm:block"></div>
+
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-velvet-900 to-rose-600 flex items-center justify-center text-gold-300 font-serif font-bold text-sm shadow-sm">
+          V
+        </div>
+        <div>
+          <h1 class="font-serif text-base sm:text-lg font-bold text-ink-900 leading-tight">
+            Customize Birthday Film
+          </h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: Autosave Status & Progress Indicator -->
+    <div class="hidden md:flex items-center gap-4">
+      <!-- Autosave Status Badge -->
+      <div id="saveStatusBadge" class="flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-parchment-200 text-xs font-medium text-ink-600 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="saveStatusText">Draft saved</span>
+      </div>
+
+      <!-- Section Progress Bar -->
+      <div class="flex items-center gap-2 bg-white px-3 py-1 rounded-full border border-parchment-200 text-xs text-ink-700 shadow-sm">
+        <span class="font-semibold text-rose-600" id="progressCount">3/12</span>
+        <span class="text-ink-400">sections</span>
+        <div class="w-16 bg-parchment-200 h-1.5 rounded-full overflow-hidden">
+          <div id="progressBarFill" class="bg-gradient-to-r from-gold-500 to-rose-500 h-full w-1/4 transition-all duration-300 rounded-full"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Segmented View Control ([Edit Form] vs [Live Preview]) -->
+    <div class="flex lg:hidden items-center bg-parchment-200 p-0.5 rounded-full text-xs font-semibold text-ink-700 border border-parchment-300">
+      <button id="viewFormBtn" class="px-3 py-1 rounded-full bg-white text-rose-600 shadow-sm transition-all" type="button">Edit</button>
+      <button id="viewPreviewBtn" class="px-3 py-1 rounded-full text-ink-600 hover:text-ink-900 transition-all" type="button">Preview</button>
+    </div>
+
+    <!-- Right: Auth & Next Step Action -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Auth / Dashboard Nav Container -->
+      <div id="editorAuthNav" class="flex items-center">
+        <a href="./login.html" id="btnEditorSignIn" class="hidden sm:inline-flex items-center text-xs font-semibold text-ink-600 hover:text-rose-600 px-3 py-1.5 rounded-full border border-parchment-300 bg-white hover:bg-parchment-100 transition-colors shadow-2xs">
+          Sign In
+        </a>
+        <a href="./dashboard.html" id="btnEditorMyGifts" class="hidden items-center gap-1.5 text-xs font-semibold text-ink-700 hover:text-rose-600 px-3 py-1.5 rounded-full border border-parchment-300 bg-white hover:bg-parchment-100 transition-colors shadow-2xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>My Gifts</span>
+        </a>
+      </div>
+
+      <button id="btnContinueOrder" type="button" class="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-md shadow-rose-600/20 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5">
+        <span>Continue</span>
+        <span class="text-gold-300">→</span>
+      </button>
+    </div>
+
+  </header>
+
+
+  <!-- ============================================================
+       MAIN TWO-PANEL WORKSPACE
+       ============================================================ -->
+  <main class="flex-1 flex flex-col lg:flex-row h-[calc(100vh-4rem)] overflow-hidden">
+    
+    <!-- ==========================================
+         LEFT PANEL: SCROLLABLE FORM ACCORDION
+         ========================================== -->
+    <div id="formPanel" class="w-full lg:w-[46%] xl:w-[44%] h-full overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 space-y-4 border-r border-parchment-300/80 bg-parchment-50/60">
+      
+      <!-- Save Progress Prompt Banner (Shown for anonymous drafts) -->
+      <div id="savePromptBanner" class="hidden p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-rose-50 border border-amber-200/80 flex items-center justify-between gap-3 text-xs text-ink-700 shadow-2xs transition-all">
+        <div class="flex items-center gap-2">
+          <span class="text-base flex-shrink-0">💾</span>
+          <span class="leading-tight"><strong>Save your progress</strong> — Sign in to keep this draft safe on all your devices.</span>
+        </div>
+        <a href="./login.html" id="btnSavePromptSignIn" class="px-3 py-1.5 rounded-full bg-velvet-900 hover:bg-rose-600 text-white font-semibold text-[11px] whitespace-nowrap transition-colors shadow-xs flex-shrink-0">
+          Sign In / Save
+        </a>
+      </div>
+      
+      <!-- ==========================================
+           GLOBAL SETTINGS SECTION (TOP-LEVEL)
+           Theme Colors & Background Music
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border-2 border-rose-200 shadow-md overflow-hidden" data-scene="none">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="true">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-gradient-to-br from-velvet-900 to-rose-600 text-gold-300 text-xs font-bold flex items-center justify-center shadow-sm">✦</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="font-serif text-base font-bold text-ink-900">Global Settings</h2>
+                <span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-600 text-[10px] font-bold uppercase tracking-wider">All Scenes</span>
+              </div>
+              <p class="text-[11px] text-ink-500">Theme color palette &amp; background soundtrack</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▲</span>
+        </button>
+        
+        <div class="accordion-content px-5 pb-6 pt-1 space-y-6">
+          
+          <!-- 1. THEME COLORS -->
+          <div class="space-y-3 pb-5 border-b border-parchment-200">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-ink-700">1. Film Theme Colors</span>
+              <span class="text-[11px] text-ink-400">Applies across all 11 scenes</span>
+            </div>
+
+            <!-- Color Pickers Row -->
+            <div class="grid grid-cols-2 gap-3.5">
+              
+              <!-- Primary Rose Hue -->
+              <div class="p-3.5 rounded-xl bg-parchment-50 border border-parchment-200 space-y-2">
+                <span class="block text-xs font-semibold text-ink-800">Primary Accent</span>
+                <div class="flex items-center gap-3">
+                  <input type="color" id="primaryColorInput" value="#d4235c" />
+                  <div>
+                    <span id="primaryColorHex" class="font-mono text-xs font-semibold text-ink-800">#d4235c</span>
+                    <span class="block text-[10px] text-ink-500">Box &amp; Keynotes</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Accent Gold Hue -->
+              <div class="p-3.5 rounded-xl bg-parchment-50 border border-parchment-200 space-y-2">
+                <span class="block text-xs font-semibold text-ink-800">Secondary Accent</span>
+                <div class="flex items-center gap-3">
+                  <input type="color" id="accentColorInput" value="#e8a23d" />
+                  <div>
+                    <span id="accentColorHex" class="font-mono text-xs font-semibold text-ink-800">#e8a23d</span>
+                    <span class="block text-[10px] text-ink-500">Ribbons &amp; Stars</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Contrast warning -->
+            <div id="contrastWarning" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+              <span>⚠️</span>
+              <span>This color may be hard to read against our warm cream background.</span>
+            </div>
+
+            <!-- Quick Palette Presets -->
+            <div class="space-y-1.5 pt-1">
+              <span class="text-[11px] font-semibold text-ink-600 block">Curated Palettes:</span>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" class="palette-preset-btn px-2.5 py-1 rounded-full border border-parchment-300 text-xs text-ink-700 hover:border-rose-400 bg-white flex items-center gap-1.5 shadow-xs" data-primary="#d4235c" data-accent="#e8a23d">
+                  <span class="w-3 h-3 rounded-full bg-[#d4235c] inline-block"></span>
+                  <span class="w-3 h-3 rounded-full bg-[#e8a23d] inline-block"></span>
+                  <span>Velvet Rose</span>
+                </button>
+                <button type="button" class="palette-preset-btn px-2.5 py-1 rounded-full border border-parchment-300 text-xs text-ink-700 hover:border-rose-400 bg-white flex items-center gap-1.5 shadow-xs" data-primary="#8a1c4a" data-accent="#f5b838">
+                  <span class="w-3 h-3 rounded-full bg-[#8a1c4a] inline-block"></span>
+                  <span class="w-3 h-3 rounded-full bg-[#f5b838] inline-block"></span>
+                  <span>Midnight Ruby</span>
+                </button>
+                <button type="button" class="palette-preset-btn px-2.5 py-1 rounded-full border border-parchment-300 text-xs text-ink-700 hover:border-rose-400 bg-white flex items-center gap-1.5 shadow-xs" data-primary="#9e2a2b" data-accent="#ffb703">
+                  <span class="w-3 h-3 rounded-full bg-[#9e2a2b] inline-block"></span>
+                  <span class="w-3 h-3 rounded-full bg-[#ffb703] inline-block"></span>
+                  <span>Autumn Sunset</span>
+                </button>
+                <button type="button" class="palette-preset-btn px-2.5 py-1 rounded-full border border-parchment-300 text-xs text-ink-700 hover:border-rose-400 bg-white flex items-center gap-1.5 shadow-xs" data-primary="#b5179e" data-accent="#ffd166">
+                  <span class="w-3 h-3 rounded-full bg-[#b5179e] inline-block"></span>
+                  <span class="w-3 h-3 rounded-full bg-[#ffd166] inline-block"></span>
+                  <span>Orchid Blossom</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- 2. BACKGROUND MUSIC -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-ink-700">2. Background Music</span>
+              <span class="text-[11px] text-ink-400">Plays seamlessly across film</span>
+            </div>
+
+            <!-- Radio Pill Choice -->
+            <div class="grid grid-cols-2 gap-2 p-1 bg-parchment-100 rounded-xl border border-parchment-200">
+              <button type="button" id="musicTypeDefaultBtn" class="py-2 px-3 rounded-lg text-xs font-semibold bg-white text-rose-600 shadow-sm transition-all text-center">
+                ✦ Featured Track
+              </button>
+              <button type="button" id="musicTypeCustomBtn" class="py-2 px-3 rounded-lg text-xs font-semibold text-ink-600 hover:text-ink-900 transition-all text-center">
+                🎵 Upload Own Song
+              </button>
+            </div>
+
+            <!-- Option A: Featured Track Info -->
+            <div id="musicDefaultPanel" class="p-3.5 rounded-xl bg-parchment-50 border border-parchment-200 space-y-2">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-sm">
+                  ♪
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-ink-900">Atmospheric Birthday Symphony</div>
+                  <div class="text-[11px] text-ink-500">Gentle acoustic strings &amp; warm piano</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Option B: Custom Audio Upload -->
+            <div id="musicCustomPanel" class="hidden space-y-3">
+              <div class="p-4 rounded-xl border-2 border-dashed border-parchment-300 bg-parchment-50 hover:border-rose-400 transition-all text-center">
+                <input type="file" id="customMusicFileInput" accept="audio/mp3, audio/wav, audio/m4a, audio/ogg, audio/*" class="hidden" />
+                <label for="customMusicFileInput" class="cursor-pointer block space-y-1">
+                  <div class="w-8 h-8 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-sm font-bold">
+                    ↑
+                  </div>
+                  <div class="text-xs font-bold text-ink-900" id="customMusicFileName">Choose audio file (MP3, WAV, M4A)</div>
+                  <div class="text-[11px] text-ink-500">Max size 15MB</div>
+                </label>
+                <div id="musicUploadSpinner" class="hidden py-2 flex items-center justify-center gap-2 text-xs text-rose-600">
+                  <div class="w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+                  <span>Uploading track...</span>
+                </div>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-parchment-100 border border-parchment-200 text-[11px] text-ink-600 leading-relaxed italic">
+                ✦ Please only upload music you have the rights to use — this becomes part of a shareable link.
+              </div>
+
+              <!-- Native audio player preview -->
+              <div id="customAudioPreviewWrap" class="hidden pt-1">
+                <audio id="customAudioElement" controls class="w-full h-9 rounded-lg"></audio>
+              </div>
+
+              <div id="musicUploadError" class="hidden p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"></div>
+            </div>
+
+
+            <!-- 3. MUSIC START POINT / TRIM SCRUBBER -->
+            <div id="musicTrimContainer" class="p-4 rounded-xl bg-parchment-50 border border-parchment-200 space-y-3">
+              
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-xs font-bold text-ink-900 block">Loop Start Point</span>
+                  <span class="text-[11px] text-ink-500">Choose where the film's music begins</span>
+                </div>
+                <div class="px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 font-mono text-xs font-bold" id="musicStartTimeDisplay">
+                  Starts at 0:27
+                </div>
+              </div>
+
+              <!-- Interactive Trim Slider -->
+              <div class="space-y-1">
+                <input type="range" id="musicStartRange" min="0" max="180" value="27" class="w-full h-2 rounded-lg" />
+                <div class="flex justify-between text-[10px] text-ink-400 font-mono">
+                  <span>0:00</span>
+                  <span>Track Timeline</span>
+                  <span id="musicTotalDurationLabel">3:20</span>
+                </div>
+              </div>
+
+              <!-- Audition Button -->
+              <div class="pt-1 flex items-center justify-between">
+                <button type="button" id="btnAuditionMusic" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-parchment-300 hover:border-rose-400 text-xs font-semibold text-ink-800 shadow-xs transition-colors">
+                  <span id="auditionIcon">▶</span>
+                  <span id="auditionLabel">Audition Start Point</span>
+                </button>
+                <span class="text-[10px] text-ink-400">Plays loop snippet</span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           1. RECIPIENT SECTION
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="11">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-rose-100 text-rose-600 text-xs font-bold flex items-center justify-center font-serif">1</span>
+            <div>
+              <h2 class="font-serif text-base font-bold text-ink-900">Recipient</h2>
+              <p class="text-[11px] text-ink-500">Who is this magical film for?</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3">
+          <div>
+            <label for="recipientNameInput" class="block text-xs font-semibold text-ink-800 mb-1">
+              Recipient's Name <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="recipientNameInput" value="Elena" placeholder="e.g. Elena, Bestie, Maya" class="w-full px-3.5 py-2.5 rounded-xl border border-parchment-300 bg-parchment-50/50 text-sm text-ink-900 focus:border-rose-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-200 transition-all font-medium" />
+            <p class="text-[11px] text-ink-500 mt-1">This name will appear in the opening wish and the Grand Toast finale.</p>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           2. SCENE 2: GIFT BOX
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="2">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-800 text-xs font-bold flex items-center justify-center font-serif">2</span>
+            <div>
+              <h2 class="font-serif text-base font-bold text-ink-900">Scene 2: Surprise Gift Box</h2>
+              <p class="text-[11px] text-ink-500">Opening 3D gift &amp; card text</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3.5">
+          <!-- Gift Box Color Picker -->
+          <div class="p-3.5 rounded-xl bg-parchment-50 border border-parchment-200 space-y-2">
+            <span class="block text-xs font-semibold text-ink-800">Gift Box Color</span>
+            <div class="flex items-center gap-3">
+              <input type="color" id="s2BoxColorInput" value="#d4235c" />
+              <div>
+                <span id="s2BoxColorHex" class="font-mono text-xs font-semibold text-ink-800">#d4235c</span>
+                <span class="block text-[10px] text-ink-500">Box Body &amp; Lid Color</span>
+              </div>
+            </div>
+            <!-- Contrast warning -->
+            <div id="s2BoxContrastWarning" class="hidden p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+              <span>⚠️</span>
+              <span>This color may have low contrast against the background or ribbon.</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Eyebrow Badge</label>
+            <input type="text" id="s2Badge" value="Special Delivery" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Header Title</label>
+            <input type="text" id="s2Title" value="A surprise awaits you..." class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Subtext</label>
+            <input type="text" id="s2Subtitle" value="crafted with love, just for you" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Revealed Card Message</label>
+            <textarea id="s2CardText" rows="2" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none leading-relaxed">Every moment with you is a gift to cherish. May this year bring endless smiles, sweet surprises, and warm happiness!</textarea>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           3. SCENE 3: SECRET PIN LOCK
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="3">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-800 text-xs font-bold flex items-center justify-center font-serif">3</span>
+            <div>
+              <h2 class="font-serif text-base font-bold text-ink-900">Scene 3: Secret PIN Lock</h2>
+              <p class="text-[11px] text-ink-500">4-digit code &amp; clue</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">
+              Secret 4-Digit PIN <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="s3Pin" maxlength="4" value="1234" placeholder="1234" class="w-full px-3.5 py-2.5 rounded-xl border border-parchment-300 bg-parchment-50/50 font-mono text-sm tracking-widest text-ink-900 focus:border-rose-500 focus:outline-none font-bold" />
+            <p id="s3PinError" class="hidden text-[11px] text-rose-600 font-semibold mt-1">PIN must be exactly 4 numeric digits (e.g. 1234, 0524).</p>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">PIN Hint Text</label>
+            <input type="text" id="s3Hint" value="hint: our favourite number" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           4. SCENE 4: CURTAIN REVEAL
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="4">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-800 text-xs font-bold flex items-center justify-center font-serif">4</span>
+            <div>
+              <h2 class="font-serif text-base font-bold text-ink-900">Scene 4: Velvet Curtain</h2>
+              <p class="text-[11px] text-ink-500">Theatrical reveal badge</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3.5">
+          <!-- Curtain Color Picker -->
+          <div class="p-3.5 rounded-xl bg-parchment-50 border border-parchment-200 space-y-2">
+            <span class="block text-xs font-semibold text-ink-800">Curtain Color</span>
+            <div class="flex items-center gap-3">
+              <input type="color" id="s4CurtainColorInput" value="#6e0a31" />
+              <div>
+                <span id="s4CurtainColorHex" class="font-mono text-xs font-semibold text-ink-800">#6e0a31</span>
+                <span class="block text-[10px] text-ink-500">Velvet Drapes Color</span>
+              </div>
+            </div>
+            <!-- Contrast warning -->
+            <div id="s4CurtainContrastWarning" class="hidden p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+              <span>⚠️</span>
+              <span>This color may have low contrast against the theatre stage.</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Badge</label>
+            <input type="text" id="s4Badge" value="Special Surprise" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           5. SCENE 5: CAKE & COUNTDOWN
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="5">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-800 text-xs font-bold flex items-center justify-center font-serif">5</span>
+            <div>
+              <h2 class="font-serif text-base font-bold text-ink-900">Scene 5: Cake &amp; Countdown</h2>
+              <p class="text-[11px] text-ink-500">Birth date &amp; candle wish</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3.5">
+          <!-- Cake Color Picker -->
+          <div class="p-3.5 rounded-xl bg-parchment-50 border border-parchment-200 space-y-2">
+            <span class="block text-xs font-semibold text-ink-800">Cake Color</span>
+            <div class="flex items-center gap-3">
+              <input type="color" id="s5CakeColorInput" value="#e85987" />
+              <div>
+                <span id="s5CakeColorHex" class="font-mono text-xs font-semibold text-ink-800">#e85987</span>
+                <span class="block text-[10px] text-ink-500">Cake Icing &amp; Body Color</span>
+              </div>
+            </div>
+            <!-- Contrast warning -->
+            <div id="s5CakeContrastWarning" class="hidden p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+              <span>⚠️</span>
+              <span>This color may have low contrast against the candles or plate.</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Birth Date (Calculates Lifetime Stats)</label>
+            <input type="date" id="s5BirthDate" value="2006-01-01" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Headline</label>
+            <input type="text" id="s5Headline" value="Happy Birthday, Beautiful 🎂" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Wish Line (After blowing candles)</label>
+            <input type="text" id="s5WishSub" value="May all your sweetest dreams take flight" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           6. SCENE 6: WALL OF US (PHOTOS + CAPTIONS PAIRED)
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="6">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-rose-100 text-rose-600 text-xs font-bold flex items-center justify-center font-serif">6</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="font-serif text-base font-bold text-ink-900">Scene 6: Wall of Us</h2>
+                <span class="px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-600 text-[9px] font-bold">6 Photos</span>
+              </div>
+              <p class="text-[11px] text-ink-500">Polaroid photos &amp; handwritten captions</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-4">
+          <p class="text-xs text-ink-600">
+            Upload a photo and write a caption for each of the 6 Polaroid frames hanging on the memory wall:
+          </p>
+
+          <!-- 6 Paired Photo + Caption Slots -->
+          <div class="space-y-3" id="s6PairedSlotsContainer">
+            <!-- Rendered by JS: 6 paired image upload + caption rows -->
+          </div>
+
+          <div id="s6PhotoUploadError" class="hidden p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"></div>
+
+          <div class="pt-2 border-t border-parchment-200 space-y-2">
+            <div>
+              <label class="block text-xs font-semibold text-ink-800 mb-1">Wall Eyebrow</label>
+              <input type="text" id="s6Eyebrow" value="a few frames from the reel" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-800 mb-1">Closing Headline</label>
+              <input type="text" id="s6Headline" value="So Many Moments" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           7. SCENE 7: MEMORY REEL (CLIPS + CAPTIONS PAIRED)
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="7">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-gold-100 text-gold-600 text-xs font-bold flex items-center justify-center font-serif">7</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="font-serif text-base font-bold text-ink-900">Scene 7: Memory Reel</h2>
+                <span class="px-1.5 py-0.5 rounded-full bg-gold-100 text-gold-700 text-[9px] font-bold">5 Video Clips</span>
+              </div>
+              <p class="text-[11px] text-ink-500">Short video clips &amp; scrolling film captions</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-4">
+          <div class="p-2.5 rounded-xl bg-parchment-100 border border-parchment-200 text-[11px] text-ink-600 leading-relaxed">
+            ✦ Upload short video clips (MP4/MOV/WEBM, max 20MB, ~8 seconds recommended) for a moving cinema strip effect.
+          </div>
+
+          <!-- 5 Paired Video + Caption Slots -->
+          <div class="space-y-3" id="s7PairedSlotsContainer">
+            <!-- Rendered by JS: 5 paired video upload + caption rows -->
+          </div>
+
+          <div id="s7ClipUploadError" class="hidden p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"></div>
+
+          <div class="pt-2 border-t border-parchment-200">
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Climax Headline</label>
+            <input type="text" id="s7Headline" value="Frame by Frame" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           8. SCENE 8: BALLOON POP
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="8">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-800 text-xs font-bold flex items-center justify-center font-serif">8</span>
+            <div>
+              <h2 class="font-serif text-base font-bold text-ink-900">Scene 8: Balloon Pop</h2>
+              <p class="text-[11px] text-ink-500">6 Interactive wish balloons</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Headline</label>
+            <input type="text" id="s8Headline" value="Pop the Wishes 🎈" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Subtitle</label>
+            <input type="text" id="s8Subtitle" value="Tap each balloon to reveal a little wish" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">6 Balloon Wish Messages</label>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="w-5 text-center text-xs font-bold text-ink-400">1</span>
+                <input type="text" id="s8Msg0" value="May your smiles be endless! 😊" class="w-full px-3 py-1.5 rounded-lg border border-parchment-300 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-5 text-center text-xs font-bold text-ink-400">2</span>
+                <input type="text" id="s8Msg1" value="Wishing you all the success! 🌟" class="w-full px-3 py-1.5 rounded-lg border border-parchment-300 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-5 text-center text-xs font-bold text-ink-400">3</span>
+                <input type="text" id="s8Msg2" value="Stay as amazing as you are! 💙" class="w-full px-3 py-1.5 rounded-lg border border-parchment-300 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-5 text-center text-xs font-bold text-ink-400">4</span>
+                <input type="text" id="s8Msg3" value="Dream big and fly high! 🚀" class="w-full px-3 py-1.5 rounded-lg border border-parchment-300 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-5 text-center text-xs font-bold text-ink-400">5</span>
+                <input type="text" id="s8Msg4" value="Health and happiness always! 🍀" class="w-full px-3 py-1.5 rounded-lg border border-parchment-300 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-5 text-center text-xs font-bold text-ink-400">6</span>
+                <input type="text" id="s8Msg5" value="Lots and lots of love! ❤️" class="w-full px-3 py-1.5 rounded-lg border border-parchment-300 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+              </div>
+            </div>
+          </div>
+          <div class="pt-1">
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Closing Wish Line</label>
+            <input type="text" id="s8Closing" value="wishes released 🎈" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           9. SCENE 9: THE HANDWRITTEN LETTER
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="9">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-800 text-xs font-bold flex items-center justify-center font-serif">9</span>
+            <div>
+              <h2 class="font-serif text-base font-bold text-ink-900">Scene 9: The Letter</h2>
+              <p class="text-[11px] text-ink-500">Typewritten envelope letter</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Eyebrow</label>
+            <input type="text" id="s9Eyebrow" value="a note for you" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Letter Message</label>
+            <textarea id="s9Message" rows="5" class="w-full px-3.5 py-2.5 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none leading-relaxed font-serif">Dear troublemaker,
+
+Thank you for every ridiculous memory and the ones we haven't made yet.
+
+Happy Birthday. I mean it.</textarea>
+            <p class="text-[11px] text-ink-500 mt-1.5 italic">
+              ✦ Blank lines will show as paragraph breaks in the vintage typewriter letter.
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           10. SCENE 10: FIREWORKS FINALE
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="10">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-800 text-xs font-bold flex items-center justify-center font-serif">10</span>
+            <div>
+              <h2 class="font-serif text-base font-bold text-ink-900">Scene 10: Fireworks Finale</h2>
+              <p class="text-[11px] text-ink-500">Closing fireworks card</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Headline</label>
+            <input type="text" id="s10Headline" value="Here's To You" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Subtext</label>
+            <textarea id="s10Subtext" rows="2" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none leading-relaxed">may this year be loud, lucky, and full of ridiculous stories we'll tell for years.</textarea>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==========================================
+           11. SCENE 11: THE FINAL TOAST
+           ========================================== -->
+      <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="11">
+        <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-800 text-xs font-bold flex items-center justify-center font-serif">11</span>
+            <div>
+              <h2 class="font-serif text-base font-bold text-ink-900">Scene 11: The Final Toast</h2>
+              <p class="text-[11px] text-ink-500">Clinking glasses &amp; hero sign-off</p>
+            </div>
+          </div>
+          <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
+        </button>
+        <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Eyebrow</label>
+            <input type="text" id="s11Eyebrow" value="and so, once more —" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Hero Closing Line</label>
+            <input type="text" id="s11HeroLine" value="Happy Birthday, {recipientName}" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            <div class="mt-1.5 px-3 py-1.5 rounded-lg bg-parchment-100 border border-parchment-200 text-xs text-ink-700">
+              <span class="text-ink-400">Preview:</span> <span id="s11HeroPreview" class="font-serif font-bold text-rose-600">Happy Birthday, Elena</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-ink-800 mb-1">Subtext</label>
+            <textarea id="s11Subtext" rows="2" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none leading-relaxed">here’s to another year of us being a little bit unstoppable together.</textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         RIGHT PANEL: LIVE PREVIEW IFRAME & TOOLBAR
+         ========================================== -->
+    <div id="previewPanel" class="w-full lg:flex-1 h-full flex flex-col bg-velvet-950 p-3 sm:p-5 overflow-hidden">
+      
+      <!-- Top Preview Navigation Bar -->
+      <div class="flex items-center justify-between gap-2 mb-3 bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 flex-shrink-0 text-white">
+        
+        <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar py-0.5 text-xs">
+          <span class="text-gold-300 font-semibold text-[11px] uppercase tracking-wider hidden sm:inline">Jump to Scene:</span>
+          
+          <div class="flex items-center gap-1.5" id="sceneJumpTabs">
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="1">1: Bow</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="2">2: Gift</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="3">3: PIN</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="4">4: Curtain</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="5">5: Cake</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="6">6: Wall</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="7">7: Reel</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="8">8: Stars</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="9">9: Letter</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="10">10: Sparks</button>
+            <button type="button" class="jump-tab-btn px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/30 text-[11px] font-medium transition-all" data-scene="11">11: Toast</button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button id="btnReloadPreview" type="button" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-colors" title="Reload Preview">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l6.73-6.19"/>
+            </svg>
+          </button>
+          <a href="./preview.html" target="_blank" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-colors" title="Open Fullscreen Preview in New Tab">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Live Film Iframe -->
+      <div class="flex-1 w-full rounded-2xl overflow-hidden shadow-2xl border border-gold-400/20 bg-black relative">
+        <iframe id="filmPreviewFrame" src="./preview.html" class="w-full h-full border-0" title="Live Interactive Birthday Film Preview" allow="autoplay; microphone"></iframe>
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- ============================================================
+       DEDICATED FULL-SCREEN PREVIEW REVIEW MODE (STEP 5)
+       ============================================================ -->
+  <div id="reviewModeOverlay" class="fixed inset-0 z-50 bg-velvet-950 hidden flex-col">
+    
+    <!-- Top Review Floating Control Bar -->
+    <div class="h-16 bg-velvet-900/95 backdrop-blur-md border-b border-gold-400/20 px-4 sm:px-8 flex items-center justify-between flex-shrink-0 z-10 text-white">
+      <button id="btnReviewBackToEdit" type="button" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 bg-white/10 hover:bg-white/20 text-white font-medium text-xs sm:text-sm transition-all cursor-pointer">
+        <span>← Back to Editing</span>
+      </button>
+
+      <div class="text-center">
+        <div class="font-serif text-sm sm:text-base font-bold text-gold-200">
+          Reviewing <span id="reviewRecipientName">Elena</span>'s Birthday Film
+        </div>
+        <div class="hidden sm:block text-[10px] text-white/60">Experience the film exactly as your recipient will see it</div>
+      </div>
+
+      <button id="btnReviewProceedCheckout" type="button" class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-md shadow-rose-600/30 transform hover:-translate-y-0.5 cursor-pointer">
+        <span>Looks Good — Proceed to Checkout</span>
+        <span class="text-gold-200">→</span>
+      </button>
+    </div>
+
+    <!-- Review Fullscreen Iframe -->
+    <div class="flex-1 w-full h-[calc(100vh-4rem)] relative bg-black">
+      <iframe id="reviewFilmPreviewFrame" src="./preview.html" class="w-full h-full border-0" title="Full Screen Review Preview" allow="autoplay; microphone"></iframe>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       MODAL: ORDER SUMMARY & PAYMENT (STEP 6)
+       ============================================================ -->
+  <div id="orderSummaryModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-parchment-300 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="flex items-center justify-between border-b border-parchment-200 pb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-full bg-gradient-to-br from-velvet-900 to-rose-600 text-gold-300 flex items-center justify-center font-bold text-sm shadow-sm">✦</div>
+          <div>
+            <h3 class="font-serif text-xl font-bold text-ink-900">Order Summary</h3>
+            <p class="text-xs text-ink-500">Review details before publishing your gift</p>
+          </div>
+        </div>
+        <button id="closeModalBtn" type="button" class="text-ink-400 hover:text-ink-900 text-xl font-bold p-1 cursor-pointer">×</button>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-parchment-50 border border-parchment-200 space-y-2.5 text-xs text-ink-700">
+        <div class="flex justify-between items-center">
+          <span class="text-ink-500">Experience:</span>
+          <span class="font-semibold text-rose-600" id="summaryExperience">Signature 11-Scene Film (Warm Paper Edition)</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-ink-500">Recipient Name:</span>
+          <span class="font-bold text-ink-900" id="summaryRecipient">Elena</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-ink-500">Secret 4-Digit PIN:</span>
+          <span class="font-mono font-bold text-ink-900 px-2 py-0.5 rounded bg-parchment-200/80" id="summaryPin">1234</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-ink-500">Soundtrack:</span>
+          <span class="font-medium text-ink-800" id="summaryMusic">Starts at 0:27</span>
+        </div>
+        <div class="pt-2 border-t border-parchment-200 flex justify-between items-center text-sm font-bold text-ink-900">
+          <span>Total Price:</span>
+          <span class="text-base text-rose-600 font-serif">₹100 <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span></span>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <!-- TEST MODE PUBLISH: In production, swap this click handler with Razorpay / Stripe checkout SDK -->
+        <button id="btnTestModePublish" type="button" class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-velvet-900 via-velvet-800 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/25 flex items-center justify-center gap-2 transform hover:-translate-y-0.5 cursor-pointer">
+          <span id="btnPublishText">Confirm &amp; Publish Gift (Test Mode — No Payment)</span>
+          <span class="text-gold-300">✦</span>
+        </button>
+
+        <div class="flex items-center justify-center gap-4 text-xs text-ink-500">
+          <button id="closeModalBtn2" type="button" class="text-ink-600 hover:text-ink-900 underline cursor-pointer">
+            ← Back to Editing
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       MODAL: YOUR GIFT IS READY! (STEP 7: QR & SHARE)
+       ============================================================ -->
+  <div id="giftReadyModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-parchment-300 shadow-2xl space-y-6 text-center animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Celebratory Header Badge -->
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 shadow-sm mx-auto">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
+
+      <div class="space-y-1">
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ink-900">
+          Your Gift Is Ready!
+        </h2>
+        <p class="text-xs sm:text-sm text-ink-600 leading-relaxed max-w-md mx-auto">
+          Your personalized birthday film has been published and is permanently active for your recipient.
+        </p>
+      </div>
+
+      <!-- Shareable Link Box -->
+      <div class="space-y-2 text-left">
+        <label class="block text-xs font-bold uppercase tracking-wider text-ink-700">
+          Private Shareable Gift Link
+        </label>
+        <div class="flex items-center gap-2">
+          <input 
+            type="text" 
+            id="readyShareUrlInput" 
+            readonly 
+            class="flex-1 px-3.5 py-2.5 rounded-xl border border-parchment-300 bg-parchment-50 font-mono text-xs text-ink-900 focus:outline-none select-all"
+          />
+          <button 
+            type="button" 
+            id="btnCopyReadyLink" 
+            class="px-4 py-2.5 rounded-xl bg-velvet-900 hover:bg-rose-600 text-white font-semibold text-xs transition-colors flex-shrink-0 cursor-pointer shadow-xs"
+          >
+            Copy Link
+          </button>
+        </div>
+        <div id="copyToast" class="hidden text-xs text-emerald-600 font-semibold pt-0.5">
+          ✓ Link copied to clipboard!
+        </div>
+      </div>
+
+      <!-- QR Code Display -->
+      <div class="p-4 rounded-2xl bg-parchment-50 border border-parchment-200 flex flex-col items-center gap-3">
+        <div class="text-xs font-semibold text-ink-700">Scan QR Code or Print on Card:</div>
+        <div class="bg-white p-2.5 rounded-xl border border-parchment-300 shadow-xs">
+          <img id="readyQrImage" src="" alt="Gift QR Code" class="w-36 h-36 object-contain" />
+        </div>
+        <a id="btnDownloadQr" href="#" download="birthday-gift-qr.png" target="_blank" class="text-xs font-semibold text-rose-600 hover:text-rose-700 underline">
+          Download QR Code Image
+        </a>
+      </div>
+
+      <!-- Share Actions -->
+      <div class="space-y-2.5 pt-1">
+        <button 
+          type="button" 
+          id="btnShareWeb" 
+          class="w-full py-3 px-6 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-md shadow-rose-600/20 flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+          <span>Share via WhatsApp / Messages</span>
+        </button>
+
+        <div class="flex items-center justify-center gap-3 pt-2">
+          <a id="readyViewRecipientLink" href="#" target="_blank" class="text-xs font-semibold text-rose-600 hover:text-rose-700 underline">
+            View Public Film as Recipient ↗
+          </a>
+          <span class="text-parchment-300">•</span>
+          <a href="./dashboard.html" class="text-xs font-semibold text-ink-600 hover:text-ink-900 underline">
+            Go to My Gifts Dashboard
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SUPABASE CLIENT & EDITOR STATE CONTROLLER
+       ============================================================ -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    // 1. Supabase Initialization
+    const SUPABASE_URL = (import.meta.env && import.meta.env.VITE_SUPABASE_URL) || window.__SUPABASE_URL || 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
+    const SUPABASE_ANON_KEY = (import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || window.__SUPABASE_KEY || 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';
+    let supabase = null;
+    let currentUser = null;
+
+    try {
+      if (SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes('xyzcompany')) {
+        supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Supabase client initialized in local mode:', e);
+    }
+
+    // 2. Draft ID Management (UUID-compliant)
+    const urlParams = new URLSearchParams(window.location.search);
+    const expParam = urlParams.get('experience') || 'birthday-film';
+    const themeParam = urlParams.get('theme') || 'paper';
+    const initialThemeId = (expParam === 'birthday-film-glass' || themeParam === 'glass') ? 'glass' : 'paper';
+
+    function generateUuid() {
+      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    let draftId = urlParams.get('draft') || urlParams.get('draftId') || localStorage.getItem('vk_current_draft_id') || localStorage.getItem('gift_draft_id') || generateUuid();
+    
+    // Ensure draftId is stored
+    localStorage.setItem('vk_current_draft_id', draftId);
+    localStorage.setItem('gift_draft_id', draftId);
+
+    if (!urlParams.has('draft')) {
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.set('draft', draftId);
+      window.history.replaceState({}, '', newUrl);
+    }
+
+    // Initialize Auth UI State & Enforce Protection
+    async function initAuthUI() {
+      if (!supabase) return;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session || !session.user) {
+          // Mandatory auth required before customizing
+          window.location.replace(`./login.html?redirect=${encodeURIComponent(window.location.href)}`);
+          return;
+        }
+
+        currentUser = session.user;
+        document.getElementById('btnEditorSignIn')?.classList.add('hidden');
+        document.getElementById('btnEditorMyGifts')?.classList.remove('hidden');
+        document.getElementById('btnEditorMyGifts')?.classList.add('inline-flex');
+        document.getElementById('savePromptBanner')?.classList.add('hidden');
+
+        // Claim current draft if unclaimed
+        await supabase
+          .from('gifts')
+          .update({ owner_id: currentUser.id })
+          .eq('id', draftId)
+          .is('owner_id', null);
+      } catch (err) {
+        console.warn('Auth check failed:', err);
+      }
+    }
+
+    if (supabase) {
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session && session.user) {
+          currentUser = session.user;
+          await initAuthUI();
+          triggerAutosave();
+        }
+      });
+    }
+
+    // 3. Local Editor State (Matches GIFT_DATA schema exactly)
+    let editorState = {
+      recipientName: "Elena",
+      themeId: initialThemeId,
+      theme: {
+        primaryColor: "#d4235c",
+        accentColor: initialThemeId === 'glass' ? "#f3b749" : "#e8a23d",
+        rose: "#d4235c",
+        gold2: initialThemeId === 'glass' ? "#f3b749" : "#e8a23d"
+      },
+      music: {
+        trackType: "default",
+        customTrackUrl: null,
+        startSeconds: 27
+      },
+      scenes: {
+        scene1_act1: {
+          eyebrow: "a little something, for you",
+          hint: "pull & release",
+          wishEyebrow: "and… make it count",
+          wishHero: "Happy Birthday",
+          wishSub: "here’s to a year that blooms",
+          kEyebrow: "make a wish…",
+          kSub: "to someone worth celebrating"
+        },
+        scene2_giftBox: {
+          badge: "Special Delivery",
+          eyebrow: "Special Delivery",
+          title: "A surprise awaits you...",
+          subtitleTop: "A surprise awaits you...",
+          subtitle: "crafted with love, just for you",
+          cardTitle: "Unwrapped with Love",
+          cardText: "Every moment with you is a gift to cherish. May this year bring endless smiles, sweet surprises, and warm happiness!",
+          boxColor: "#d4235c"
+        },
+        scene3_pinLock: {
+          pin: "1234",
+          instruction: "enter the code to unlock it",
+          hint: "hint: our favourite number"
+        },
+        scene4_curtain: {
+          badge: "Special Surprise",
+          curtainColor: "#6e0a31"
+        },
+        scene5_cakeCountdown: {
+          birthDate: "2006-01-01T00:00:00Z",
+          badge: "Milestone Moment",
+          headline: "Happy Birthday, Beautiful 🎂",
+          title: "Happy Birthday, Beautiful 🎂",
+          subtitle: "The world has been sweeter since you arrived ♥",
+          wishLine: "make a wish…",
+          wishTitle: "Make a wish… 🌠",
+          wishSub: "May all your sweetest dreams take flight",
+          cakeColor: "#e85987"
+        },
+        scene6_wallOfUs: {
+          eyebrow: "a few frames from the reel",
+          photos: [null, null, null, null, null, null],
+          captions: [
+            "the trip we almost didn't survive",
+            "3am phone calls about nothing",
+            "that one inside joke, still funny",
+            "dancing in the kitchen out of tune",
+            "the sunset we wished would freeze in time",
+            "laughing until our stomachs hurt"
+          ],
+          headline: "So Many Moments",
+          subtext: "and this is just the highlight reel."
+        },
+        scene7_memoryReel: {
+          clips: [null, null, null, null, null],
+          captions: [
+            "the year we became inseparable",
+            "every ridiculous plan that somehow worked out",
+            "places that only make sense with you",
+            "the quiet moments that meant the most",
+            "every chapter better than the last"
+          ],
+          headline: "Frame by Frame",
+          subtext: "you're in almost all of my favorites."
+        },
+        scene8_balloonPop: {
+          headline: "Pop the Wishes 🎈",
+          subtitle: "Tap each balloon to reveal a little wish",
+          closing: "wishes released 🎈",
+          messages: [
+            "May your smiles be endless! 😊",
+            "Wishing you all the success! 🌟",
+            "Stay as amazing as you are! 💙",
+            "Dream big and fly high! 🚀",
+            "Health and happiness always! 🍀",
+            "Lots and lots of love! ❤️"
+          ]
+        },
+        scene9_letter: {
+          eyebrow: "a note for you",
+          message: "Dear troublemaker,\n\nThank you for every ridiculous memory and the ones we haven't made yet.\n\nHappy Birthday. I mean it."
+        },
+        scene10_fireworks: {
+          headline: "Here's To You",
+          subtext: "may this year be loud, lucky, and full of ridiculous stories we'll tell for years."
+        },
+        scene11_finalToast: {
+          eyebrow: "and so, once more —",
+          heroLine: "Happy Birthday, {recipientName}",
+          subtext: "here’s to another year of us being a little bit unstoppable together."
+        }
+      }
+    };
+
+    // 4. Track Currently Active Scene in Preview (Shared State)
+    let currentPreviewScene = 1;
+    let autoSceneJumpTimeout = null;
+
+    function jumpPreviewToScene(sceneNum) {
+      if (!sceneNum || isNaN(sceneNum) || sceneNum < 1 || sceneNum > 11) return;
+      if (currentPreviewScene === sceneNum) return;
+
+      currentPreviewScene = sceneNum;
+      
+      document.querySelectorAll('.jump-tab-btn').forEach(tab => {
+        const s = parseInt(tab.getAttribute('data-scene'));
+        if (s === sceneNum) {
+          tab.classList.add('bg-rose-500', 'text-white', 'shadow-sm');
+          tab.classList.remove('bg-white/15', 'hover:bg-white/30');
+        } else {
+          tab.classList.remove('bg-rose-500', 'text-white', 'shadow-sm');
+          tab.classList.add('bg-white/15', 'hover:bg-white/30');
+        }
+      });
+
+      const previewIframe = document.getElementById('filmPreviewFrame');
+      if (previewIframe && previewIframe.contentWindow) {
+        try {
+          previewIframe.contentWindow.postMessage({ type: 'GOTO_SCENE', sceneNum: sceneNum }, '*');
+        } catch (e) {}
+      }
+    }
+
+    function triggerAutoSceneJump(sceneNum) {
+      if (!sceneNum || isNaN(sceneNum) || sceneNum < 1 || sceneNum > 11) return;
+      clearTimeout(autoSceneJumpTimeout);
+      autoSceneJumpTimeout = setTimeout(() => {
+        jumpPreviewToScene(sceneNum);
+      }, 150);
+    }
+
+    // 5. Restore Saved Draft
+    function restoreDraft() {
+      const localSaved = localStorage.getItem(`vk_draft_data_${draftId}`);
+      if (localSaved) {
+        try {
+          const parsed = JSON.parse(localSaved);
+          if (parsed && typeof parsed === 'object') {
+            editorState = { ...editorState, ...parsed };
+            // Ensure photos & clips arrays exist
+            if (!editorState.scenes.scene6_wallOfUs.photos) {
+              editorState.scenes.scene6_wallOfUs.photos = [null, null, null, null, null, null];
+            }
+            if (!editorState.scenes.scene7_memoryReel.clips) {
+              editorState.scenes.scene7_memoryReel.clips = [null, null, null, null, null];
+            }
+            populateFormFromState();
+          }
+        } catch (e) {
+          console.error('Error parsing local draft:', e);
+        }
+      }
+
+      if (supabase) {
+        supabase.from('gifts').select('*').eq('id', draftId).single().then(({ data, error }) => {
+          if (data && (data.content || data.data)) {
+            const remotePayload = data.content || data.data;
+            editorState = { ...editorState, ...remotePayload };
+            if (data.experience_id) editorState.experienceId = data.experience_id;
+            if (data.theme_id) editorState.themeId = data.theme_id;
+            if (!editorState.scenes.scene6_wallOfUs.photos) {
+              editorState.scenes.scene6_wallOfUs.photos = [null, null, null, null, null, null];
+            }
+            if (!editorState.scenes.scene7_memoryReel.clips) {
+              editorState.scenes.scene7_memoryReel.clips = [null, null, null, null, null];
+            }
+            populateFormFromState();
+            pushUpdateToPreview();
+          }
+        }).catch(() => {});
+      }
+    }
+
+    // 6. Populate Form Inputs from Current State
+    function populateFormFromState() {
+      const getEl = (id) => document.getElementById(id);
+      
+      // Recipient
+      if (getEl('recipientNameInput')) getEl('recipientNameInput').value = editorState.recipientName || '';
+      
+      // Theme Colors
+      if (getEl('primaryColorInput')) getEl('primaryColorInput').value = editorState.theme.primaryColor || '#d4235c';
+      if (getEl('primaryColorHex')) getEl('primaryColorHex').textContent = editorState.theme.primaryColor || '#d4235c';
+      if (getEl('accentColorInput')) getEl('accentColorInput').value = editorState.theme.accentColor || '#e8a23d';
+      if (getEl('accentColorHex')) getEl('accentColorHex').textContent = editorState.theme.accentColor || '#e8a23d';
+
+      // Music Settings
+      if (editorState.music) {
+        const m = editorState.music;
+        setMusicType(m.trackType || 'default');
+        if (getEl('musicStartRange')) getEl('musicStartRange').value = m.startSeconds || 27;
+        updateMusicStartTimeDisplay(m.startSeconds || 27);
+        if (m.customTrackUrl && getEl('customAudioElement')) {
+          getEl('customAudioElement').src = m.customTrackUrl;
+          getEl('customAudioPreviewWrap')?.classList.remove('hidden');
+        }
+      }
+
+      // Per-Scene Fields
+      const sc = editorState.scenes;
+      if (sc.scene2_giftBox) {
+        if (getEl('s2Badge')) getEl('s2Badge').value = sc.scene2_giftBox.badge || '';
+        if (getEl('s2Title')) getEl('s2Title').value = sc.scene2_giftBox.title || '';
+        if (getEl('s2Subtitle')) getEl('s2Subtitle').value = sc.scene2_giftBox.subtitle || '';
+        if (getEl('s2CardText')) getEl('s2CardText').value = sc.scene2_giftBox.cardText || '';
+        const defaultBoxColor = editorState.themeId === 'glass' ? '#d4235c' : '#d4235c';
+        const boxColor = sc.scene2_giftBox.boxColor || defaultBoxColor;
+        if (getEl('s2BoxColorInput')) getEl('s2BoxColorInput').value = boxColor;
+        if (getEl('s2BoxColorHex')) getEl('s2BoxColorHex').textContent = boxColor;
+        checkBoxColorContrast(boxColor);
+      }
+      if (sc.scene3_pinLock) {
+        if (getEl('s3Pin')) getEl('s3Pin').value = sc.scene3_pinLock.pin || '1234';
+        if (getEl('s3Hint')) getEl('s3Hint').value = sc.scene3_pinLock.hint || '';
+      }
+      if (sc.scene4_curtain) {
+        if (getEl('s4Badge')) getEl('s4Badge').value = sc.scene4_curtain.badge || 'Special Surprise';
+        const defaultCurtain = editorState.themeId === 'glass' ? '#3b051b' : '#6e0a31';
+        const curtainColor = sc.scene4_curtain.curtainColor || defaultCurtain;
+        if (getEl('s4CurtainColorInput')) getEl('s4CurtainColorInput').value = curtainColor;
+        if (getEl('s4CurtainColorHex')) getEl('s4CurtainColorHex').textContent = curtainColor;
+        checkCurtainColorContrast(curtainColor);
+      }
+      if (sc.scene5_cakeCountdown) {
+        if (getEl('s5Headline')) getEl('s5Headline').value = sc.scene5_cakeCountdown.headline || '';
+        if (getEl('s5WishSub')) getEl('s5WishSub').value = sc.scene5_cakeCountdown.wishSub || '';
+        if (getEl('s5BirthDate') && sc.scene5_cakeCountdown.birthDate) {
+          getEl('s5BirthDate').value = sc.scene5_cakeCountdown.birthDate.split('T')[0];
+        }
+        const defaultCake = editorState.themeId === 'glass' ? '#d4235c' : '#e85987';
+        const cakeColor = sc.scene5_cakeCountdown.cakeColor || defaultCake;
+        if (getEl('s5CakeColorInput')) getEl('s5CakeColorInput').value = cakeColor;
+        if (getEl('s5CakeColorHex')) getEl('s5CakeColorHex').textContent = cakeColor;
+        checkCakeColorContrast(cakeColor);
+      }
+      if (sc.scene6_wallOfUs) {
+        if (getEl('s6Eyebrow')) getEl('s6Eyebrow').value = sc.scene6_wallOfUs.eyebrow || '';
+        if (getEl('s6Headline')) getEl('s6Headline').value = sc.scene6_wallOfUs.headline || '';
+      }
+      if (sc.scene7_memoryReel) {
+        if (getEl('s7Headline')) getEl('s7Headline').value = sc.scene7_memoryReel.headline || '';
+      }
+      const s8 = sc.scene8_balloonPop || sc.scene8_constellation;
+      if (s8) {
+        if (getEl('s8Headline')) getEl('s8Headline').value = s8.headline || 'Pop the Wishes 🎈';
+        if (getEl('s8Subtitle')) getEl('s8Subtitle').value = s8.subtitle || (s8.subtext || 'Tap each balloon to reveal a little wish');
+        if (getEl('s8Closing')) getEl('s8Closing').value = s8.closing || 'wishes released 🎈';
+        const msgs = Array.isArray(s8.messages) ? s8.messages : (Array.isArray(s8.captions) ? s8.captions : []);
+        msgs.forEach((msg, i) => {
+          if (getEl(`s8Msg${i}`)) getEl(`s8Msg${i}`).value = msg || '';
+        });
+      }
+      if (sc.scene9_letter) {
+        if (getEl('s9Eyebrow')) getEl('s9Eyebrow').value = sc.scene9_letter.eyebrow || '';
+        if (getEl('s9Message')) getEl('s9Message').value = sc.scene9_letter.message || '';
+      }
+      if (sc.scene10_fireworks) {
+        if (getEl('s10Headline')) getEl('s10Headline').value = sc.scene10_fireworks.headline || '';
+        if (getEl('s10Subtext')) getEl('s10Subtext').value = sc.scene10_fireworks.subtext || '';
+      }
+      if (sc.scene11_finalToast) {
+        if (getEl('s11Eyebrow')) getEl('s11Eyebrow').value = sc.scene11_finalToast.eyebrow || '';
+        if (getEl('s11HeroLine')) getEl('s11HeroLine').value = sc.scene11_finalToast.heroLine || 'Happy Birthday, {recipientName}';
+        if (getEl('s11Subtext')) getEl('s11Subtext').value = sc.scene11_finalToast.subtext || '';
+      }
+
+      updateHeroPreviewToken();
+      renderScene6PairedSlots();
+      renderScene7PairedSlots();
+      updateValidationAndProgress();
+    }
+
+    // 7. Live Substituted Hero Token Preview
+    function updateHeroPreviewToken() {
+      const heroLine = document.getElementById('s11HeroLine')?.value || "Happy Birthday, {recipientName}";
+      const recName = editorState.recipientName || "Elena";
+      const previewEl = document.getElementById('s11HeroPreview');
+      if (previewEl) {
+        previewEl.textContent = heroLine.replace(/\{recipientName\}/gi, recName);
+      }
+    }
+
+    // 8. Color Contrast Checker
+    function hexToLuminance(hex) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      const r = parseInt(hex.substr(0, 2), 16) / 255;
+      const g = parseInt(hex.substr(2, 2), 16) / 255;
+      const b = parseInt(hex.substr(4, 2), 16) / 255;
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    function checkColorContrast(primaryHex) {
+      const lum = hexToLuminance(primaryHex);
+      const contrastWarnEl = document.getElementById('contrastWarning');
+      if (!contrastWarnEl) return;
+      if (lum > 0.75 || lum < 0.02) {
+        contrastWarnEl.classList.remove('hidden');
+      } else {
+        contrastWarnEl.classList.add('hidden');
+      }
+    }
+
+    function checkBoxColorContrast(boxHex) {
+      if (!boxHex) return;
+      const lum = hexToLuminance(boxHex);
+      const contrastWarnEl = document.getElementById('s2BoxContrastWarning');
+      if (!contrastWarnEl) return;
+      if (lum > 0.82 || lum < 0.015) {
+        contrastWarnEl.classList.remove('hidden');
+      } else {
+        contrastWarnEl.classList.add('hidden');
+      }
+    }
+
+    function checkCurtainColorContrast(hex) {
+      if (!hex) return;
+      const lum = hexToLuminance(hex);
+      const contrastWarnEl = document.getElementById('s4CurtainContrastWarning');
+      if (!contrastWarnEl) return;
+      if (lum > 0.85 || lum < 0.008) {
+        contrastWarnEl.classList.remove('hidden');
+      } else {
+        contrastWarnEl.classList.add('hidden');
+      }
+    }
+
+    function checkCakeColorContrast(hex) {
+      if (!hex) return;
+      const lum = hexToLuminance(hex);
+      const contrastWarnEl = document.getElementById('s5CakeContrastWarning');
+      if (!contrastWarnEl) return;
+      if (lum > 0.88 || lum < 0.015) {
+        contrastWarnEl.classList.remove('hidden');
+      } else {
+        contrastWarnEl.classList.add('hidden');
+      }
+    }
+
+    // 9. Music Helpers & Audition Loop Player
+    let auditionAudio = null;
+    let auditionTimeout = null;
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function updateMusicStartTimeDisplay(seconds) {
+      const el = document.getElementById('musicStartTimeDisplay');
+      if (el) el.textContent = `Starts at ${formatTime(seconds)}`;
+    }
+
+    function setMusicType(type) {
+      editorState.music.trackType = type;
+      const defBtn = document.getElementById('musicTypeDefaultBtn');
+      const custBtn = document.getElementById('musicTypeCustomBtn');
+      const defPanel = document.getElementById('musicDefaultPanel');
+      const custPanel = document.getElementById('musicCustomPanel');
+
+      if (type === 'default') {
+        defBtn?.classList.add('bg-white', 'text-rose-600', 'shadow-sm');
+        defBtn?.classList.remove('text-ink-600');
+        custBtn?.classList.remove('bg-white', 'text-rose-600', 'shadow-sm');
+        custBtn?.classList.add('text-ink-600');
+        defPanel?.classList.remove('hidden');
+        custPanel?.classList.add('hidden');
+      } else {
+        custBtn?.classList.add('bg-white', 'text-rose-600', 'shadow-sm');
+        custBtn?.classList.remove('text-ink-600');
+        defBtn?.classList.remove('bg-white', 'text-rose-600', 'shadow-sm');
+        defBtn?.classList.add('text-ink-600');
+        defPanel?.classList.add('hidden');
+        custPanel?.classList.remove('hidden');
+      }
+    }
+
+    function toggleAuditionLoop() {
+      const icon = document.getElementById('auditionIcon');
+      const label = document.getElementById('auditionLabel');
+      const startSec = editorState.music.startSeconds || 0;
+
+      if (auditionAudio && !auditionAudio.paused) {
+        auditionAudio.pause();
+        clearTimeout(auditionTimeout);
+        if (icon) icon.textContent = '▶';
+        if (label) label.textContent = 'Audition Start Point';
+        return;
+      }
+
+      if (!auditionAudio) {
+        auditionAudio = new Audio();
+      }
+
+      const src = (editorState.music.trackType === 'custom' && editorState.music.customTrackUrl) 
+        ? editorState.music.customTrackUrl 
+        : 'assets/bg-music.mp3';
+
+      auditionAudio.src = src;
+      auditionAudio.currentTime = startSec;
+      auditionAudio.play().then(() => {
+        if (icon) icon.textContent = '⏸';
+        if (label) label.textContent = 'Stop Audition';
+
+        clearTimeout(auditionTimeout);
+        auditionTimeout = setTimeout(() => {
+          if (auditionAudio) {
+            auditionAudio.currentTime = startSec;
+            auditionAudio.play().catch(() => {});
+          }
+        }, 12000);
+      }).catch((e) => {
+        console.warn('Audition playback error:', e);
+      });
+
+      auditionAudio.onended = () => {
+        if (icon) icon.textContent = '▶';
+        if (label) label.textContent = 'Audition Start Point';
+      };
+    }
+
+    // 10. Scene 6: Paired Photo + Caption Slots Renderer
+    function renderScene6PairedSlots() {
+      const container = document.getElementById('s6PairedSlotsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const s6 = editorState.scenes.scene6_wallOfUs;
+      if (!s6.photos) s6.photos = [null, null, null, null, null, null];
+      if (!s6.captions) s6.captions = [];
+
+      for (let i = 0; i < 6; i++) {
+        const photoUrl = s6.photos[i];
+        const caption = s6.captions[i] || '';
+
+        const slotEl = document.createElement('div');
+        slotEl.className = 'p-3 rounded-xl bg-parchment-50 border border-parchment-200 flex flex-col sm:flex-row items-center gap-3 group';
+        
+        let thumbHtml = '';
+        if (photoUrl) {
+          thumbHtml = `
+            <div class="relative w-14 h-14 rounded-lg overflow-hidden border border-parchment-300 flex-shrink-0 bg-black/10">
+              <img src="${photoUrl}" class="w-full h-full object-cover" alt="Polaroid ${i+1}" />
+              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                <label class="p-1 bg-white text-ink-900 rounded-full cursor-pointer hover:bg-parchment-100 shadow-xs" title="Replace Photo">
+                  <input type="file" accept="image/*" class="hidden s6-photo-input" data-index="${i}" />
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </label>
+                <button type="button" class="btn-remove-s6-photo p-1 bg-white text-rose-600 rounded-full hover:bg-rose-50 shadow-xs" data-index="${i}" title="Remove Photo">
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          thumbHtml = `
+            <label class="w-14 h-14 rounded-lg border-2 border-dashed border-parchment-300 bg-white hover:border-rose-400 cursor-pointer flex flex-col items-center justify-center flex-shrink-0 transition-colors">
+              <input type="file" accept="image/*" class="hidden s6-photo-input" data-index="${i}" />
+              <span class="text-xs font-bold text-rose-500">+</span>
+              <span class="text-[8px] text-ink-400">Photo</span>
+              <div class="s6-spinner hidden absolute inset-0 bg-white/80 flex items-center justify-center rounded-lg">
+                <div class="w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            </label>
+          `;
+        }
+
+        slotEl.innerHTML = `
+          ${thumbHtml}
+          <div class="flex-1 w-full min-w-0">
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[10px] font-bold text-ink-600 uppercase tracking-wider">Polaroid #${i+1}</label>
+              <span class="text-[9px] text-ink-400">${photoUrl ? 'Photo attached' : 'Gradient fallback'}</span>
+            </div>
+            <input type="text" class="s6-caption-input w-full px-3 py-1.5 rounded-lg border border-parchment-300 bg-white text-xs text-ink-900 focus:border-rose-500 focus:outline-none" data-index="${i}" value="${caption}" placeholder="Write a memory line..." />
+          </div>
+        `;
+
+        container.appendChild(slotEl);
+      }
+
+      // Wire Event Listeners
+      container.querySelectorAll('.s6-photo-input').forEach(input => {
+        input.addEventListener('change', handleS6PhotoSelected);
+      });
+      container.querySelectorAll('.btn-remove-s6-photo').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          editorState.scenes.scene6_wallOfUs.photos[idx] = null;
+          renderScene6PairedSlots();
+          pushUpdateToPreview(6);
+          triggerAutosave();
+        });
+      });
+      container.querySelectorAll('.s6-caption-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+          const idx = parseInt(input.getAttribute('data-index'));
+          editorState.scenes.scene6_wallOfUs.captions[idx] = e.target.value;
+          queuePreviewUpdate(6);
+        });
+      });
+    }
+
+    // MIME normalizers for Supabase Storage
+    function getNormalizedImageMime(file) {
+      const ext = (file.name.split('.').pop() || '').toLowerCase();
+      if (['jpg', 'jpeg'].includes(ext) || file.type === 'image/jpg' || file.type === 'image/jpeg') return 'image/jpeg';
+      if (ext === 'png' || file.type === 'image/png') return 'image/png';
+      if (ext === 'webp' || file.type === 'image/webp') return 'image/webp';
+      if (ext === 'gif' || file.type === 'image/gif') return 'image/gif';
+      if (['heic', 'heif'].includes(ext) || file.type === 'image/heic' || file.type === 'image/heif') return 'image/heic';
+      return file.type || 'image/jpeg';
+    }
+
+    function getNormalizedVideoMime(file) {
+      const ext = (file.name.split('.').pop() || '').toLowerCase();
+      if (ext === 'webm' || file.type === 'video/webm') return 'video/webm';
+      if (ext === 'mov' || file.type === 'video/quicktime' || file.type === 'video/mov') return 'video/quicktime';
+      return 'video/mp4';
+    }
+
+    function getNormalizedAudioMime(file) {
+      const ext = (file.name.split('.').pop() || '').toLowerCase();
+      if (ext === 'wav' || file.type === 'audio/wav') return 'audio/wav';
+      if (ext === 'ogg' || file.type === 'audio/ogg') return 'audio/ogg';
+      if (['m4a', 'aac'].includes(ext) || file.type === 'audio/x-m4a' || file.type === 'audio/aac') return 'audio/x-m4a';
+      return 'audio/mpeg';
+    }
+
+    // 11. Scene 6 Photo Upload Handler
+    async function handleS6PhotoSelected(e) {
+      const file = e.target.files[0];
+      const index = parseInt(e.target.getAttribute('data-index'));
+      const errorEl = document.getElementById('s6PhotoUploadError');
+      if (errorEl) errorEl.classList.add('hidden');
+
+      if (!file) return;
+
+      const isImage = (file.type && file.type.startsWith('image/')) || /\.(jpg|jpeg|png|webp|gif|heic|heif)$/i.test(file.name);
+      if (!isImage) {
+        if (errorEl) {
+          errorEl.textContent = 'Please select a valid image file (JPG, PNG, WEBP, HEIC).';
+          errorEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (file.size > 8 * 1024 * 1024) {
+        if (errorEl) {
+          errorEl.textContent = 'File is too large. Maximum size is 8MB.';
+          errorEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const slotEl = e.target.closest('label');
+      const spinner = slotEl?.querySelector('.s6-spinner');
+      if (spinner) spinner.classList.remove('hidden');
+
+      try {
+        if (!supabase) {
+          throw new Error('Supabase client is not initialized.');
+        }
+
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const safeExt = ext === 'jpeg' ? 'jpg' : ext;
+        const fileName = `${draftId}_s6_photo${index}_${Date.now()}.${safeExt}`;
+        const contentType = getNormalizedImageMime(file);
+
+        const { data, error } = await supabase.storage
+          .from('gift-photos')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: contentType
+          });
+
+        if (error) {
+          throw new Error(error.message || 'Failed to upload image to storage.');
+        }
+
+        const { data: pubData } = supabase.storage.from('gift-photos').getPublicUrl(fileName);
+        const uploadedUrl = pubData?.publicUrl;
+
+        if (!uploadedUrl) {
+          throw new Error('Could not retrieve public URL for uploaded photo.');
+        }
+
+        editorState.scenes.scene6_wallOfUs.photos[index] = uploadedUrl;
+        renderScene6PairedSlots();
+        pushUpdateToPreview(6);
+        triggerAutosave();
+      } catch (err) {
+        console.error('Photo upload error:', err);
+        if (errorEl) {
+          errorEl.textContent = `Upload failed: ${err.message || 'Please try again.'}`;
+          errorEl.classList.remove('hidden');
+        }
+      } finally {
+        if (spinner) spinner.classList.add('hidden');
+      }
+    }
+
+    // 12. Scene 7: Paired Video Clip + Caption Slots Renderer
+    function renderScene7PairedSlots() {
+      const container = document.getElementById('s7PairedSlotsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const s7 = editorState.scenes.scene7_memoryReel;
+      if (!s7.clips) s7.clips = [null, null, null, null, null];
+      if (!s7.captions) s7.captions = [];
+
+      for (let i = 0; i < 5; i++) {
+        const clipUrl = s7.clips[i];
+        const caption = s7.captions[i] || '';
+
+        const slotEl = document.createElement('div');
+        slotEl.className = 'p-3 rounded-xl bg-parchment-50 border border-parchment-200 flex flex-col sm:flex-row items-center gap-3 group';
+        
+        let thumbHtml = '';
+        if (clipUrl) {
+          thumbHtml = `
+            <div class="relative w-14 h-14 rounded-lg overflow-hidden border border-parchment-300 flex-shrink-0 bg-black">
+              <video src="${clipUrl}" autoplay muted loop playsinline class="w-full h-full object-cover"></video>
+              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                <label class="p-1 bg-white text-ink-900 rounded-full cursor-pointer hover:bg-parchment-100 shadow-xs" title="Replace Clip">
+                  <input type="file" accept="video/mp4, video/webm, video/quicktime, video/*" class="hidden s7-clip-input" data-index="${i}" />
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </label>
+                <button type="button" class="btn-remove-s7-clip p-1 bg-white text-rose-600 rounded-full hover:bg-rose-50 shadow-xs" data-index="${i}" title="Remove Clip">
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          thumbHtml = `
+            <label class="w-14 h-14 rounded-lg border-2 border-dashed border-parchment-300 bg-white hover:border-gold-400 cursor-pointer flex flex-col items-center justify-center flex-shrink-0 transition-colors relative">
+              <input type="file" accept="video/mp4, video/webm, video/quicktime, video/*" class="hidden s7-clip-input" data-index="${i}" />
+              <span class="text-xs font-bold text-gold-600">+</span>
+              <span class="text-[8px] text-ink-400">Clip</span>
+              <div class="s7-spinner hidden absolute inset-0 bg-white/80 flex items-center justify-center rounded-lg">
+                <div class="w-4 h-4 border-2 border-gold-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            </label>
+          `;
+        }
+
+        slotEl.innerHTML = `
+          ${thumbHtml}
+          <div class="flex-1 w-full min-w-0">
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[10px] font-bold text-ink-600 uppercase tracking-wider">Film Frame #${i+1}</label>
+              <span class="text-[9px] text-ink-400">${clipUrl ? 'Video clip attached' : 'Celluloid icon fallback'}</span>
+            </div>
+            <input type="text" class="s7-caption-input w-full px-3 py-1.5 rounded-lg border border-parchment-300 bg-white text-xs text-ink-900 focus:border-rose-500 focus:outline-none" data-index="${i}" value="${caption}" placeholder="Write a film reel line..." />
+          </div>
+        `;
+
+        container.appendChild(slotEl);
+      }
+
+      container.querySelectorAll('.s7-clip-input').forEach(input => {
+        input.addEventListener('change', handleS7ClipSelected);
+      });
+      container.querySelectorAll('.btn-remove-s7-clip').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(btn.getAttribute('data-index'));
+          editorState.scenes.scene7_memoryReel.clips[idx] = null;
+          renderScene7PairedSlots();
+          pushUpdateToPreview(7);
+          triggerAutosave();
+        });
+      });
+      container.querySelectorAll('.s7-caption-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+          const idx = parseInt(input.getAttribute('data-index'));
+          editorState.scenes.scene7_memoryReel.captions[idx] = e.target.value;
+          queuePreviewUpdate(7);
+        });
+      });
+    }
+
+    // 13. Scene 7 Video Clip Upload Handler (Max 20MB, short clips)
+    async function handleS7ClipSelected(e) {
+      const file = e.target.files[0];
+      const index = parseInt(e.target.getAttribute('data-index'));
+      const errorEl = document.getElementById('s7ClipUploadError');
+      if (errorEl) errorEl.classList.add('hidden');
+
+      if (!file) return;
+
+      const isVideo = (file.type && file.type.startsWith('video/')) || /\.(mp4|mov|webm|m4v|mkv)$/i.test(file.name);
+      if (!isVideo) {
+        if (errorEl) {
+          errorEl.textContent = 'Please select a valid video clip (MP4, MOV, WEBM).';
+          errorEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (file.size > 20 * 1024 * 1024) {
+        if (errorEl) {
+          errorEl.textContent = 'Video clip is too large. Maximum size is 20MB (~8s recommended).';
+          errorEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const slotEl = e.target.closest('label') || e.target.closest('.relative');
+      const spinner = slotEl?.querySelector('.s7-spinner');
+      if (spinner) spinner.classList.remove('hidden');
+
+      try {
+        if (!supabase) {
+          throw new Error('Supabase client is not initialized.');
+        }
+
+        const ext = (file.name.split('.').pop() || 'mp4').toLowerCase();
+        const fileName = `${draftId}_s7_clip${index}_${Date.now()}.${ext}`;
+        const contentType = getNormalizedVideoMime(file);
+
+        const { data, error } = await supabase.storage
+          .from('gift-clips')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: contentType
+          });
+
+        if (error) {
+          throw new Error(error.message || 'Failed to upload video clip to storage.');
+        }
+
+        const { data: pubData } = supabase.storage.from('gift-clips').getPublicUrl(fileName);
+        const uploadedUrl = pubData?.publicUrl;
+
+        if (!uploadedUrl) {
+          throw new Error('Could not retrieve public URL for uploaded video clip.');
+        }
+
+        editorState.scenes.scene7_memoryReel.clips[index] = uploadedUrl;
+        renderScene7PairedSlots();
+        pushUpdateToPreview(7);
+        triggerAutosave();
+      } catch (err) {
+        console.error('Video clip upload error:', err);
+        if (errorEl) {
+          errorEl.textContent = `Upload failed: ${err.message || 'Please try again.'}`;
+          errorEl.classList.remove('hidden');
+        }
+      } finally {
+        if (spinner) spinner.classList.add('hidden');
+      }
+    }
+
+    // 14. Custom Music Upload Handler
+    async function handleCustomMusicUpload(e) {
+      const file = e.target.files[0];
+      const errorEl = document.getElementById('musicUploadError');
+      const spinner = document.getElementById('musicUploadSpinner');
+      const nameEl = document.getElementById('customMusicFileName');
+      if (errorEl) errorEl.classList.add('hidden');
+
+      if (!file) return;
+
+      const isAudio = (file.type && file.type.startsWith('audio/')) || /\.(mp3|wav|m4a|ogg|aac)$/i.test(file.name);
+      if (!isAudio) {
+        if (errorEl) {
+          errorEl.textContent = 'Please select a valid audio file (MP3, WAV, M4A, OGG).';
+          errorEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (file.size > 15 * 1024 * 1024) {
+        if (errorEl) {
+          errorEl.textContent = 'Audio file is too large. Maximum size is 15MB.';
+          errorEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (spinner) spinner.classList.remove('hidden');
+      if (nameEl) nameEl.textContent = file.name;
+
+      try {
+        if (!supabase) {
+          throw new Error('Supabase client is not initialized.');
+        }
+
+        const ext = (file.name.split('.').pop() || 'mp3').toLowerCase();
+        const fileName = `${draftId}_audio_${Date.now()}.${ext}`;
+        const contentType = getNormalizedAudioMime(file);
+
+        const { data, error } = await supabase.storage
+          .from('gift-music')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: contentType
+          });
+
+        if (error) {
+          throw new Error(error.message || 'Failed to upload audio to storage.');
+        }
+
+        const { data: pubData } = supabase.storage.from('gift-music').getPublicUrl(fileName);
+        const uploadedUrl = pubData?.publicUrl;
+
+        if (!uploadedUrl) {
+          throw new Error('Could not retrieve public URL for uploaded audio.');
+        }
+
+        editorState.music.customTrackUrl = uploadedUrl;
+        editorState.music.trackType = 'custom';
+
+        const audioEl = document.getElementById('customAudioElement');
+        if (audioEl) {
+          audioEl.src = uploadedUrl;
+          document.getElementById('customAudioPreviewWrap')?.classList.remove('hidden');
+        }
+
+        pushUpdateToPreview();
+        triggerAutosave();
+      } catch (err) {
+        console.error('Music upload error:', err);
+        if (errorEl) {
+          errorEl.textContent = `Upload failed: ${err.message || 'Please try again.'}`;
+          errorEl.classList.remove('hidden');
+        }
+      } finally {
+        if (spinner) spinner.classList.add('hidden');
+      }
+    }
+
+    // 15. Live Preview PostMessage Synchronization
+    const previewIframe = document.getElementById('filmPreviewFrame');
+    let debounceTimer = null;
+
+    function pushUpdateToPreview(targetScene = null) {
+      if (!previewIframe || !previewIframe.contentWindow) return;
+      try {
+        previewIframe.contentWindow.postMessage({
+          type: 'GIFT_DATA_UPDATE',
+          giftData: editorState,
+          targetScene: targetScene
+        }, '*');
+      } catch (e) {
+        console.warn('Could not postMessage to preview iframe:', e);
+      }
+    }
+
+    function queuePreviewUpdate(targetScene = null) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        pushUpdateToPreview(targetScene);
+        triggerAutosave();
+      }, 400);
+    }
+
+    // 16. Autosave to Supabase & LocalStorage
+    let saveTimeout = null;
+    function triggerAutosave() {
+      const statusText = document.getElementById('saveStatusText');
+      if (statusText) statusText.textContent = 'Saving...';
+
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(async () => {
+        try {
+          localStorage.setItem(`vk_draft_data_${draftId}`, JSON.stringify(editorState));
+        } catch (e) {}
+
+        if (supabase) {
+          try {
+            const payload = {
+              id: draftId,
+              experience_id: expParam || 'birthday-film',
+              theme_id: editorState.themeId || 'paper',
+              content: editorState,
+              data: editorState, // fallback compatibility
+              photo_urls: editorState.scenes?.scene6_wallOfUs?.photos || [],
+              clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
+              status: 'draft',
+              updated_at: new Date().toISOString()
+            };
+
+            if (currentUser && currentUser.id) {
+              payload.owner_id = currentUser.id;
+            }
+
+            await supabase.from('gifts').upsert(payload);
+          } catch (e) {
+            console.warn('Supabase autosave error:', e);
+          }
+        }
+
+        if (statusText) statusText.textContent = 'Draft saved';
+      }, 1000);
+    }
+
+    // 17. Form Event Listeners & Auto Scene Jumping Engine
+    function initFormListeners() {
+      const bind = (id, callback) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', callback);
+      };
+
+      // Recipient
+      bind('recipientNameInput', (e) => {
+        editorState.recipientName = e.target.value.trim() || 'Elena';
+        updateHeroPreviewToken();
+        queuePreviewUpdate(11);
+        updateValidationAndProgress();
+      });
+
+      // Global Colors
+      bind('primaryColorInput', (e) => {
+        const hex = e.target.value;
+        editorState.theme.primaryColor = hex;
+        editorState.theme.rose = hex;
+        document.getElementById('primaryColorHex').textContent = hex;
+        checkColorContrast(hex);
+        queuePreviewUpdate();
+      });
+      bind('accentColorInput', (e) => {
+        const hex = e.target.value;
+        editorState.theme.accentColor = hex;
+        editorState.theme.gold2 = hex;
+        document.getElementById('accentColorHex').textContent = hex;
+        queuePreviewUpdate();
+      });
+
+      // Palette Presets
+      document.querySelectorAll('.palette-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-primary');
+          const a = btn.getAttribute('data-accent');
+          editorState.theme.primaryColor = p;
+          editorState.theme.rose = p;
+          editorState.theme.accentColor = a;
+          editorState.theme.gold2 = a;
+          document.getElementById('primaryColorInput').value = p;
+          document.getElementById('primaryColorHex').textContent = p;
+          document.getElementById('accentColorInput').value = a;
+          document.getElementById('accentColorHex').textContent = a;
+          checkColorContrast(p);
+          pushUpdateToPreview();
+          triggerAutosave();
+        });
+      });
+
+      // Global Music Radio Buttons
+      document.getElementById('musicTypeDefaultBtn')?.addEventListener('click', () => {
+        setMusicType('default');
+        pushUpdateToPreview();
+        triggerAutosave();
+      });
+      document.getElementById('musicTypeCustomBtn')?.addEventListener('click', () => {
+        setMusicType('custom');
+        pushUpdateToPreview();
+        triggerAutosave();
+      });
+
+      // Custom Music File
+      document.getElementById('customMusicFileInput')?.addEventListener('change', handleCustomMusicUpload);
+
+      // Music Start Range Slider
+      bind('musicStartRange', (e) => {
+        const sec = parseInt(e.target.value);
+        editorState.music.startSeconds = sec;
+        updateMusicStartTimeDisplay(sec);
+        queuePreviewUpdate();
+      });
+
+      // Audition Loop Button
+      document.getElementById('btnAuditionMusic')?.addEventListener('click', toggleAuditionLoop);
+
+      // Scene 2: Gift Box
+      bind('s2BoxColorInput', (e) => {
+        const hex = e.target.value;
+        if (!editorState.scenes.scene2_giftBox) editorState.scenes.scene2_giftBox = {};
+        editorState.scenes.scene2_giftBox.boxColor = hex;
+        const hexEl = document.getElementById('s2BoxColorHex');
+        if (hexEl) hexEl.textContent = hex;
+        checkBoxColorContrast(hex);
+        queuePreviewUpdate(2);
+      });
+      bind('s2Badge', (e) => { editorState.scenes.scene2_giftBox.badge = e.target.value; queuePreviewUpdate(2); });
+      bind('s2Title', (e) => { editorState.scenes.scene2_giftBox.title = e.target.value; queuePreviewUpdate(2); });
+      bind('s2Subtitle', (e) => { editorState.scenes.scene2_giftBox.subtitle = e.target.value; queuePreviewUpdate(2); });
+      bind('s2CardText', (e) => { editorState.scenes.scene2_giftBox.cardText = e.target.value; queuePreviewUpdate(2); });
+
+      // Scene 3: PIN
+      bind('s3Pin', (e) => {
+        const val = e.target.value.replace(/\D/g, '').substring(0, 4);
+        e.target.value = val;
+        editorState.scenes.scene3_pinLock.pin = val;
+        const err = document.getElementById('s3PinError');
+        if (err) {
+          if (val.length === 4) err.classList.add('hidden');
+          else err.classList.remove('hidden');
+        }
+        queuePreviewUpdate(3);
+        updateValidationAndProgress();
+      });
+      bind('s3Hint', (e) => { editorState.scenes.scene3_pinLock.hint = e.target.value; queuePreviewUpdate(3); });
+
+      // Scene 4: Curtain
+      bind('s4CurtainColorInput', (e) => {
+        const hex = e.target.value;
+        if (!editorState.scenes.scene4_curtain) editorState.scenes.scene4_curtain = {};
+        editorState.scenes.scene4_curtain.curtainColor = hex;
+        const hexEl = document.getElementById('s4CurtainColorHex');
+        if (hexEl) hexEl.textContent = hex;
+        checkCurtainColorContrast(hex);
+        queuePreviewUpdate(4);
+      });
+      bind('s4Badge', (e) => { editorState.scenes.scene4_curtain.badge = e.target.value; queuePreviewUpdate(4); });
+
+      // Scene 5: Cake
+      bind('s5CakeColorInput', (e) => {
+        const hex = e.target.value;
+        if (!editorState.scenes.scene5_cakeCountdown) editorState.scenes.scene5_cakeCountdown = {};
+        editorState.scenes.scene5_cakeCountdown.cakeColor = hex;
+        const hexEl = document.getElementById('s5CakeColorHex');
+        if (hexEl) hexEl.textContent = hex;
+        checkCakeColorContrast(hex);
+        queuePreviewUpdate(5);
+      });
+      bind('s5Headline', (e) => { editorState.scenes.scene5_cakeCountdown.headline = e.target.value; queuePreviewUpdate(5); });
+      bind('s5WishSub', (e) => { editorState.scenes.scene5_cakeCountdown.wishSub = e.target.value; queuePreviewUpdate(5); });
+      bind('s5BirthDate', (e) => {
+        if (e.target.value) {
+          editorState.scenes.scene5_cakeCountdown.birthDate = `${e.target.value}T00:00:00Z`;
+          queuePreviewUpdate(5);
+        }
+      });
+
+      // Scene 6: Wall of Us Metadata
+      bind('s6Eyebrow', (e) => { editorState.scenes.scene6_wallOfUs.eyebrow = e.target.value; queuePreviewUpdate(6); });
+      bind('s6Headline', (e) => { editorState.scenes.scene6_wallOfUs.headline = e.target.value; queuePreviewUpdate(6); });
+
+      // Scene 7: Reel Metadata
+      bind('s7Headline', (e) => { editorState.scenes.scene7_memoryReel.headline = e.target.value; queuePreviewUpdate(7); });
+
+      // Scene 8: Balloon Pop
+      for (let i = 0; i < 6; i++) {
+        bind(`s8Msg${i}`, (e) => {
+          if (!editorState.scenes.scene8_balloonPop) editorState.scenes.scene8_balloonPop = { messages: [] };
+          if (!Array.isArray(editorState.scenes.scene8_balloonPop.messages)) editorState.scenes.scene8_balloonPop.messages = [];
+          editorState.scenes.scene8_balloonPop.messages[i] = e.target.value;
+          queuePreviewUpdate(8);
+        });
+      }
+      bind('s8Headline', (e) => {
+        if (!editorState.scenes.scene8_balloonPop) editorState.scenes.scene8_balloonPop = {};
+        editorState.scenes.scene8_balloonPop.headline = e.target.value;
+        queuePreviewUpdate(8);
+      });
+      bind('s8Subtitle', (e) => {
+        if (!editorState.scenes.scene8_balloonPop) editorState.scenes.scene8_balloonPop = {};
+        editorState.scenes.scene8_balloonPop.subtitle = e.target.value;
+        queuePreviewUpdate(8);
+      });
+      bind('s8Closing', (e) => {
+        if (!editorState.scenes.scene8_balloonPop) editorState.scenes.scene8_balloonPop = {};
+        editorState.scenes.scene8_balloonPop.closing = e.target.value;
+        queuePreviewUpdate(8);
+      });
+
+      // Scene 9: Letter
+      bind('s9Eyebrow', (e) => { editorState.scenes.scene9_letter.eyebrow = e.target.value; queuePreviewUpdate(9); });
+      bind('s9Message', (e) => { editorState.scenes.scene9_letter.message = e.target.value; queuePreviewUpdate(9); });
+
+      // Scene 10: Fireworks
+      bind('s10Headline', (e) => { editorState.scenes.scene10_fireworks.headline = e.target.value; queuePreviewUpdate(10); });
+      bind('s10Subtext', (e) => { editorState.scenes.scene10_fireworks.subtext = e.target.value; queuePreviewUpdate(10); });
+
+      // Scene 11: Toast
+      bind('s11Eyebrow', (e) => { editorState.scenes.scene11_finalToast.eyebrow = e.target.value; queuePreviewUpdate(11); });
+      bind('s11HeroLine', (e) => {
+        editorState.scenes.scene11_finalToast.heroLine = e.target.value;
+        updateHeroPreviewToken();
+        queuePreviewUpdate(11);
+      });
+      bind('s11Subtext', (e) => { editorState.scenes.scene11_finalToast.subtext = e.target.value; queuePreviewUpdate(11); });
+
+      // AUTO-SYNC SCENE ON ACCORDION EXPAND & FIELD FOCUS
+      document.querySelectorAll('.accordion-item').forEach(item => {
+        const header = item.querySelector('.accordion-header');
+        const content = item.querySelector('.accordion-content');
+        const icon = item.querySelector('.accordion-icon');
+        const sceneAttr = item.getAttribute('data-scene');
+        const sceneNum = sceneAttr && sceneAttr !== 'none' ? parseInt(sceneAttr) : null;
+
+        header?.addEventListener('click', () => {
+          const isCurrentlyOpen = !content.classList.contains('hidden');
+
+          document.querySelectorAll('.accordion-content').forEach(c => c.classList.add('hidden'));
+          document.querySelectorAll('.accordion-icon').forEach(ic => ic.textContent = '▼');
+
+          if (!isCurrentlyOpen) {
+            content.classList.remove('hidden');
+            if (icon) icon.textContent = '▲';
+            if (sceneNum) {
+              triggerAutoSceneJump(sceneNum);
+            }
+          }
+        });
+
+        if (sceneNum) {
+          item.addEventListener('focusin', () => {
+            triggerAutoSceneJump(sceneNum);
+          });
+        }
+      });
+
+      // Manual Jump Tabs Override
+      document.querySelectorAll('.jump-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sc = parseInt(btn.getAttribute('data-scene'));
+          jumpPreviewToScene(sc);
+        });
+      });
+
+      // Reload Preview Button
+      document.getElementById('btnReloadPreview')?.addEventListener('click', () => {
+        if (previewIframe) {
+          previewIframe.src = previewIframe.src;
+        }
+      });
+    }
+
+    // 18. Validation & Progress Tracker
+    function updateValidationAndProgress() {
+      let completedCount = 0;
+      const totalSections = 12;
+
+      const isNameValid = Boolean(editorState.recipientName && editorState.recipientName.trim().length > 0);
+      const isPinValid = Boolean(editorState.scenes?.scene3_pinLock?.pin && String(editorState.scenes.scene3_pinLock.pin).length === 4);
+      const isThemeValid = Boolean(editorState.theme?.primaryColor && editorState.theme?.accentColor);
+
+      if (isThemeValid) completedCount++;
+      if (editorState.music?.trackType) completedCount++;
+      if (isNameValid) completedCount++;
+      if (editorState.scenes?.scene2_giftBox?.title) completedCount++;
+      if (isPinValid) completedCount++;
+      if (editorState.scenes?.scene4_curtain?.badge) completedCount++;
+      if (editorState.scenes?.scene5_cakeCountdown?.headline) completedCount++;
+      if (editorState.scenes?.scene6_wallOfUs?.headline) completedCount++;
+      if (editorState.scenes?.scene7_memoryReel?.headline) completedCount++;
+      if (editorState.scenes?.scene8_balloonPop?.headline || editorState.scenes?.scene8_constellation?.headline) completedCount++;
+      if (editorState.scenes?.scene9_letter?.message) completedCount++;
+      if (editorState.scenes?.scene10_fireworks?.headline) completedCount++;
+
+      const progCountEl = document.getElementById('progressCount');
+      const progFillEl = document.getElementById('progressBarFill');
+      if (progCountEl) progCountEl.textContent = `${completedCount}/${totalSections}`;
+      if (progFillEl) progFillEl.style.width = `${Math.round((completedCount / totalSections) * 100)}%`;
+
+      const canProceed = isNameValid && isPinValid && isThemeValid;
+      const continueBtn = document.getElementById('btnContinueOrder');
+      if (continueBtn) {
+        continueBtn.disabled = !canProceed;
+        if (!canProceed) {
+          continueBtn.title = 'Please ensure Recipient Name and 4-Digit PIN are valid to continue.';
+        } else {
+          continueBtn.title = 'Proceed to Order Summary';
+        }
+      }
+    }
+
+    // 19. Mobile Segmented Toggle
+    const viewFormBtn = document.getElementById('viewFormBtn');
+    const viewPreviewBtn = document.getElementById('viewPreviewBtn');
+    const formPanel = document.getElementById('formPanel');
+    const previewPanel = document.getElementById('previewPanel');
+
+    if (viewFormBtn && viewPreviewBtn && formPanel && previewPanel) {
+      viewFormBtn.addEventListener('click', () => {
+        formPanel.classList.remove('hidden');
+        previewPanel.classList.add('hidden');
+        viewFormBtn.classList.add('bg-white', 'text-rose-600', 'shadow-sm');
+        viewFormBtn.classList.remove('text-ink-600');
+        viewPreviewBtn.classList.remove('bg-white', 'text-rose-600', 'shadow-sm');
+        viewPreviewBtn.classList.add('text-ink-600');
+      });
+
+      viewPreviewBtn.addEventListener('click', () => {
+        formPanel.classList.add('hidden');
+        previewPanel.classList.remove('hidden');
+        viewPreviewBtn.classList.add('bg-white', 'text-rose-600', 'shadow-sm');
+        viewPreviewBtn.classList.remove('text-ink-600');
+        viewFormBtn.classList.remove('bg-white', 'text-rose-600', 'shadow-sm');
+        viewFormBtn.classList.add('text-ink-600');
+      });
+    }
+
+    // 20. Dedicated Full-Screen Review Mode (Step 5) & Order Summary Handlers
+    const continueBtn = document.getElementById('btnContinueOrder');
+    const reviewOverlay = document.getElementById('reviewModeOverlay');
+    const reviewIframe = document.getElementById('reviewFilmPreviewFrame');
+    const btnReviewBack = document.getElementById('btnReviewBackToEdit');
+    const btnReviewProceed = document.getElementById('btnReviewProceedCheckout');
+
+    const orderModal = document.getElementById('orderSummaryModal');
+    const closeOrderModal = () => {
+      orderModal?.classList.add('hidden');
+      orderModal?.classList.remove('flex');
+    };
+
+    const readyModal = document.getElementById('giftReadyModal');
+    const btnPublish = document.getElementById('btnTestModePublish');
+    const btnPublishText = document.getElementById('btnPublishText');
+
+    let currentPublishedSlug = null;
+
+    // Step 5: Enter Full-Screen Dedicated Review Mode on "Continue"
+    if (continueBtn && reviewOverlay) {
+      continueBtn.addEventListener('click', () => {
+        triggerAutosave();
+
+        const recName = editorState.recipientName || 'Elena';
+        const recEl = document.getElementById('reviewRecipientName');
+        if (recEl) recEl.textContent = recName;
+
+        // Sync review iframe source
+        const expSlug = editorState.themeId === 'glass' ? 'birthday-film-glass' : 'birthday-film';
+        if (reviewIframe) {
+          reviewIframe.src = `./preview.html?experience=${expSlug}&review=true`;
+          
+          const onReviewLoad = () => {
+            try {
+              reviewIframe.contentWindow.postMessage({
+                type: 'GIFT_DATA_UPDATE',
+                giftData: editorState,
+                targetScene: 1
+              }, '*');
+            } catch (e) {}
+            reviewIframe.removeEventListener('load', onReviewLoad);
+          };
+          reviewIframe.addEventListener('load', onReviewLoad);
+        }
+
+        reviewOverlay.classList.remove('hidden');
+        reviewOverlay.classList.add('flex');
+      });
+
+      // Back to Editing
+      btnReviewBack?.addEventListener('click', () => {
+        reviewOverlay.classList.add('hidden');
+        reviewOverlay.classList.remove('flex');
+      });
+
+      // Proceed to Checkout from Review
+      btnReviewProceed?.addEventListener('click', () => {
+        reviewOverlay.classList.add('hidden');
+        reviewOverlay.classList.remove('flex');
+        openOrderSummary();
+      });
+    }
+
+    // Step 6: Order Summary Modal
+    function openOrderSummary() {
+      if (!orderModal) return;
+      triggerAutosave();
+
+      const expName = editorState.themeId === 'glass' 
+        ? 'Signature 11-Scene Film (Glass Edition)' 
+        : 'Signature 11-Scene Film (Warm Paper Edition)';
+
+      document.getElementById('summaryRecipient').textContent = editorState.recipientName || 'Elena';
+      document.getElementById('summaryPin').textContent = editorState.scenes?.scene3_pinLock?.pin || '1234';
+      document.getElementById('summaryMusic').textContent = `Starts at ${formatTime(editorState.music?.startSeconds || 27)}`;
+      
+      const summaryExpEl = document.getElementById('summaryExperience');
+      if (summaryExpEl) summaryExpEl.textContent = expName;
+
+      orderModal.classList.remove('hidden');
+      orderModal.classList.add('flex');
+    }
+
+    document.getElementById('closeModalBtn')?.addEventListener('click', closeOrderModal);
+    document.getElementById('closeModalBtn2')?.addEventListener('click', closeOrderModal);
+
+    // Step 7: Test Mode Publish Execution
+    /* TEST MODE PUBLISH: In production, swap this handler with Razorpay / Stripe gateway integration */
+    if (btnPublish) {
+      btnPublish.addEventListener('click', async () => {
+        btnPublish.disabled = true;
+        if (btnPublishText) {
+          btnPublishText.innerHTML = `
+            <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-1"></span>
+            <span>Publishing Keepsake Film...</span>
+          `;
+        }
+
+        try {
+          // Generate a clean public slug
+          const safeName = (editorState.recipientName || 'gift')
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '')
+            .substring(0, 10);
+          const randomSuffix = Math.random().toString(36).substring(2, 8);
+          const slug = `${safeName}-${randomSuffix}`;
+          currentPublishedSlug = slug;
+
+          if (supabase) {
+            const payload = {
+              status: 'paid',
+              slug: slug,
+              experience_id: expParam || 'birthday-film',
+              theme_id: editorState.themeId || 'paper',
+              content: editorState,
+              data: editorState,
+              photo_urls: editorState.scenes?.scene6_wallOfUs?.photos || [],
+              clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
+              updated_at: new Date().toISOString()
+            };
+
+            if (currentUser && currentUser.id) {
+              payload.owner_id = currentUser.id;
+            }
+
+            const { error } = await supabase
+              .from('gifts')
+              .update(payload)
+              .eq('id', draftId);
+
+            if (error) {
+              console.warn('Supabase update warning, trying upsert:', error);
+              payload.id = draftId;
+              await supabase.from('gifts').upsert(payload);
+            }
+          }
+
+          // Build public URL
+          const shareUrl = `${window.location.origin}/gift.html?slug=${slug}`;
+
+          // Populate Ready Modal
+          const shareInput = document.getElementById('readyShareUrlInput');
+          if (shareInput) shareInput.value = shareUrl;
+
+          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(shareUrl)}`;
+          const qrImg = document.getElementById('readyQrImage');
+          if (qrImg) qrImg.src = qrUrl;
+
+          const btnDownloadQr = document.getElementById('btnDownloadQr');
+          if (btnDownloadQr) btnDownloadQr.href = qrUrl;
+
+          const viewRecipientLink = document.getElementById('readyViewRecipientLink');
+          if (viewRecipientLink) viewRecipientLink.href = `./gift.html?slug=${slug}`;
+
+          // Close order modal and open ready modal
+          closeOrderModal();
+          readyModal?.classList.remove('hidden');
+          readyModal?.classList.add('flex');
+
+        } catch (err) {
+          console.error('Publish error:', err);
+          alert('Could not complete publishing. Please check your connection and try again.');
+        } finally {
+          btnPublish.disabled = false;
+          if (btnPublishText) {
+            btnPublishText.textContent = 'Confirm & Publish Gift (Test Mode — No Payment)';
+          }
+        }
+      });
+    }
+
+    // Copy Ready Link Handler
+    document.getElementById('btnCopyReadyLink')?.addEventListener('click', async () => {
+      const shareInput = document.getElementById('readyShareUrlInput');
+      const copyToast = document.getElementById('copyToast');
+      if (shareInput) {
+        try {
+          await navigator.clipboard.writeText(shareInput.value);
+          if (copyToast) {
+            copyToast.classList.remove('hidden');
+            setTimeout(() => copyToast.classList.add('hidden'), 2500);
+          }
+        } catch (e) {
+          shareInput.select();
+          document.execCommand('copy');
+          if (copyToast) {
+            copyToast.classList.remove('hidden');
+            setTimeout(() => copyToast.classList.add('hidden'), 2500);
+          }
+        }
+      }
+    });
+
+    // Web Share API Handler
+    document.getElementById('btnShareWeb')?.addEventListener('click', async () => {
+      const shareInput = document.getElementById('readyShareUrlInput');
+      const shareUrl = shareInput?.value || window.location.href;
+      const recName = editorState.recipientName || 'Elena';
+      const shareData = {
+        title: `A Birthday Film for ${recName} ♥`,
+        text: `I made a special cinematic birthday film for you, ${recName}! Open your private link to experience it:`,
+        url: shareUrl
+      };
+
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        try {
+          await navigator.share(shareData);
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`, '_blank');
+          }
+        }
+      } else {
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`, '_blank');
+      }
+    });
+
+    // 21. Preview Frame Ready Listener
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'PREVIEW_READY') {
+        pushUpdateToPreview();
+        if (reviewIframe && reviewIframe.contentWindow) {
+          try {
+            reviewIframe.contentWindow.postMessage({
+              type: 'GIFT_DATA_UPDATE',
+              giftData: editorState,
+              targetScene: 1
+            }, '*');
+          } catch (e) {}
+        }
+      }
+    });
+
+    // Boot
+    initAuthUI();
+    restoreDraft();
+    initFormListeners();
+    updateValidationAndProgress();
+    if (previewIframe && editorState.themeId === 'glass') {
+      previewIframe.src = './preview.html?experience=birthday-film-glass';
+    }
+    setTimeout(pushUpdateToPreview, 800);
+  </script>
+</body>
+</html>

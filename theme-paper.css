@@ -1,0 +1,30 @@
+/* ============================================================
+   THEME: WARM PAPER & ROSE ("Paper Edition" — Default)
+   Swappable theme layer for the 11-Scene Birthday Film.
+   Applied via [data-theme="paper"] on <html> or .theme-paper on <body>.
+   ============================================================ */
+
+:root,
+:root[data-theme="paper"],
+body.theme-paper {
+  /* --- warm paper (Act 1 + the tree's dawn) --- */
+  --paper-0:  #fff6ee;
+  --paper-1:  #f9e2d2;
+  --paper-2:  #f2c9b8;
+
+  /* --- rose flood (Acts 2–3) --- */
+  --rose-deep: #a80f43;
+  --rose:      #d4235c;
+  --rose-lift: #ff5f86;
+  --rose-mid:  #c41f52;
+  --wine:      #6e0a31;
+
+  /* --- accents / ink --- */
+  --gold-1:    #ffcf6a;
+  --gold-2:    #e8a23d;
+  --ink:       #7a4a55;   /* dusty rose ink        */
+  --ink-soft:  #a9808a;   /* muted eyebrow / sub   */
+  --cream:     #fff3ea;
+
+  --ease-out:  cubic-bezier(.2,.7,.2,1);
+}

@@ -797,21 +797,47 @@
       }
 
       try {
-        // Query Supabase for paid gift matching unique slug or id
+        const cleanSlug = slug.toLowerCase().trim();
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanSlug);
+
+        // 1. First, search for paid gift matching slug or UUID
         let query = supabase.from('gifts').select('*');
-        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)) {
-          query = query.or(`slug.eq.${slug},id.eq.${slug}`);
+        if (isUuid) {
+          query = query.or(`slug.ilike.${cleanSlug},id.eq.${cleanSlug}`);
         } else {
-          query = query.eq('slug', slug);
+          query = query.ilike('slug', cleanSlug);
         }
 
-        const { data: gift, error } = await query
+        let { data: gift, error } = await query
           .eq('status', 'paid')
           .maybeSingle();
 
-        if (error || !gift) {
+        // 2. If not found and input is a UUID, allow fallback to draft mode
+        if (!gift && isUuid) {
+          const { data: draftGift } = await supabase
+            .from('gifts')
+            .select('*')
+            .eq('id', cleanSlug)
+            .maybeSingle();
+          if (draftGift) {
+            gift = draftGift;
+          }
+        }
+
+        // 3. Fallback to localStorage draft if offline/local preview
+        if (!gift && isUuid) {
+          try {
+            const localData = localStorage.getItem(`vk_draft_data_${cleanSlug}`);
+            if (localData) {
+              const parsed = JSON.parse(localData);
+              gift = { id: cleanSlug, status: 'draft', content: parsed };
+            }
+          } catch (e) {}
+        }
+
+        if (!gift) {
           if (error) console.warn('Supabase gift fetch warning:', error);
-          // If no paid gift found, show on-brand invalid gift card
+          // If no gift found, show on-brand invalid gift card
           loadingScreen?.classList.add('hidden');
           invalidScreen?.classList.remove('hidden');
           return;

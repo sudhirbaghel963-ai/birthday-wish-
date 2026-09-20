@@ -24,6 +24,10 @@
   <link rel="stylesheet" href="./theme-glass.css" />
 
   <style>
+    .hidden {
+      display: none !important;
+    }
+
     /* Loading overlay */
     #giftLoadingScreen {
       position: fixed;
@@ -39,6 +43,9 @@
       font-family: 'Fraunces', Georgia, serif;
       text-align: center;
       padding: 1.5rem;
+    }
+    #giftLoadingScreen.hidden {
+      display: none !important;
     }
     [data-theme="glass"] #giftLoadingScreen {
       background: radial-gradient(circle at center, #260c33 0%, #15061c 60%, #08020d 100%);
@@ -67,6 +74,9 @@
       justify-content: center;
       padding: 1.5rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    #invalidGiftScreen.hidden {
+      display: none !important;
     }
     .invalid-card {
       background: #ffffff;

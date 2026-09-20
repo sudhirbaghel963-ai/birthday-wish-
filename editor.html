@@ -135,6 +135,111 @@
     input[type="range"]::-webkit-slider-thumb:hover {
       transform: scale(1.15);
     }
+
+    /* =====================================================
+       MOBILE STEP-BY-STEP WIZARD  (below lg = <1024px)
+       ===================================================== */
+
+    /* Full-viewport shell — sits above <body> content on mobile */
+    #mobileStepperShell {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: #fcf7f0; /* parchment-100 */
+      overflow: hidden;
+    }
+    @media (min-width: 1024px) {
+      #mobileStepperShell { display: none !important; }
+    }
+
+    /* Progress bar track */
+    #mobileProgressTrack {
+      height: 3px;
+      background: #ebd9c5; /* parchment-300 */
+      flex-shrink: 0;
+    }
+    #mobileProgressFill {
+      height: 100%;
+      background: linear-gradient(to right, #d99b26, #d4235c);
+      transition: width 0.35s ease;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Content scroll area */
+    #mobileStepContent {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 1.25rem 1rem 1rem;
+    }
+    #mobileStepContent > * {
+      /* Remove accordion inner padding — stepper supplies its own */
+    }
+
+    /* Bottom nav bar */
+    #mobileBottomNav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: rgba(252,247,240,0.97);
+      border-top: 1px solid #ebd9c5;
+      flex-shrink: 0;
+      padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Preview FAB */
+    #mobilePreviewFab {
+      position: absolute;
+      bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+      right: 1rem;
+      z-index: 5;
+    }
+
+    /* Full-screen preview overlay */
+    #mobilePreviewOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: #17040d; /* velvet-950 */
+      display: flex;
+      flex-direction: column;
+    }
+    #mobilePreviewOverlay.hidden { display: none; }
+    @media (min-width: 1024px) {
+      #mobilePreviewOverlay { display: none !important; }
+    }
+
+    /* Full-screen menu drawer */
+    #mobileMenuDrawer {
+      position: fixed;
+      inset: 0;
+      z-index: 55;
+      background: #fcf7f0;
+      display: flex;
+      flex-direction: column;
+    }
+    #mobileMenuDrawer.hidden { display: none; }
+    @media (min-width: 1024px) {
+      #mobileMenuDrawer { display: none !important; }
+    }
+
+    /* Stepper content fade */
+    #mobileStepContent .ms-step-entering {
+      animation: msSlideIn 0.18s ease both;
+    }
+    @keyframes msSlideIn {
+      from { opacity: 0; transform: translateX(18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes msSlideInBack {
+      from { opacity: 0; transform: translateX(-18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .ms-step-entering-back { animation: msSlideInBack 0.18s ease both; }
   </style>
 </head>
 <body class="bg-parchment-100 text-ink-900 font-sans antialiased h-screen flex flex-col overflow-hidden selection:bg-rose-100 selection:text-rose-500">
@@ -142,7 +247,7 @@
   <!-- ============================================================
        TOP HEADER / TOOLBAR
        ============================================================ -->
-  <header class="h-16 border-b border-parchment-300/80 bg-parchment-50/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between z-40 flex-shrink-0">
+  <header class="hidden lg:flex h-16 border-b border-parchment-300/80 bg-parchment-50/95 backdrop-blur-md px-4 sm:px-6 items-center justify-between z-40 flex-shrink-0">
     
     <!-- Left: Back & Brand -->
     <div class="flex items-center gap-3 sm:gap-4">
@@ -183,8 +288,8 @@
       </div>
     </div>
 
-    <!-- Mobile Segmented View Control ([Edit Form] vs [Live Preview]) -->
-    <div class="flex lg:hidden items-center bg-parchment-200 p-0.5 rounded-full text-xs font-semibold text-ink-700 border border-parchment-300">
+    <!-- Mobile Segmented View Control — hidden on mobile (stepper replaces this), shown only on tablet sm–lg gap -->
+    <div class="hidden lg:hidden items-center bg-parchment-200 p-0.5 rounded-full text-xs font-semibold text-ink-700 border border-parchment-300">
       <button id="viewFormBtn" class="px-3 py-1 rounded-full bg-white text-rose-600 shadow-sm transition-all" type="button">Edit</button>
       <button id="viewPreviewBtn" class="px-3 py-1 rounded-full text-ink-600 hover:text-ink-900 transition-all" type="button">Preview</button>
     </div>
@@ -214,7 +319,7 @@
   <!-- ============================================================
        MAIN TWO-PANEL WORKSPACE
        ============================================================ -->
-  <main class="flex-1 flex flex-col lg:flex-row h-[calc(100vh-4rem)] overflow-hidden">
+  <main class="hidden lg:flex flex-1 flex-col lg:flex-row h-[calc(100vh-4rem)] overflow-hidden">
     
     <!-- ==========================================
          LEFT PANEL: SCROLLABLE FORM ACCORDION
@@ -908,6 +1013,127 @@ Happy Birthday. I mean it.</textarea>
     </div>
 
   </main>
+
+
+  <!-- ============================================================
+       MOBILE STEP-BY-STEP WIZARD SHELL  (hidden on lg+)
+       ============================================================ -->
+  <div id="mobileStepperShell">
+
+    <!-- Compact Header -->
+    <div class="flex items-center justify-between px-4 py-3 bg-parchment-50/95 border-b border-parchment-300/80 backdrop-blur-md flex-shrink-0">
+      <!-- Left: back to create.html OR prev step -->
+      <a href="./create.html" id="mobileBackHomeBtn" class="w-9 h-9 flex items-center justify-center rounded-full border border-parchment-300 bg-white text-ink-600 shadow-sm" title="Back">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </a>
+
+      <!-- Centre: section name -->
+      <div class="flex-1 text-center px-3">
+        <div id="mobileStepTitle" class="font-serif text-sm font-bold text-ink-900 leading-tight truncate">Recipient</div>
+        <div id="mobileStepSubtitle" class="text-[10px] text-ink-500 leading-none mt-0.5 truncate">Who is this magical film for?</div>
+      </div>
+
+      <!-- Right: autosave dot + menu -->
+      <div class="flex items-center gap-2">
+        <!-- tiny autosave indicator -->
+        <div id="mobileSaveIndicator" class="flex items-center gap-1 px-2 py-1 rounded-full bg-white border border-parchment-200 text-[10px] font-medium text-ink-500">
+          <span id="mobileSaveDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span id="mobileSaveLabel">Saved</span>
+        </div>
+        <!-- menu / jump icon -->
+        <button id="mobileMenuBtn" type="button" class="w-9 h-9 flex items-center justify-center rounded-full border border-parchment-300 bg-white text-ink-600 shadow-sm" title="Jump to section">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div id="mobileProgressTrack">
+      <div id="mobileProgressFill" style="width: 8%"></div>
+    </div>
+
+    <!-- Step Content Area (fields injected here by JS) -->
+    <div id="mobileStepContent" class="custom-scrollbar"></div>
+
+    <!-- Preview FAB — always reachable -->
+    <div id="mobilePreviewFab">
+      <button id="mobilePreviewFabBtn" type="button" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-velvet-900 hover:bg-velvet-800 text-white text-xs font-semibold shadow-lg shadow-velvet-900/30 transition-all">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Preview
+      </button>
+    </div>
+
+    <!-- Fixed Bottom Navigation -->
+    <div id="mobileBottomNav">
+      <!-- Back button -->
+      <button id="mobileNavBack" type="button" class="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-parchment-300 bg-white text-ink-700 font-semibold text-sm shadow-sm transition-colors hover:bg-parchment-100">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+
+      <!-- Step counter -->
+      <div class="text-center flex-shrink-0">
+        <div id="mobileStepCounter" class="text-xs font-semibold text-ink-500">Step 1 of 12</div>
+      </div>
+
+      <!-- Next / Continue button -->
+      <button id="mobileNavNext" type="button" class="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm shadow-md shadow-rose-600/20 transition-all">
+        Next
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+  </div>
+
+
+  <!-- ============================================================
+       MOBILE FULL-SCREEN PREVIEW OVERLAY  (hidden on lg+)
+       ============================================================ -->
+  <div id="mobilePreviewOverlay" class="hidden">
+
+    <!-- Top bar -->
+    <div class="flex items-center justify-between px-4 py-3 bg-velvet-900/95 border-b border-gold-400/20 flex-shrink-0 backdrop-blur-md">
+      <button id="mobilePreviewClose" type="button" class="flex items-center gap-2 px-3 py-2 rounded-full border border-white/20 bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to editing
+      </button>
+      <div class="font-serif text-xs font-bold text-gold-200 truncate px-2">
+        Previewing <span id="mobilePreviewRecipientName">Elena</span>'s Film
+      </div>
+      <button id="mobilePreviewProceed" type="button" class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white font-semibold text-xs transition-all shadow-md">
+        Looks Good
+        <span class="text-gold-200">→</span>
+      </button>
+    </div>
+
+    <!-- Preview iframe -->
+    <div class="flex-1 relative bg-black">
+      <iframe id="mobilePreviewFrame" src="./preview.html" class="w-full h-full border-0" title="Mobile Film Preview" allow="autoplay; microphone"></iframe>
+    </div>
+
+  </div>
+
+
+  <!-- ============================================================
+       MOBILE SECTION JUMP MENU DRAWER  (hidden on lg+)
+       ============================================================ -->
+  <div id="mobileMenuDrawer" class="hidden">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-4 py-3.5 border-b border-parchment-300 bg-parchment-50 flex-shrink-0">
+      <div>
+        <div class="font-serif text-base font-bold text-ink-900">Sections</div>
+        <div class="text-[11px] text-ink-500">Jump to any step</div>
+      </div>
+      <button id="mobileMenuClose" type="button" class="w-9 h-9 flex items-center justify-center rounded-full border border-parchment-300 bg-white text-ink-600 hover:bg-parchment-100 transition-colors">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Step list — populated by JS -->
+    <div id="mobileMenuList" class="flex-1 overflow-y-auto py-2 custom-scrollbar"></div>
+
+  </div>
 
 
   <!-- ============================================================
@@ -2720,6 +2946,316 @@ Happy Birthday. I mean it.</textarea>
         }
       }
     });
+
+    // ================================================================
+    // 22. MOBILE STEP-BY-STEP WIZARD  (only active below lg = 1024px)
+    // ================================================================
+    (function () {
+      // Only wire up if stepper shell exists
+      const shell = document.getElementById('mobileStepperShell');
+      if (!shell) return;
+
+      // ------------------------------------------------------------------
+      // Step definitions  — each maps to an accordion-item index in formPanel
+      // DOM order inside #formPanel: [0]=GlobalSettings, [1]=Recipient,
+      //   [2]=Scene2, [3]=Scene3, [4]=Scene4, [5]=Scene5,
+      //   [6]=Scene6, [7]=Scene7, [8]=Scene8, [9]=Scene9,
+      //   [10]=Scene10, [11]=Scene11
+      // We show Recipient first (idx 1), then Global Settings (idx 0),
+      // then scenes 2-11 (idx 2-11).
+      // ------------------------------------------------------------------
+      const STEPS = [
+        { idx: 1,  title: 'Recipient',                 subtitle: 'Who is this magical film for?',          scene: null },
+        { idx: 0,  title: 'Theme & Music',             subtitle: 'Colors and background soundtrack',        scene: null },
+        { idx: 2,  title: 'Scene 2: Gift Box',         subtitle: 'Opening 3D gift & card text',            scene: 2 },
+        { idx: 3,  title: 'Scene 3: Secret PIN',       subtitle: '4-digit code & hint',                    scene: 3 },
+        { idx: 4,  title: 'Scene 4: Velvet Curtain',   subtitle: 'Theatrical reveal badge',                 scene: 4 },
+        { idx: 5,  title: 'Scene 5: Cake & Countdown', subtitle: 'Birth date & candle wish',               scene: 5 },
+        { idx: 6,  title: 'Scene 6: Wall of Us',       subtitle: 'Polaroid photos & captions',             scene: 6 },
+        { idx: 7,  title: 'Scene 7: Memory Reel',      subtitle: 'Video clips & film captions',            scene: 7 },
+        { idx: 8,  title: 'Scene 8: Balloon Pop',      subtitle: '6 interactive wish balloons',            scene: 8 },
+        { idx: 9,  title: 'Scene 9: The Letter',       subtitle: 'Typewritten envelope letter',            scene: 9 },
+        { idx: 10, title: 'Scene 10: Fireworks',       subtitle: 'Closing fireworks card',                 scene: 10 },
+        { idx: 11, title: 'Scene 11: Final Toast',     subtitle: 'Clinking glasses & hero sign-off',       scene: 11 },
+      ];
+      const TOTAL = STEPS.length;
+
+      // Cached accordion items (stable order from formPanel DOM)
+      let accordionItems = [];
+      // Original parent + next sibling to restore items on desktop resize
+      const originalPositions = [];
+      let currentStep = 0;
+      let isMobile = window.innerWidth < 1024;
+
+      // UI refs
+      const contentEl    = document.getElementById('mobileStepContent');
+      const titleEl      = document.getElementById('mobileStepTitle');
+      const subtitleEl   = document.getElementById('mobileStepSubtitle');
+      const counterEl    = document.getElementById('mobileStepCounter');
+      const progressFill = document.getElementById('mobileProgressFill');
+      const navBack      = document.getElementById('mobileNavBack');
+      const navNext      = document.getElementById('mobileNavNext');
+      const menuBtn      = document.getElementById('mobileMenuBtn');
+      const menuDrawer   = document.getElementById('mobileMenuDrawer');
+      const menuClose    = document.getElementById('mobileMenuClose');
+      const menuList     = document.getElementById('mobileMenuList');
+      const previewFabBtn       = document.getElementById('mobilePreviewFabBtn');
+      const previewOverlay      = document.getElementById('mobilePreviewOverlay');
+      const previewClose        = document.getElementById('mobilePreviewClose');
+      const previewProceedBtn   = document.getElementById('mobilePreviewProceed');
+      const previewRecipientEl  = document.getElementById('mobilePreviewRecipientName');
+      const mobilePreviewIframe = document.getElementById('mobilePreviewFrame');
+      const saveDot   = document.getElementById('mobileSaveDot');
+      const saveLabel = document.getElementById('mobileSaveLabel');
+
+      // ------------------------------------------------------------------
+      // Autosave status mirror — watch the desktop saveStatusText
+      // ------------------------------------------------------------------
+      function syncSaveStatus() {
+        const desktopText = document.getElementById('saveStatusText');
+        if (!desktopText || !saveDot || !saveLabel) return;
+        const txt = desktopText.textContent || '';
+        saveLabel.textContent = txt.replace('Draft saved', 'Saved').trim() || 'Saved';
+        const saving = txt.toLowerCase().includes('saving');
+        saveDot.className = 'w-1.5 h-1.5 rounded-full ' + (saving ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400');
+      }
+
+      // Poll save status every 2s (simple, lightweight)
+      setInterval(syncSaveStatus, 2000);
+
+      // ------------------------------------------------------------------
+      // Initialise — collect accordion items once DOM-ready
+      // ------------------------------------------------------------------
+      function init() {
+        accordionItems = Array.from(document.querySelectorAll('#formPanel .accordion-item'));
+        // Record original DOM positions for desktop restore
+        accordionItems.forEach((el, i) => {
+          originalPositions[i] = { parent: el.parentNode, nextSibling: el.nextSibling };
+        });
+        buildMenuList();
+        if (isMobile) goToStep(0, true);
+      }
+
+      // ------------------------------------------------------------------
+      // Build the jump menu list
+      // ------------------------------------------------------------------
+      function buildMenuList() {
+        if (!menuList) return;
+        menuList.innerHTML = '';
+        STEPS.forEach((step, i) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'w-full flex items-center gap-3.5 px-4 py-3.5 text-left transition-colors hover:bg-parchment-100 border-b border-parchment-200/60 last:border-0';
+          btn.innerHTML = `
+            <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-700 text-[11px] font-bold flex items-center justify-center flex-shrink-0 font-serif">${i + 1}</span>
+            <div class="min-w-0">
+              <div class="text-sm font-semibold text-ink-900 leading-tight">${step.title}</div>
+              <div class="text-[11px] text-ink-500 leading-none mt-0.5">${step.subtitle}</div>
+            </div>
+            <svg class="ml-auto flex-shrink-0 text-ink-300" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          `;
+          btn.addEventListener('click', () => {
+            closeMobileMenu();
+            goToStep(i);
+          });
+          menuList.appendChild(btn);
+        });
+      }
+
+      // ------------------------------------------------------------------
+      // Go to a step — the heart of the wizard
+      // ------------------------------------------------------------------
+      function goToStep(stepIndex, instant, goingBack) {
+        if (stepIndex < 0 || stepIndex >= TOTAL) return;
+
+        // 1. Return current step's accordion-content back to its accordion-item
+        if (typeof currentStep === 'number' && contentEl.children.length > 0) {
+          const prevStep = STEPS[currentStep];
+          const prevItem = accordionItems[prevStep.idx];
+          if (prevItem) {
+            const prevContent = contentEl.firstChild;
+            if (prevContent) prevItem.appendChild(prevContent);
+          }
+        }
+
+        currentStep = stepIndex;
+        const step = STEPS[stepIndex];
+        const item = accordionItems[step.idx];
+
+        // 2. Pull accordion-content out of its item and place it in the stepper
+        const contentDiv = item?.querySelector('.accordion-content');
+        if (contentDiv) {
+          // Unhide (accordion normally hides it)
+          contentDiv.classList.remove('hidden');
+          // Remove accordion padding that's been replaced by stepper padding
+          contentDiv.style.padding = '0';
+          if (!instant) {
+            contentDiv.classList.remove('ms-step-entering', 'ms-step-entering-back');
+            void contentDiv.offsetWidth; // reflow
+            contentDiv.classList.add(goingBack ? 'ms-step-entering-back' : 'ms-step-entering');
+          }
+          contentEl.innerHTML = '';
+          contentEl.appendChild(contentDiv);
+          contentEl.scrollTop = 0;
+        }
+
+        // 3. Update header
+        if (titleEl) titleEl.textContent = step.title;
+        if (subtitleEl) subtitleEl.textContent = step.subtitle;
+
+        // 4. Update progress bar
+        const pct = Math.round(((stepIndex + 1) / TOTAL) * 100);
+        if (progressFill) progressFill.style.width = pct + '%';
+
+        // 5. Update counter
+        if (counterEl) counterEl.textContent = `Step ${stepIndex + 1} of ${TOTAL}`;
+
+        // 6. Update nav buttons
+        if (navBack) {
+          if (stepIndex === 0) {
+            navBack.style.visibility = 'hidden';
+          } else {
+            navBack.style.visibility = 'visible';
+          }
+        }
+        if (navNext) {
+          const isLast = stepIndex === TOTAL - 1;
+          if (isLast) {
+            navNext.innerHTML = `Continue <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+          } else {
+            navNext.innerHTML = `Next <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+          }
+        }
+
+        // 7. Highlight active step in menu
+        if (menuList) {
+          menuList.querySelectorAll('button').forEach((btn, i) => {
+            const isActive = i === stepIndex;
+            btn.classList.toggle('bg-rose-50', isActive);
+            btn.classList.toggle('text-rose-600', isActive);
+          });
+        }
+
+        // 8. Auto-jump preview to matching scene (if iframe loaded)
+        if (step.scene && typeof jumpPreviewToScene === 'function') {
+          try { jumpPreviewToScene(step.scene); } catch (e) {}
+        }
+      }
+
+      // ------------------------------------------------------------------
+      // Navigation button handlers
+      // ------------------------------------------------------------------
+      navBack?.addEventListener('click', () => {
+        if (currentStep > 0) goToStep(currentStep - 1, false, true);
+      });
+
+      navNext?.addEventListener('click', () => {
+        if (currentStep < TOTAL - 1) {
+          goToStep(currentStep + 1, false, false);
+        } else {
+          // Last step → trigger Continue (same as desktop btnContinueOrder)
+          document.getElementById('btnContinueOrder')?.click();
+        }
+      });
+
+      // ------------------------------------------------------------------
+      // Menu drawer
+      // ------------------------------------------------------------------
+      function openMobileMenu() {
+        if (menuDrawer) menuDrawer.classList.remove('hidden');
+      }
+      function closeMobileMenu() {
+        if (menuDrawer) menuDrawer.classList.add('hidden');
+      }
+      menuBtn?.addEventListener('click', openMobileMenu);
+      menuClose?.addEventListener('click', closeMobileMenu);
+
+      // ------------------------------------------------------------------
+      // Preview overlay
+      // ------------------------------------------------------------------
+      function openMobilePreview() {
+        if (!previewOverlay) return;
+        previewOverlay.classList.remove('hidden');
+        // Update recipient name label
+        const rn = editorState?.recipientName || 'Elena';
+        if (previewRecipientEl) previewRecipientEl.textContent = rn;
+        // Push current data to mobile preview iframe
+        if (mobilePreviewIframe?.contentWindow) {
+          try {
+            mobilePreviewIframe.contentWindow.postMessage({
+              type: 'GIFT_DATA_UPDATE',
+              giftData: editorState,
+              targetScene: STEPS[currentStep]?.scene || 1
+            }, '*');
+          } catch (e) {}
+        }
+      }
+      function closeMobilePreview() {
+        if (previewOverlay) previewOverlay.classList.add('hidden');
+      }
+      previewFabBtn?.addEventListener('click', openMobilePreview);
+      previewClose?.addEventListener('click', closeMobilePreview);
+      previewProceedBtn?.addEventListener('click', () => {
+        closeMobilePreview();
+        // Trigger the existing Continue / checkout flow
+        document.getElementById('btnContinueOrder')?.click();
+      });
+
+      // Also push data to mobile preview iframe whenever preview is ready
+      window.addEventListener('message', (ev) => {
+        if (ev.data?.type === 'PREVIEW_READY' && ev.source === mobilePreviewIframe?.contentWindow) {
+          if (mobilePreviewIframe?.contentWindow) {
+            try {
+              mobilePreviewIframe.contentWindow.postMessage({
+                type: 'GIFT_DATA_UPDATE',
+                giftData: editorState,
+                targetScene: STEPS[currentStep]?.scene || 1
+              }, '*');
+            } catch (e) {}
+          }
+        }
+      });
+
+      // ------------------------------------------------------------------
+      // Restore items back to accordion on desktop resize
+      // ------------------------------------------------------------------
+      function restoreToAccordion() {
+        // Pull whatever is in the content el back to its accordion parent
+        if (contentEl.children.length > 0) {
+          const prevStep = STEPS[currentStep];
+          const prevItem = accordionItems[prevStep?.idx];
+          if (prevItem && contentEl.firstChild) {
+            prevItem.appendChild(contentEl.firstChild);
+          }
+        }
+      }
+
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          const nowMobile = window.innerWidth < 1024;
+          if (nowMobile && !isMobile) {
+            isMobile = true;
+            goToStep(currentStep, true);
+          } else if (!nowMobile && isMobile) {
+            isMobile = false;
+            restoreToAccordion();
+          }
+        }, 120);
+      });
+
+      // ------------------------------------------------------------------
+      // Boot — call once after all other init is done
+      // ------------------------------------------------------------------
+      // We delay a tick so accordionItems populate correctly after
+      // restoreDraft() renders slots (Scene 6/7 dynamic content)
+      setTimeout(() => {
+        if (window.innerWidth < 1024) init();
+        else accordionItems = Array.from(document.querySelectorAll('#formPanel .accordion-item'));
+      }, 100);
+
+    })();
 
     // Boot
     initAuthUI();

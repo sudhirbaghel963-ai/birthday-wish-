@@ -2982,7 +2982,7 @@ Happy Birthday. I mean it.</textarea>
     function sanitizeRazorpayKey(raw) {
       let key = (typeof raw === 'string' ? raw : '').trim();
       if (!key || key.includes('your-key')) {
-        return 'rzp_test_TebJwughcMiesv';
+        return 'rzp_live_Tei1OOAhTauufy';
       }
       return key;
     }
@@ -3187,7 +3187,7 @@ Happy Birthday. I mean it.</textarea>
           }
 
           // 4. Configure & Open Razorpay Modal
-          const rzpKey = orderData.key_id || RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+          const rzpKey = orderData.key_id || RAZORPAY_KEY_ID || 'rzp_live_Tei1OOAhTauufy';
 
           const rzpOptions = {
             key: rzpKey,

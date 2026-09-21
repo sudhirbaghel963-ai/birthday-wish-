@@ -2978,9 +2978,18 @@ Happy Birthday. I mean it.</textarea>
     const FLAT_PRICE_INR = 100;
     const FLAT_PRICE_PAISE = 10000;
 
-    const RAZORPAY_KEY_ID = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_RAZORPAY_KEY_ID)
+    function sanitizeRazorpayKey(raw) {
+      let key = (typeof raw === 'string' ? raw : '').trim();
+      if (!key || key.includes('your-key')) {
+        return 'rzp_test_TebJwughcMiesv';
+      }
+      return key;
+    }
+
+    const RAW_RZP_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_RAZORPAY_KEY_ID)
       || (typeof window !== 'undefined' && window.__RAZORPAY_KEY_ID)
       || '';
+    const RAZORPAY_KEY_ID = sanitizeRazorpayKey(RAW_RZP_KEY);
 
     let razorpaySdkLoadingPromise = null;
     function loadRazorpaySdk() {

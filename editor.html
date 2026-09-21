@@ -1225,94 +1225,7 @@ Happy Birthday. I mean it.</textarea>
   </div>
 
 
-  <!-- ============================================================
-       MODAL: YOUR GIFT IS READY! (STEP 7: QR & SHARE)
-       ============================================================ -->
-  <div id="giftReadyModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-parchment-300 shadow-2xl space-y-6 text-center animate-in fade-in zoom-in-95 duration-200">
-      
-      <!-- Celebratory Header Badge -->
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 shadow-sm mx-auto">
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6L9 17l-5-5"/>
-        </svg>
-      </div>
 
-      <div class="space-y-1">
-        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ink-900">
-          Your Gift Is Ready!
-        </h2>
-        <p class="text-xs sm:text-sm text-ink-600 leading-relaxed max-w-md mx-auto">
-          Your personalized birthday film has been published and is permanently active for your recipient.
-        </p>
-      </div>
-
-      <!-- Shareable Link Box -->
-      <div class="space-y-2 text-left">
-        <label class="block text-xs font-bold uppercase tracking-wider text-ink-700">
-          Private Shareable Gift Link
-        </label>
-        <div class="flex items-center gap-2">
-          <input 
-            type="text" 
-            id="readyShareUrlInput" 
-            readonly 
-            class="flex-1 px-3.5 py-2.5 rounded-xl border border-parchment-300 bg-parchment-50 font-mono text-xs text-ink-900 focus:outline-none select-all"
-          />
-          <button 
-            type="button" 
-            id="btnCopyReadyLink" 
-            class="px-4 py-2.5 rounded-xl bg-velvet-900 hover:bg-rose-600 text-white font-semibold text-xs transition-colors flex-shrink-0 cursor-pointer shadow-xs"
-          >
-            Copy Link
-          </button>
-        </div>
-        <div id="copyToast" class="hidden text-xs text-emerald-600 font-semibold pt-0.5">
-          ✓ Link copied to clipboard!
-        </div>
-      </div>
-
-      <!-- QR Code Display -->
-      <div class="p-4 rounded-2xl bg-parchment-50 border border-parchment-200 flex flex-col items-center gap-3">
-        <div class="text-xs font-semibold text-ink-700">Scan QR Code or Print on Card:</div>
-        <div class="bg-white p-2.5 rounded-xl border border-parchment-300 shadow-xs">
-          <img id="readyQrImage" src="" alt="Gift QR Code" class="w-36 h-36 object-contain" />
-        </div>
-        <a id="btnDownloadQr" href="#" download="birthday-gift-qr.png" target="_blank" class="text-xs font-semibold text-rose-600 hover:text-rose-700 underline">
-          Download QR Code Image
-        </a>
-      </div>
-
-      <!-- Share Actions -->
-      <div class="space-y-2.5 pt-1">
-        <button 
-          type="button" 
-          id="btnShareWeb" 
-          class="w-full py-3 px-6 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-md shadow-rose-600/20 flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="18" cy="5" r="3"></circle>
-            <circle cx="6" cy="12" r="3"></circle>
-            <circle cx="18" cy="19" r="3"></circle>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-          </svg>
-          <span>Share via WhatsApp / Messages</span>
-        </button>
-
-        <div class="flex items-center justify-center gap-3 pt-2">
-          <a id="readyViewRecipientLink" href="#" target="_blank" class="text-xs font-semibold text-rose-600 hover:text-rose-700 underline">
-            View Public Film as Recipient ↗
-          </a>
-          <span class="text-parchment-300">•</span>
-          <a href="./dashboard.html" class="text-xs font-semibold text-ink-600 hover:text-ink-900 underline">
-            Go to My Gifts Dashboard
-          </a>
-        </div>
-      </div>
-
-    </div>
-  </div>
 
 
   <!-- ============================================================
@@ -2724,11 +2637,8 @@ Happy Birthday. I mean it.</textarea>
       orderModal?.classList.remove('flex');
     };
 
-    const readyModal = document.getElementById('giftReadyModal');
     const btnPublish = document.getElementById('btnTestModePublish');
     const btnPublishText = document.getElementById('btnPublishText');
-
-    let currentPublishedSlug = null;
 
     // Step 5: Enter Full-Screen Dedicated Review Mode on "Continue"
     if (continueBtn && reviewOverlay) {
@@ -2798,153 +2708,16 @@ Happy Birthday. I mean it.</textarea>
     document.getElementById('closeModalBtn')?.addEventListener('click', closeOrderModal);
     document.getElementById('closeModalBtn2')?.addEventListener('click', closeOrderModal);
 
-    // Step 7: Test Mode Publish Execution
-    /* TEST MODE PUBLISH: Calls complete_gift_payment SECURITY DEFINER RPC to transition status safely */
+    // Step 7: Publish & Payment Action (Temporary Placeholder)
+    // TODO: connect new publish / payment flow here
     if (btnPublish) {
-      btnPublish.addEventListener('click', async () => {
-        btnPublish.disabled = true;
-        if (btnPublishText) {
-          btnPublishText.innerHTML = `
-            <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-1"></span>
-            <span>Publishing Keepsake Film...</span>
-          `;
-        }
-
-        try {
-          if (!supabase) {
-            throw new Error('Supabase client is not initialized.');
-          }
-
-          // 1. Ensure latest draft state is upserted to database before payment transition
-          const draftPayload = {
-            id: draftId,
-            status: 'draft',
-            experience_id: expParam || 'birthday-film',
-            theme_id: editorState.themeId || 'paper',
-            content: editorState,
-            photo_urls: editorState.scenes?.scene6_wallOfUs?.photos || [],
-            clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
-            updated_at: new Date().toISOString()
-          };
-
-          if (currentUser && currentUser.id) {
-            draftPayload.owner_id = currentUser.id;
-          }
-
-          const { error: draftError } = await supabase
-            .from('gifts')
-            .upsert(draftPayload, { onConflict: 'id' });
-
-          if (draftError) {
-            console.error('Draft save before publish error:', draftError);
-            throw new Error(draftError.message || 'Failed to save draft state before publishing');
-          }
-
-          // 2. Call the elevated server-side function to complete payment & generate unique slug
-          const paymentId = 'test_pay_' + Date.now();
-          const pricePaid = 100.00;
-
-          const { data: giftData, error: rpcError } = await supabase
-            .rpc('complete_gift_payment', {
-              p_gift_id: draftId,
-              p_payment_id: paymentId,
-              p_price_paid: pricePaid
-            });
-
-          if (rpcError) {
-            console.error('complete_gift_payment RPC error:', rpcError);
-            throw new Error(rpcError.message || 'Payment completion RPC failed');
-          }
-
-          const publishedGift = giftData;
-          const slug = publishedGift?.slug;
-          if (!slug) {
-            throw new Error('Failed to obtain a valid gift link slug from server.');
-          }
-          currentPublishedSlug = slug;
-
-          // 3. Build public URL cleanly
-          const origin = window.location.origin;
-          const currentPath = window.location.pathname;
-          const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-          const shareUrl = `${origin}${basePath}gift.html?slug=${slug}`;
-
-          // 4. Populate Ready Modal
-          const shareInput = document.getElementById('readyShareUrlInput');
-          if (shareInput) shareInput.value = shareUrl;
-
-          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(shareUrl)}`;
-          const qrImg = document.getElementById('readyQrImage');
-          if (qrImg) qrImg.src = qrUrl;
-
-          const btnDownloadQr = document.getElementById('btnDownloadQr');
-          if (btnDownloadQr) btnDownloadQr.href = qrUrl;
-
-          const viewRecipientLink = document.getElementById('readyViewRecipientLink');
-          if (viewRecipientLink) viewRecipientLink.href = `./gift.html?slug=${slug}`;
-
-          // Close order modal and open ready modal
-          closeOrderModal();
-          readyModal?.classList.remove('hidden');
-          readyModal?.classList.add('flex');
-
-        } catch (err) {
-          console.error('Publish error:', err);
-          alert(`Could not complete publishing: ${err.message || 'Please check your connection and try again.'}`);
-        } finally {
-          btnPublish.disabled = false;
-          if (btnPublishText) {
-            btnPublishText.textContent = 'Confirm & Publish Gift (Test Mode — No Payment)';
-          }
-        }
-      });
+      btnPublish.disabled = true;
+      btnPublish.classList.add('opacity-50', 'cursor-not-allowed');
+      btnPublish.title = 'Publishing temporarily disabled pending payment gateway integration';
+      if (btnPublishText) {
+        btnPublishText.textContent = 'Publishing Temporarily Disabled';
+      }
     }
-
-    // Copy Ready Link Handler
-    document.getElementById('btnCopyReadyLink')?.addEventListener('click', async () => {
-      const shareInput = document.getElementById('readyShareUrlInput');
-      const copyToast = document.getElementById('copyToast');
-      if (shareInput) {
-        try {
-          await navigator.clipboard.writeText(shareInput.value);
-          if (copyToast) {
-            copyToast.classList.remove('hidden');
-            setTimeout(() => copyToast.classList.add('hidden'), 2500);
-          }
-        } catch (e) {
-          shareInput.select();
-          document.execCommand('copy');
-          if (copyToast) {
-            copyToast.classList.remove('hidden');
-            setTimeout(() => copyToast.classList.add('hidden'), 2500);
-          }
-        }
-      }
-    });
-
-    // Web Share API Handler
-    document.getElementById('btnShareWeb')?.addEventListener('click', async () => {
-      const shareInput = document.getElementById('readyShareUrlInput');
-      const shareUrl = shareInput?.value || window.location.href;
-      const recName = editorState.recipientName || 'Elena';
-      const shareData = {
-        title: `A Birthday Film for ${recName} ♥`,
-        text: `I made a special cinematic birthday film for you, ${recName}! Open your private link to experience it:`,
-        url: shareUrl
-      };
-
-      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-        try {
-          await navigator.share(shareData);
-        } catch (err) {
-          if (err.name !== 'AbortError') {
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`, '_blank');
-          }
-        }
-      } else {
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`, '_blank');
-      }
-    });
 
     // 21. Preview Frame Ready Listener
     window.addEventListener('message', (event) => {

@@ -55,6 +55,11 @@ const defaultGiftData = {
     scene1_act1: {
       eyebrow: "a little something, for you",
       hint: "pull & release",
+      kineticLine1: "Happy Birthday",
+      kineticSubtext: "to someone worth celebrating",
+      closingEyebrow: "and… make it count",
+      closingHero: "Happy Birthday",
+      closingSubtext: "here’s to a year that blooms",
       wishEyebrow: "and… make it count",
       wishHero: "Happy Birthday",
       wishSub: "here’s to a year that blooms",
@@ -168,6 +173,32 @@ function deepMergeGiftData(target, source) {
 window.GIFT_DATA = deepMergeGiftData(defaultGiftData, window.GIFT_DATA || {});
 
 const $ = (id) => document.getElementById(id);
+
+function splitWord(el){
+  if (!el) return [];
+  const chars = [...el.textContent];
+  el.textContent = '';
+  return chars.map((c) => {
+    const s = document.createElement('span');
+    s.className = 'hl__ch';
+    s.textContent = c === ' ' ? ' ' : c;
+    el.appendChild(s);
+    return s;
+  });
+}
+let line1Chars = [];
+let line2Chars = [];
+let kChars = [];
+
+function rebuildKineticChars(line1Str, line2Str){
+  const el1 = $('wLine1');
+  const el2 = $('wLine2');
+  if (el1 && typeof line1Str === 'string') el1.textContent = line1Str;
+  if (el2 && typeof line2Str === 'string') el2.textContent = line2Str;
+  if (el1) line1Chars = splitWord(el1);
+  if (el2) line2Chars = splitWord(el2);
+  kChars = [...line1Chars, ...line2Chars];
+}
 
 function applyGiftDataTheme(theme, explicitThemeId) {
   const urlParams = new URLSearchParams(window.location.search);
@@ -358,13 +389,47 @@ function populateStaticContent(data) {
 
   // --- Scene 1 ---
   const s1 = sc.scene1_act1 || {};
-  const elEyebrow = $('eyebrow'); if (elEyebrow && s1.eyebrow) elEyebrow.textContent = s1.eyebrow;
-  const elHint = $('hint'); if (elHint && s1.hint) elHint.textContent = s1.hint;
-  const elWEyebrow = $('wEyebrow'); if (elWEyebrow && s1.wishEyebrow) elWEyebrow.textContent = s1.wishEyebrow;
-  const elWHero = $('wHero'); if (elWHero && s1.wishHero) elWHero.textContent = s1.wishHero;
-  const elWSub = $('wSub'); if (elWSub && s1.wishSub) elWSub.textContent = s1.wishSub;
-  const elKEyebrow = $('kEyebrow'); if (elKEyebrow && s1.kEyebrow) elKEyebrow.textContent = s1.kEyebrow;
-  const elKSub = $('kSub'); if (elKSub && s1.kSub) elKSub.textContent = s1.kSub;
+  const recName = gd.recipientName || (gd.content && gd.content.recipientName) || 'Elena';
+
+  const elEyebrow = $('eyebrow');
+  if (elEyebrow && s1.eyebrow !== undefined) elEyebrow.textContent = s1.eyebrow;
+
+  const elHint = $('hint');
+  if (elHint && s1.hint !== undefined) elHint.textContent = s1.hint;
+
+  const elKEyebrow = $('kEyebrow');
+  if (elKEyebrow && (s1.kEyebrow !== undefined || s1.kineticEyebrow !== undefined)) {
+    elKEyebrow.textContent = s1.kineticEyebrow !== undefined ? s1.kineticEyebrow : s1.kEyebrow;
+  }
+
+  const kineticLine = s1.kineticLine1 !== undefined ? s1.kineticLine1 : (s1.kineticHeadline !== undefined ? s1.kineticHeadline : (s1.wishHero !== undefined ? s1.wishHero : 'Happy Birthday'));
+  if (kineticLine !== undefined) {
+    const parts = String(kineticLine).trim().split(/\s+/);
+    const line1Text = parts[0] || '';
+    const line2Text = parts.slice(1).join(' ') || '';
+    rebuildKineticChars(line1Text, line2Text);
+  }
+
+  const elKSub = $('kSub');
+  if (elKSub && (s1.kineticSubtext !== undefined || s1.kSub !== undefined)) {
+    elKSub.textContent = s1.kineticSubtext !== undefined ? s1.kineticSubtext : s1.kSub;
+  }
+
+  const elWEyebrow = $('wEyebrow');
+  if (elWEyebrow && (s1.closingEyebrow !== undefined || s1.wishEyebrow !== undefined)) {
+    elWEyebrow.textContent = s1.closingEyebrow !== undefined ? s1.closingEyebrow : s1.wishEyebrow;
+  }
+
+  const elWHero = $('wHero');
+  if (elWHero && (s1.closingHero !== undefined || s1.wishHero !== undefined)) {
+    const rawHero = s1.closingHero !== undefined ? s1.closingHero : s1.wishHero;
+    elWHero.textContent = String(rawHero).replace(/\{recipientName\}/gi, recName);
+  }
+
+  const elWSub = $('wSub');
+  if (elWSub && (s1.closingSubtext !== undefined || s1.wishSub !== undefined)) {
+    elWSub.textContent = s1.closingSubtext !== undefined ? s1.closingSubtext : s1.wishSub;
+  }
 
   // --- Scene 2 ---
   const s2 = sc.scene2_giftBox || {};
@@ -1102,21 +1167,10 @@ function drawFinal(){
    ACTS 1–3 (GSAP) — the bow, the shot, the wish
    ============================================================ */
 
-/* the two headline words become per-glyph spans so each hinges up on its own */
-function splitWord(el){
-  const chars = [...el.textContent];
-  el.textContent = '';
-  return chars.map((c) => {
-    const s = document.createElement('span');
-    s.className = 'hl__ch';
-    s.textContent = c === ' ' ? ' ' : c;
-    el.appendChild(s);
-    return s;
-  });
+/* Initialize per-glyph kinetic headline spans */
+if (!line1Chars.length && !line2Chars.length) {
+  rebuildKineticChars();
 }
-const line1Chars = splitWord($('wLine1'));
-const line2Chars = splitWord($('wLine2'));
-const kChars = [...line1Chars, ...line2Chars];
 
 /* drifting light motes behind the scene */
 function buildMotes(){

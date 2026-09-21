@@ -799,18 +799,26 @@
       const slug = getGiftSlug();
       const loadingScreen = document.getElementById('giftLoadingScreen');
       const invalidScreen = document.getElementById('invalidGiftScreen');
+      const filmContainer = document.getElementById('filmContainer');
 
-      if (!slug) {
+      const showInvalidScreen = () => {
         loadingScreen?.classList.add('hidden');
         invalidScreen?.classList.remove('hidden');
+        if (filmContainer) filmContainer.style.display = 'none';
+      };
+
+      if (!slug) {
+        showInvalidScreen();
         return;
       }
+
+      let gift = null;
 
       try {
         const cleanSlug = slug.toLowerCase().trim();
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanSlug);
 
-        // 1. First, search for paid gift matching slug or UUID
+        // 1. Search for paid gift matching slug or UUID
         let query = supabase.from('gifts').select('*');
         if (isUuid) {
           query = query.or(`slug.ilike.${cleanSlug},id.eq.${cleanSlug}`);
@@ -818,9 +826,13 @@
           query = query.ilike('slug', cleanSlug);
         }
 
-        let { data: gift, error } = await query
+        const { data: paidGift, error } = await query
           .eq('status', 'paid')
           .maybeSingle();
+
+        if (paidGift) {
+          gift = paidGift;
+        }
 
         // 2. If not found and input is a UUID, allow fallback to draft mode
         if (!gift && isUuid) {
@@ -844,82 +856,84 @@
             }
           } catch (e) {}
         }
-
-        if (!gift) {
-          if (error) console.warn('Supabase gift fetch warning:', error);
-          // If no gift found, show on-brand invalid gift card
-          loadingScreen?.classList.add('hidden');
-          invalidScreen?.classList.remove('hidden');
-          return;
-        }
-
-        // Parse content and normalize schema
-        const content = gift.content || gift.data || {};
-        const themeId = gift.theme_id || content.themeId || 'paper';
-        const expId = gift.experience_id || 'birthday-film';
-
-        const finalGiftData = {
-          recipientName: content.recipientName || 'Elena',
-          themeId: themeId,
-          experienceId: expId,
-          theme: content.theme || {
-            primaryColor: '#d4235c',
-            accentColor: themeId === 'glass' ? '#f3b749' : '#e8a23d'
-          },
-          scenes: content.scenes || {},
-          music: content.music || {
-            trackType: 'default',
-            customTrackUrl: null,
-            startSeconds: 27
-          },
-          photos: (content.scenes && content.scenes.scene6_wallOfUs && content.scenes.scene6_wallOfUs.photos) || gift.photo_urls || [null, null, null, null, null, null]
-        };
-
-        // Inject uploaded photos if present
-        if (gift.photo_urls && Array.isArray(gift.photo_urls)) {
-          if (!finalGiftData.scenes.scene6_wallOfUs) finalGiftData.scenes.scene6_wallOfUs = {};
-          finalGiftData.scenes.scene6_wallOfUs.photos = gift.photo_urls;
-        }
-
-        // Inject uploaded video clips if present
-        if (gift.clip_urls && Array.isArray(gift.clip_urls)) {
-          if (!finalGiftData.scenes.scene7_memoryReel) finalGiftData.scenes.scene7_memoryReel = {};
-          finalGiftData.scenes.scene7_memoryReel.clips = gift.clip_urls;
-        }
-
-        // Inject custom music if present
-        if (gift.music && typeof gift.music === 'object') {
-          finalGiftData.music = { ...finalGiftData.music, ...gift.music };
-        }
-
-        // Apply Theme to document
-        document.documentElement.setAttribute('data-theme', themeId);
-        document.body.className = 'theme-' + themeId;
-
-        // Set Dynamic Page Title & Social Meta
-        const recName = finalGiftData.recipientName || 'You';
-        document.title = `A Birthday Surprise for ${recName} ♥ — Velvet & Keepsake`;
-        const ogTitle = document.getElementById('ogTitle');
-        if (ogTitle) ogTitle.setAttribute('content', `A Birthday Surprise for ${recName} ♥`);
-        const ogDesc = document.getElementById('ogDesc');
-        if (ogDesc) ogDesc.setAttribute('content', `An intimate, 11-scene cinematic birthday celebration crafted with love for ${recName}.`);
-
-        // Inject into window.GIFT_DATA before loading birthday.js
-        window.GIFT_DATA = finalGiftData;
-
-        // Fade out loader
-        if (loadingScreen) {
-          loadingScreen.style.opacity = '0';
-          setTimeout(() => { loadingScreen.classList.add('hidden'); }, 600);
-        }
-
-        // Dynamically import birthday film engine
-        await import('./birthday.js');
-
       } catch (err) {
-        console.error('Error loading gift:', err);
-        loadingScreen?.classList.add('hidden');
-        invalidScreen?.classList.remove('hidden');
+        console.error('Error fetching gift from database:', err);
+      }
+
+      if (!gift) {
+        showInvalidScreen();
+        return;
+      }
+
+      // Valid gift confirmed — guarantee invalid screen stays hidden
+      invalidScreen?.classList.add('hidden');
+      if (filmContainer) filmContainer.style.display = '';
+
+      // Parse content and normalize schema
+      const content = gift.content || gift.data || {};
+      const themeId = gift.theme_id || content.themeId || 'paper';
+      const expId = gift.experience_id || 'birthday-film';
+
+      const finalGiftData = {
+        recipientName: content.recipientName || 'Elena',
+        themeId: themeId,
+        experienceId: expId,
+        theme: content.theme || {
+          primaryColor: '#d4235c',
+          accentColor: themeId === 'glass' ? '#f3b749' : '#e8a23d'
+        },
+        scenes: content.scenes || {},
+        music: content.music || {
+          trackType: 'default',
+          customTrackUrl: null,
+          startSeconds: 27
+        },
+        photos: (content.scenes && content.scenes.scene6_wallOfUs && content.scenes.scene6_wallOfUs.photos) || gift.photo_urls || [null, null, null, null, null, null]
+      };
+
+      // Inject uploaded photos if present
+      if (gift.photo_urls && Array.isArray(gift.photo_urls)) {
+        if (!finalGiftData.scenes.scene6_wallOfUs) finalGiftData.scenes.scene6_wallOfUs = {};
+        finalGiftData.scenes.scene6_wallOfUs.photos = gift.photo_urls;
+      }
+
+      // Inject uploaded video clips if present
+      if (gift.clip_urls && Array.isArray(gift.clip_urls)) {
+        if (!finalGiftData.scenes.scene7_memoryReel) finalGiftData.scenes.scene7_memoryReel = {};
+        finalGiftData.scenes.scene7_memoryReel.clips = gift.clip_urls;
+      }
+
+      // Inject custom music if present
+      if (gift.music && typeof gift.music === 'object') {
+        finalGiftData.music = { ...finalGiftData.music, ...gift.music };
+      }
+
+      // Apply Theme to document
+      document.documentElement.setAttribute('data-theme', themeId);
+      document.body.className = 'theme-' + themeId;
+
+      // Set Dynamic Page Title & Social Meta
+      const recName = finalGiftData.recipientName || 'You';
+      document.title = `A Birthday Surprise for ${recName} ♥ — Velvet & Keepsake`;
+      const ogTitle = document.getElementById('ogTitle');
+      if (ogTitle) ogTitle.setAttribute('content', `A Birthday Surprise for ${recName} ♥`);
+      const ogDesc = document.getElementById('ogDesc');
+      if (ogDesc) ogDesc.setAttribute('content', `An intimate, 11-scene cinematic birthday celebration crafted with love for ${recName}.`);
+
+      // Inject into window.GIFT_DATA before loading birthday.js
+      window.GIFT_DATA = finalGiftData;
+
+      // Fade out loader
+      if (loadingScreen) {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => { loadingScreen.classList.add('hidden'); }, 600);
+      }
+
+      // Load birthday film engine in isolated try/catch so film errors never trigger invalid screen
+      try {
+        await import('./birthday.js');
+      } catch (engineErr) {
+        console.error('Film engine warning:', engineErr);
       }
     }
 

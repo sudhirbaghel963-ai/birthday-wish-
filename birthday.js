@@ -192,9 +192,9 @@ function applyGiftDataTheme(theme, explicitThemeId) {
   const gold = theme.accentColor || theme.gold2 || (currentThemeId === 'glass' ? '#f3b749' : '#e8a23d');
 
   root.setProperty('--rose', rose);
-  root.setProperty('--rose-lift', theme.roseLift || shade(rose, 25));
-  root.setProperty('--rose-deep', theme.roseDeep || shade(rose, -35));
-  root.setProperty('--rose-mid', theme.roseMid || shade(rose, -15));
+  root.setProperty('--rose-lift', theme.roseLift || adjustColorLightness(rose, 25));
+  root.setProperty('--rose-deep', theme.roseDeep || adjustColorLightness(rose, -35));
+  root.setProperty('--rose-mid', theme.roseMid || adjustColorLightness(rose, -15));
   root.setProperty('--gold-1', theme.gold1 || (currentThemeId === 'glass' ? '#fce18b' : '#f5b838'));
   root.setProperty('--gold-2', gold);
   if (theme.wine) root.setProperty('--wine', theme.wine);

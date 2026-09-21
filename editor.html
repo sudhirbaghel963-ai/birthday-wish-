@@ -1207,6 +1207,12 @@ Happy Birthday. I mean it.</textarea>
         </div>
       </div>
 
+      <!-- Publish Error Notification -->
+      <div id="publishErrorAlert" class="hidden p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 items-start gap-2.5 animate-in fade-in">
+        <span class="text-base leading-none select-none">⚠️</span>
+        <div class="flex-1 font-medium" id="publishErrorMessage"></div>
+      </div>
+
       <div class="space-y-3">
         <!-- TEST MODE PUBLISH: In production, swap this click handler with Razorpay / Stripe checkout SDK -->
         <button id="btnTestModePublish" type="button" class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-velvet-900 via-velvet-800 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/25 flex items-center justify-center gap-2 transform hover:-translate-y-0.5 cursor-pointer">
@@ -1225,6 +1231,159 @@ Happy Birthday. I mean it.</textarea>
   </div>
 
 
+  <!-- ============================================================
+       MODAL: YOUR GIFT IS READY! (SHARE & QR CODE)
+       ============================================================ -->
+  <div id="giftReadyModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-parchment-300 shadow-2xl space-y-6 text-center animate-in fade-in zoom-in-95 duration-200 relative overflow-hidden">
+      
+      <!-- Celebratory Ambient Glow -->
+      <div class="absolute -top-24 -left-24 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-gold-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Valid Slug State Container -->
+      <div id="readyValidContent" class="space-y-6">
+        <!-- Celebratory Badge -->
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-600 border border-emerald-200 shadow-inner mx-auto relative">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          <span class="absolute -top-1 -right-1 text-gold-500 text-sm">✦</span>
+        </div>
+
+        <div class="space-y-1.5">
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ink-900">
+            Your Gift Is Ready!
+          </h2>
+          <p class="text-xs sm:text-sm text-ink-600 leading-relaxed max-w-md mx-auto" id="readyRecipientGreeting">
+            Your personalized keepsake film has been published and is permanently active.
+          </p>
+        </div>
+
+        <!-- Shareable Link Box -->
+        <div class="space-y-2 text-left">
+          <div class="flex items-center justify-between">
+            <label class="block text-xs font-bold uppercase tracking-wider text-ink-700">
+              Private Shareable Gift Link
+            </label>
+            <span class="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              ● Active &amp; Live
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <input 
+              type="text" 
+              id="readyShareUrlInput" 
+              readonly 
+              class="flex-1 px-3.5 py-2.5 rounded-xl border border-parchment-300 bg-parchment-50 font-mono text-xs text-ink-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 select-all"
+            />
+            <button 
+              type="button" 
+              id="btnCopyReadyLink" 
+              class="px-4 py-2.5 rounded-xl bg-velvet-900 hover:bg-rose-600 text-white font-semibold text-xs transition-all flex-shrink-0 cursor-pointer shadow-xs flex items-center gap-1.5"
+            >
+              <svg id="copyIcon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span id="copyBtnText">Copy Link</span>
+            </button>
+          </div>
+          
+          <div id="copyToast" class="hidden text-xs text-emerald-600 font-semibold pt-0.5 flex items-center gap-1">
+            <span>✓</span> <span>Link copied to clipboard!</span>
+          </div>
+        </div>
+
+        <!-- QR Code Display (Generated Client-Side with High-Contrast Canvas) -->
+        <div class="p-4 rounded-2xl bg-parchment-50 border border-parchment-200 flex flex-col items-center gap-3">
+          <div class="text-xs font-semibold text-ink-700">Scan QR Code or Print on Card:</div>
+          <div class="bg-white p-3 rounded-2xl border border-parchment-300 shadow-sm flex items-center justify-center">
+            <canvas id="readyQrCanvas" class="w-36 h-36 max-w-full rounded-lg"></canvas>
+          </div>
+          <button 
+            type="button" 
+            id="btnDownloadQr" 
+            class="text-xs font-semibold text-rose-600 hover:text-rose-700 underline flex items-center gap-1.5 cursor-pointer"
+          >
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Download QR Code Image (PNG)</span>
+          </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-3 pt-1">
+          <!-- Web Share API Button -->
+          <button 
+            type="button" 
+            id="btnShareWeb" 
+            class="w-full py-3 px-6 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-md shadow-rose-600/20 flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span id="btnShareText">Share Link</span>
+          </button>
+
+          <!-- Persistent Note -->
+          <p class="text-[11px] text-ink-500 leading-normal pt-1">
+            ✦ This link is yours to keep — you can always find it again from your <a href="./dashboard.html" class="underline text-rose-600 hover:text-rose-700 font-medium">dashboard</a>.
+          </p>
+
+          <div class="flex items-center justify-center gap-3 pt-1 border-t border-parchment-200">
+            <a id="readyViewRecipientLink" href="#" target="_blank" class="text-xs font-semibold text-rose-600 hover:text-rose-700 underline">
+              View Public Film as Recipient ↗
+            </a>
+            <span class="text-parchment-300">•</span>
+            <a href="./dashboard.html" class="text-xs font-semibold text-ink-600 hover:text-ink-900 underline">
+              Go to My Gifts Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fallback Container for Missing / Invalid Slug -->
+      <div id="readyFallbackContent" class="hidden space-y-5 py-4">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-amber-50 text-amber-600 border border-amber-200 shadow-sm mx-auto">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+
+        <div class="space-y-2">
+          <h3 class="font-serif text-xl font-bold text-ink-900">
+            Gift Link Not Found
+          </h3>
+          <p class="text-xs sm:text-sm text-ink-600 max-w-sm mx-auto">
+            We couldn't find your gift's link — check My Gifts to find it again.
+          </p>
+        </div>
+
+        <div class="pt-2">
+          <a 
+            href="./dashboard.html" 
+            class="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-velvet-900 hover:bg-rose-600 text-white font-semibold text-xs transition-colors shadow-xs"
+          >
+            Go to My Gifts Dashboard
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
 
 
 
@@ -1233,6 +1392,7 @@ Happy Birthday. I mean it.</textarea>
        ============================================================ -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    import QRCode from 'qrcode';
 
     function sanitizeSupabaseUrl(raw) {
       let url = (typeof raw === 'string' ? raw : '').trim();
@@ -2708,16 +2868,341 @@ Happy Birthday. I mean it.</textarea>
     document.getElementById('closeModalBtn')?.addEventListener('click', closeOrderModal);
     document.getElementById('closeModalBtn2')?.addEventListener('click', closeOrderModal);
 
-    // Step 7: Publish & Payment Action (Temporary Placeholder)
-    // TODO: connect new publish / payment flow here
-    if (btnPublish) {
-      btnPublish.disabled = true;
-      btnPublish.classList.add('opacity-50', 'cursor-not-allowed');
-      btnPublish.title = 'Publishing temporarily disabled pending payment gateway integration';
-      if (btnPublishText) {
-        btnPublishText.textContent = 'Publishing Temporarily Disabled';
+    // ================================================================
+    // Step 7: "Your Gift Is Ready" Screen & Publish Controller
+    // ================================================================
+    const readyModal = document.getElementById('giftReadyModal');
+    const readyValidContent = document.getElementById('readyValidContent');
+    const readyFallbackContent = document.getElementById('readyFallbackContent');
+    const publishErrorAlert = document.getElementById('publishErrorAlert');
+    const publishErrorMessage = document.getElementById('publishErrorMessage');
+    const readyShareUrlInput = document.getElementById('readyShareUrlInput');
+    const readyRecipientGreeting = document.getElementById('readyRecipientGreeting');
+    const readyViewRecipientLink = document.getElementById('readyViewRecipientLink');
+    const readyQrCanvas = document.getElementById('readyQrCanvas');
+    const btnCopyReadyLink = document.getElementById('btnCopyReadyLink');
+    const copyBtnText = document.getElementById('copyBtnText');
+    const copyToast = document.getElementById('copyToast');
+    const btnShareWeb = document.getElementById('btnShareWeb');
+    const btnDownloadQr = document.getElementById('btnDownloadQr');
+
+    let currentPublishedSlug = null;
+
+    /**
+     * Constructs public shareable URL for a given slug
+     */
+    function getShareableGiftUrl(slug) {
+      const origin = window.location.origin;
+      const pathname = window.location.pathname;
+      const basePath = pathname.substring(0, pathname.lastIndexOf('/') + 1);
+      return `${origin}${basePath}gift.html?slug=${encodeURIComponent(slug)}`;
+    }
+
+    /**
+     * Client-side QR Code Generator using lightweight QRCode library on canvas
+     */
+    async function renderQrCodeCanvas(url) {
+      if (!readyQrCanvas) return;
+      try {
+        await QRCode.toCanvas(readyQrCanvas, url, {
+          width: 280,
+          margin: 2,
+          color: {
+            dark: '#1c1917',   // Rich velvet dark charcoal for 100% scanner contrast
+            light: '#ffffff'   // Clean white background
+          },
+          errorCorrectionLevel: 'M'
+        });
+      } catch (err) {
+        console.error('Failed to render client-side QR code:', err);
       }
     }
+
+    /**
+     * Displays the celebratory Gift Ready screen
+     */
+    async function openGiftReadyModal(slug, recipientName) {
+      if (!readyModal) return;
+
+      if (!slug || typeof slug !== 'string' || slug.trim().length < 3) {
+        showGiftReadyFallback();
+        return;
+      }
+
+      const cleanSlug = slug.trim();
+      currentPublishedSlug = cleanSlug;
+      const shareUrl = getShareableGiftUrl(cleanSlug);
+      const recName = recipientName || editorState.recipientName || 'Elena';
+
+      // Set visible content states
+      if (readyValidContent) readyValidContent.classList.remove('hidden');
+      if (readyFallbackContent) readyFallbackContent.classList.add('hidden');
+
+      if (readyShareUrlInput) readyShareUrlInput.value = shareUrl;
+      if (readyRecipientGreeting) {
+        readyRecipientGreeting.textContent = `A personalized cinematic birthday film for ${recName} is published and permanently live.`;
+      }
+      if (readyViewRecipientLink) {
+        readyViewRecipientLink.href = shareUrl;
+      }
+
+      // Render client-side QR code
+      await renderQrCodeCanvas(shareUrl);
+
+      // Open Modal
+      closeOrderModal();
+      readyModal.classList.remove('hidden');
+      readyModal.classList.add('flex');
+    }
+
+    /**
+     * Fallback display if navigated directly with missing or corrupt slug
+     */
+    function showGiftReadyFallback() {
+      if (!readyModal) return;
+      if (readyValidContent) readyValidContent.classList.add('hidden');
+      if (readyFallbackContent) readyFallbackContent.classList.remove('hidden');
+      closeOrderModal();
+      readyModal.classList.remove('hidden');
+      readyModal.classList.add('flex');
+    }
+
+    /**
+     * Invokes the Supabase Edge Function `publish-gift`
+     */
+    async function invokePublishEdgeFunction(giftId) {
+      // 1. First try Supabase SDK Functions Invoke
+      try {
+        if (supabase && supabase.functions) {
+          const { data, error } = await supabase.functions.invoke('publish-gift', {
+            body: { id: giftId }
+          });
+          if (!error && data && data.slug) {
+            return { data, error: null };
+          }
+          if (error) {
+            let msg = error.message;
+            if (error.context && typeof error.context.json === 'function') {
+              try {
+                const ctx = await error.context.json();
+                if (ctx && ctx.error) msg = ctx.error;
+              } catch (_) {}
+            }
+            return { data: null, error: new Error(msg || 'Publish edge function failed.') };
+          }
+        }
+      } catch (invokeErr) {
+        console.warn('supabase.functions.invoke exception, falling back to direct HTTP fetch:', invokeErr);
+      }
+
+      // 2. Direct HTTP Fetch Fallback
+      const endpoint = `${SUPABASE_URL}/functions/v1/publish-gift`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${currentUser?.access_token || SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({ id: giftId })
+      });
+
+      const json = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const errorMsg = json.error || json.message || `Publish service returned HTTP ${response.status}`;
+        return { data: null, error: new Error(errorMsg) };
+      }
+
+      return { data: json, error: null };
+    }
+
+    // Connect Confirm & Get Link button
+    if (btnPublish) {
+      btnPublish.disabled = false;
+      btnPublish.classList.remove('opacity-50', 'cursor-not-allowed');
+      btnPublish.title = 'Confirm and get your shareable link';
+      if (btnPublishText) {
+        btnPublishText.textContent = 'Confirm & Get Link';
+      }
+
+      btnPublish.addEventListener('click', async () => {
+        // Clear any previous error
+        if (publishErrorAlert) publishErrorAlert.classList.add('hidden');
+
+        // Set Loading State
+        btnPublish.disabled = true;
+        btnPublish.classList.add('opacity-75', 'cursor-not-allowed');
+        if (btnPublishText) {
+          btnPublishText.innerHTML = `
+            <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-1.5"></span>
+            <span>Publishing Keepsake Film...</span>
+          `;
+        }
+
+        try {
+          if (!supabase) {
+            throw new Error('Supabase client is not connected.');
+          }
+
+          // 1. Ensure latest editor draft is saved before publishing
+          const draftPayload = {
+            id: draftId,
+            status: 'draft',
+            experience_id: expParam || 'birthday-film',
+            theme_id: editorState.themeId || 'paper',
+            content: editorState,
+            photo_urls: editorState.scenes?.scene6_wallOfUs?.photos || [],
+            clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
+            updated_at: new Date().toISOString()
+          };
+
+          if (currentUser && currentUser.id) {
+            draftPayload.owner_id = currentUser.id;
+          }
+
+          const { error: draftError } = await supabase
+            .from('gifts')
+            .upsert(draftPayload, { onConflict: 'id' });
+
+          if (draftError) {
+            console.error('Draft save before publish failed:', draftError);
+            throw new Error(draftError.message || 'Failed to save latest draft.');
+          }
+
+          // 2. Call the server-side publish-gift Edge Function
+          const { data: publishData, error: publishErr } = await invokePublishEdgeFunction(draftId);
+
+          if (publishErr || !publishData || !publishData.slug) {
+            const errMsg = publishErr?.message || 'Server did not return a valid gift link slug.';
+            throw new Error(errMsg);
+          }
+
+          // 3. Transition to "Your Gift Is Ready" Screen
+          await openGiftReadyModal(publishData.slug, editorState.recipientName);
+
+        } catch (err) {
+          console.error('Publish error:', err);
+          // Keep customer on Order Summary and display specific error
+          if (publishErrorAlert && publishErrorMessage) {
+            publishErrorMessage.textContent = err.message || 'Could not complete publishing. Please check your connection and try again.';
+            publishErrorAlert.classList.remove('hidden');
+            publishErrorAlert.classList.add('flex');
+          }
+        } finally {
+          btnPublish.disabled = false;
+          btnPublish.classList.remove('opacity-75', 'cursor-not-allowed');
+          if (btnPublishText) {
+            btnPublishText.textContent = 'Confirm & Get Link';
+          }
+        }
+      });
+    }
+
+    // Copy Link Handler with Visual Confirmation
+    btnCopyReadyLink?.addEventListener('click', async () => {
+      const shareUrl = readyShareUrlInput?.value;
+      if (!shareUrl) return;
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(shareUrl);
+        } else {
+          readyShareUrlInput.select();
+          document.execCommand('copy');
+        }
+
+        // Visual confirmation state
+        if (copyBtnText) copyBtnText.textContent = '✓ Copied!';
+        if (btnCopyReadyLink) {
+          btnCopyReadyLink.classList.remove('bg-velvet-900', 'hover:bg-rose-600');
+          btnCopyReadyLink.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+        }
+        if (copyToast) copyToast.classList.remove('hidden');
+
+        setTimeout(() => {
+          if (copyBtnText) copyBtnText.textContent = 'Copy Link';
+          if (btnCopyReadyLink) {
+            btnCopyReadyLink.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+            btnCopyReadyLink.classList.add('bg-velvet-900', 'hover:bg-rose-600');
+          }
+          if (copyToast) copyToast.classList.add('hidden');
+        }, 2500);
+
+      } catch (e) {
+        readyShareUrlInput.select();
+        document.execCommand('copy');
+        if (copyToast) copyToast.classList.remove('hidden');
+        setTimeout(() => copyToast?.classList.add('hidden'), 2500);
+      }
+    });
+
+    // Native Web Share API Handler with Fallback
+    btnShareWeb?.addEventListener('click', async () => {
+      const shareUrl = readyShareUrlInput?.value || window.location.href;
+      const recName = editorState.recipientName || 'Elena';
+      const shareData = {
+        title: `A Birthday Keepsake for ${recName} ♥`,
+        text: `I made something special for you 🎂`,
+        url: shareUrl
+      };
+
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        try {
+          await navigator.share(shareData);
+          return;
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            // fallback if share was rejected
+          } else {
+            return;
+          }
+        }
+      }
+
+      // Fallback for desktop / unsupported browsers: Copy link + WhatsApp fallback
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        if (copyToast) {
+          copyToast.innerHTML = '<span>✓</span> <span>Link copied! Opening WhatsApp...</span>';
+          copyToast.classList.remove('hidden');
+          setTimeout(() => copyToast.classList.add('hidden'), 2500);
+        }
+      } catch (e) {}
+
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareData.text + ' ' + shareUrl)}`;
+      window.open(whatsappUrl, '_blank');
+    });
+
+    // Download QR Code Handler (Exports Client-Side Canvas to PNG)
+    btnDownloadQr?.addEventListener('click', () => {
+      if (!readyQrCanvas) return;
+      try {
+        const dataUrl = readyQrCanvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `birthday-film-qr-${currentPublishedSlug || 'gift'}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch (err) {
+        console.error('Failed to export QR code PNG:', err);
+      }
+    });
+
+    // Direct Navigation / Page Refresh Reliability Check
+    (function checkDirectReadyNavigation() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramSlug = urlParams.get('slug');
+      const isReadyParam = urlParams.get('ready') === 'true' || urlParams.get('published') === 'true';
+
+      if (isReadyParam || (paramSlug && paramSlug.length >= 3 && !urlParams.get('id'))) {
+        if (paramSlug && paramSlug.length >= 3) {
+          openGiftReadyModal(paramSlug, editorState.recipientName);
+        } else {
+          showGiftReadyFallback();
+        }
+      }
+    })();
 
     // 21. Preview Frame Ready Listener
     window.addEventListener('message', (event) => {

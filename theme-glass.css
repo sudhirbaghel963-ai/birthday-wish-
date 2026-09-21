@@ -471,8 +471,15 @@ body.theme-glass {
 
 [data-theme="glass"] .memory-frame .frame-caption,
 .theme-glass .memory-frame .frame-caption {
-  color: #f3e8ff !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+  color: #fff8f1 !important;
+  background: rgba(28, 12, 40, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
 }
 
 [data-theme="glass"] .memory-closing-title,

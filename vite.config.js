@@ -5,13 +5,28 @@ export default defineConfig({
   base: './',
   plugins: [
     {
-      name: 'gift-slug-router',
+      name: 'clean-url-and-gift-router',
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
-          if (req.url && (req.url.startsWith('/gift/') || req.url.startsWith('/view/')) && !req.url.includes('.')) {
-            const parts = req.url.split('/');
-            const slug = parts[parts.length - 1].split('?')[0];
-            req.url = `/gift.html?slug=${encodeURIComponent(slug)}`;
+          if (req.url) {
+            const [pathname, search] = req.url.split('?');
+            const query = search ? `?${search}` : '';
+
+            // Handle /gift/:slug and /view/:slug
+            if ((pathname.startsWith('/gift/') || pathname.startsWith('/view/')) && !pathname.includes('.')) {
+              const parts = pathname.split('/');
+              const slug = parts[parts.length - 1];
+              req.url = `/gift.html?slug=${encodeURIComponent(slug)}${search ? '&' + search : ''}`;
+              return next();
+            }
+
+            // Handle clean URLs: /admin -> /admin.html, /login -> /login.html, etc.
+            const cleanRoutes = ['admin', 'login', 'dashboard', 'editor', 'create', 'gift', 'preview', 'terms', 'privacy'];
+            const match = pathname.replace(/^\//, '').replace(/\/$/, '');
+            if (cleanRoutes.includes(match)) {
+              req.url = `/${match}.html${query}`;
+              return next();
+            }
           }
           next();
         });

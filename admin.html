@@ -1119,7 +1119,7 @@
       }
     }
 
-    // 11. Render Experiences & Pricing Catalog Editor
+    // 11. Render Experiences Catalog (Visibility Management & Fixed Flat Pricing)
     function renderExperiencesAdmin() {
       const container = document.getElementById('experiencesAdminContainer');
       if (!container) return;
@@ -1138,15 +1138,12 @@
 
           <p class="text-xs text-slate-500">${exp.tagline || exp.description || ''}</p>
 
-          <div class="grid grid-cols-2 gap-3 pt-2">
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
             <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Active Price</label>
-              <input type="text" class="exp-price-input w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-800 focus:border-slate-900 focus:outline-none" value="${exp.price}" />
+              <span class="text-[10px] uppercase font-bold text-slate-400 block">Platform Pricing Model</span>
+              <span class="font-bold text-slate-800">Fixed Flat Rate: ₹100.00</span>
             </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Original Price (Strike)</label>
-              <input type="text" class="exp-orig-price-input w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-500 focus:border-slate-900 focus:outline-none" value="${exp.original_price || '₹199'}" />
-            </div>
+            <span class="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Universal Rate</span>
           </div>
 
           <div class="flex items-center justify-between pt-3 border-t border-slate-100">
@@ -1156,7 +1153,7 @@
             </label>
 
             <button type="button" class="btn-save-exp px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors shadow-2xs">
-              Save Changes
+              Save Visibility
             </button>
           </div>
         </div>
@@ -1167,8 +1164,6 @@
         btn.addEventListener('click', async (e) => {
           const card = e.target.closest('[data-exp-id]');
           const expId = card.getAttribute('data-exp-id');
-          const price = card.querySelector('.exp-price-input').value.trim();
-          const origPrice = card.querySelector('.exp-orig-price-input').value.trim();
           const isActive = card.querySelector('.exp-active-toggle').checked;
 
           btn.textContent = 'Saving...';
@@ -1179,8 +1174,6 @@
                 .from('experiences')
                 .upsert({
                   id: expId,
-                  price: price,
-                  original_price: origPrice,
                   is_active: isActive,
                   updated_at: new Date().toISOString()
                 });
@@ -1188,19 +1181,17 @@
               if (!error) {
                 const target = allExperiences.find(x => x.id === expId);
                 if (target) {
-                  target.price = price;
-                  target.original_price = origPrice;
                   target.is_active = isActive;
                 }
                 btn.textContent = 'Saved ✓';
-                setTimeout(() => { btn.textContent = 'Save Changes'; renderExperiencesAdmin(); }, 1200);
+                setTimeout(() => { btn.textContent = 'Save Visibility'; renderExperiencesAdmin(); }, 1200);
                 return;
               }
             } catch (err) {}
           }
 
           btn.textContent = 'Saved (Local)';
-          setTimeout(() => { btn.textContent = 'Save Changes'; }, 1200);
+          setTimeout(() => { btn.textContent = 'Save Visibility'; }, 1200);
         });
       });
     }

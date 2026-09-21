@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS public.gifts (
     photo_urls JSONB NOT NULL DEFAULT '[]'::jsonb,
     clip_urls JSONB NOT NULL DEFAULT '[]'::jsonb,
     music JSONB NOT NULL DEFAULT '{}'::jsonb,
+    razorpay_order_id TEXT,
     razorpay_payment_id TEXT,
+    razorpay_signature TEXT,
     price_paid NUMERIC(10, 2),
 
     CONSTRAINT chk_gifts_status CHECK (status IN ('draft', 'paid')),
@@ -33,6 +35,7 @@ CREATE TABLE IF NOT EXISTS public.gifts (
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_gifts_slug ON public.gifts(slug) WHERE slug IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_gifts_owner_id ON public.gifts(owner_id) WHERE owner_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_gifts_razorpay_order_id ON public.gifts(razorpay_order_id) WHERE razorpay_order_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_gifts_status_updated ON public.gifts(status, updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_gifts_refunded ON public.gifts(refunded) WHERE refunded IS TRUE;
 

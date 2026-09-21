@@ -1214,11 +1214,18 @@ Happy Birthday. I mean it.</textarea>
       </div>
 
       <div class="space-y-3">
-        <!-- TEST MODE PUBLISH: In production, swap this click handler with Razorpay / Stripe checkout SDK -->
+        <!-- Razorpay Secure Checkout Button -->
         <button id="btnTestModePublish" type="button" class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-velvet-900 via-velvet-800 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/25 flex items-center justify-center gap-2 transform hover:-translate-y-0.5 cursor-pointer">
-          <span id="btnPublishText">Confirm &amp; Publish Gift (Test Mode — No Payment)</span>
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          <span id="btnPublishText">Pay Now · ₹100</span>
           <span class="text-gold-300">✦</span>
         </button>
+
+        <div class="flex items-center justify-center gap-2 text-[11px] text-ink-400">
+          <span>🔒 256-bit SSL Encrypted</span>
+          <span>•</span>
+          <span>Razorpay Secure</span>
+        </div>
 
         <div class="flex items-center justify-center gap-4 text-xs text-ink-500">
           <button id="closeModalBtn2" type="button" class="text-ink-600 hover:text-ink-900 underline cursor-pointer">
@@ -2967,27 +2974,57 @@ Happy Birthday. I mean it.</textarea>
       readyModal.classList.add('flex');
     }
 
+    // Single Flat Pricing Constant: ₹100 = 10,000 paise
+    const FLAT_PRICE_INR = 100;
+    const FLAT_PRICE_PAISE = 10000;
+
+    const RAZORPAY_KEY_ID = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_RAZORPAY_KEY_ID)
+      || (typeof window !== 'undefined' && window.__RAZORPAY_KEY_ID)
+      || '';
+
+    let razorpaySdkLoadingPromise = null;
+    function loadRazorpaySdk() {
+      if (window.Razorpay) return Promise.resolve(window.Razorpay);
+      if (razorpaySdkLoadingPromise) return razorpaySdkLoadingPromise;
+
+      razorpaySdkLoadingPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.async = true;
+        script.onload = () => resolve(window.Razorpay);
+        script.onerror = () => {
+          razorpaySdkLoadingPromise = null;
+          reject(new Error('Failed to load Razorpay payment gateway. Please check your internet connection and try again.'));
+        };
+        document.head.appendChild(script);
+      });
+      return razorpaySdkLoadingPromise;
+    }
+
     /**
-     * Invokes the publish service (Edge Function or PostgreSQL RPC)
+     * Creates a server-side Razorpay Order via create-razorpay-order Edge Function
      */
-    async function invokePublishEdgeFunction(giftId) {
-      // 1. Attempt Edge Function invocation via Supabase SDK
+    async function createRazorpayOrder(giftId) {
+      // 1. Invoke via Supabase SDK Functions client
       try {
         if (supabase && supabase.functions) {
-          const { data, error } = await supabase.functions.invoke('publish-gift', {
-            body: { id: giftId }
+          const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
+            body: { gift_id: giftId }
           });
-          if (!error && data && data.slug) {
+          if (!error && data && (data.order_id || data.already_paid)) {
             return { data, error: null };
+          }
+          if (error) {
+            console.warn('[payment] create-razorpay-order SDK invoke error:', error);
           }
         }
       } catch (invokeErr) {
-        console.warn('[publish] Edge function invoke not reachable:', invokeErr);
+        console.warn('[payment] create-razorpay-order invoke exception:', invokeErr);
       }
 
-      // 2. Direct HTTP Fetch to Edge Function endpoint
+      // 2. Direct HTTP endpoint fetch fallback
       try {
-        const endpoint = `${SUPABASE_URL}/functions/v1/publish-gift`;
+        const endpoint = `${SUPABASE_URL}/functions/v1/create-razorpay-order`;
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
@@ -2995,52 +3032,79 @@ Happy Birthday. I mean it.</textarea>
             'apikey': SUPABASE_ANON_KEY,
             'Authorization': `Bearer ${currentUser?.access_token || SUPABASE_ANON_KEY}`
           },
-          body: JSON.stringify({ id: giftId })
+          body: JSON.stringify({ gift_id: giftId })
         });
 
-        if (response.ok) {
-          const json = await response.json();
-          if (json && json.slug) {
-            return { data: json, error: null };
-          }
+        const json = await response.json();
+        if (response.ok && json && (json.order_id || json.already_paid)) {
+          return { data: json, error: null };
         }
+        return { data: null, error: new Error(json?.error || `Order initialization failed (${response.status})`) };
       } catch (fetchErr) {
-        console.warn('[publish] Direct edge fetch error:', fetchErr);
+        console.warn('[payment] Direct create-razorpay-order fetch error:', fetchErr);
+        return { data: null, error: fetchErr };
       }
-
-      // 3. Elevated Database SECURITY DEFINER RPC fallback
-      try {
-        console.log('[publish] Transitioning status via complete_gift_payment RPC...');
-        const { data: rpcData, error: rpcError } = await supabase
-          .rpc('complete_gift_payment', {
-            p_gift_id: giftId,
-            p_payment_id: 'order_pub_' + Date.now(),
-            p_price_paid: 100.00
-          });
-
-        if (rpcError) {
-          console.error('[publish] RPC error:', rpcError);
-          return { data: null, error: new Error(rpcError.message || 'Database payment RPC failed') };
-        }
-
-        if (rpcData && rpcData.slug) {
-          return { data: rpcData, error: null };
-        }
-      } catch (rpcErr) {
-        console.error('[publish] Unexpected RPC exception:', rpcErr);
-        return { data: null, error: new Error(rpcErr.message || 'Publish operation failed') };
-      }
-
-      return { data: null, error: new Error('Unable to publish gift. Please try again.') };
     }
 
-    // Connect Confirm & Get Link button
+    /**
+     * Verifies Razorpay HMAC-SHA256 signature server-side via verify-razorpay-payment Edge Function
+     */
+    async function verifyRazorpayPayment(giftId, rzpResponse) {
+      const payload = {
+        gift_id: giftId,
+        razorpay_order_id: rzpResponse.razorpay_order_id,
+        razorpay_payment_id: rzpResponse.razorpay_payment_id,
+        razorpay_signature: rzpResponse.razorpay_signature
+      };
+
+      // 1. Invoke via Supabase SDK Functions client
+      try {
+        if (supabase && supabase.functions) {
+          const { data, error } = await supabase.functions.invoke('verify-razorpay-payment', {
+            body: payload
+          });
+          if (!error && data && data.slug) {
+            return { data, error: null };
+          }
+          if (error) {
+            console.warn('[payment] verify-razorpay-payment SDK invoke error:', error);
+          }
+        }
+      } catch (invokeErr) {
+        console.warn('[payment] verify-razorpay-payment invoke exception:', invokeErr);
+      }
+
+      // 2. Direct HTTP endpoint fetch fallback
+      try {
+        const endpoint = `${SUPABASE_URL}/functions/v1/verify-razorpay-payment`;
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${currentUser?.access_token || SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const json = await response.json();
+        if (response.ok && json && json.slug) {
+          return { data: json, error: null };
+        }
+        return { data: null, error: new Error(json?.error || `Payment verification failed (${response.status})`) };
+      } catch (fetchErr) {
+        console.warn('[payment] Direct verify-razorpay-payment fetch error:', fetchErr);
+        return { data: null, error: fetchErr };
+      }
+    }
+
+    // Connect Pay Now Razorpay Checkout button
     if (btnPublish) {
       btnPublish.disabled = false;
       btnPublish.classList.remove('opacity-50', 'cursor-not-allowed');
-      btnPublish.title = 'Confirm and get your shareable link';
+      btnPublish.title = `Pay ₹${FLAT_PRICE_INR} & get your shareable link`;
       if (btnPublishText) {
-        btnPublishText.textContent = 'Confirm & Get Link';
+        btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
       }
 
       btnPublish.addEventListener('click', async () => {
@@ -3053,16 +3117,16 @@ Happy Birthday. I mean it.</textarea>
         if (btnPublishText) {
           btnPublishText.innerHTML = `
             <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-1.5"></span>
-            <span>Publishing Keepsake Film...</span>
+            <span>Preparing Checkout...</span>
           `;
         }
 
         try {
           if (!supabase) {
-            throw new Error('Supabase client is not connected.');
+            throw new Error('Database client is not connected. Please check your network.');
           }
 
-          // 1. Ensure latest editor draft is saved before publishing
+          // 1. Ensure latest editor draft state is saved before payment
           const draftPayload = {
             id: draftId,
             status: 'draft',
@@ -3083,34 +3147,138 @@ Happy Birthday. I mean it.</textarea>
             .upsert(draftPayload, { onConflict: 'id' });
 
           if (draftError) {
-            console.error('Draft save before publish failed:', draftError);
+            console.error('Draft save before payment failed:', draftError);
             throw new Error(draftError.message || 'Failed to save latest draft.');
           }
 
-          // 2. Call the server-side publish-gift Edge Function
-          const { data: publishData, error: publishErr } = await invokePublishEdgeFunction(draftId);
+          // 2. Call the server-side create-razorpay-order Edge Function
+          const { data: orderData, error: orderErr } = await createRazorpayOrder(draftId);
 
-          if (publishErr || !publishData || !publishData.slug) {
-            const errMsg = publishErr?.message || 'Server did not return a valid gift link slug.';
+          if (orderErr || !orderData) {
+            const errMsg = orderErr?.message || 'Could not create payment order. Please verify connection and retry.';
             throw new Error(errMsg);
           }
 
-          // 3. Transition to "Your Gift Is Ready" Screen
-          await openGiftReadyModal(publishData.slug, editorState.recipientName);
+          // If gift was already paid for previously, directly display confirmation
+          if (orderData.already_paid && orderData.slug) {
+            await openGiftReadyModal(orderData.slug, editorState.recipientName);
+            return;
+          }
+
+          if (!orderData.order_id) {
+            throw new Error('Server did not return a valid Razorpay Order ID.');
+          }
+
+          // 3. Dynamically Load Razorpay SDK
+          await loadRazorpaySdk();
+
+          if (!window.Razorpay) {
+            throw new Error('Razorpay Checkout SDK is unavailable. Please check your internet connection.');
+          }
+
+          // 4. Configure & Open Razorpay Modal
+          const rzpKey = orderData.key_id || RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+
+          const rzpOptions = {
+            key: rzpKey,
+            amount: orderData.amount || FLAT_PRICE_PAISE,
+            currency: 'INR',
+            name: 'Velvet & Keepsake',
+            description: `${editorState.recipientName || 'Elena'}'s Keepsake Birthday Film`,
+            image: './favicon.png',
+            order_id: orderData.order_id,
+            theme: {
+              color: '#1a0b12'
+            },
+            prefill: {
+              name: currentUser?.user_metadata?.full_name || '',
+              email: currentUser?.email || ''
+            },
+            notes: {
+              gift_id: draftId,
+              recipient: editorState.recipientName || 'Elena'
+            },
+            modal: {
+              ondismiss: function() {
+                btnPublish.disabled = false;
+                btnPublish.classList.remove('opacity-75', 'cursor-not-allowed');
+                if (btnPublishText) {
+                  btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
+                }
+                if (publishErrorAlert && publishErrorMessage) {
+                  publishErrorMessage.textContent = 'Payment was cancelled. Your customized gift remains safely saved in your drafts.';
+                  publishErrorAlert.classList.remove('hidden');
+                  publishErrorAlert.classList.add('flex');
+                }
+              }
+            },
+            handler: async function(rzpSuccessResponse) {
+              // 5. Success Handler: Securely Verify Signature Server-side
+              btnPublish.disabled = true;
+              btnPublish.classList.add('opacity-75', 'cursor-not-allowed');
+              if (btnPublishText) {
+                btnPublishText.innerHTML = `
+                  <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-1.5"></span>
+                  <span>Verifying Payment...</span>
+                `;
+              }
+
+              try {
+                const { data: verifyData, error: verifyErr } = await verifyRazorpayPayment(draftId, rzpSuccessResponse);
+
+                if (verifyErr || !verifyData || !verifyData.slug) {
+                  throw new Error(verifyErr?.message || 'Payment verification failed on the server. Please contact support if your account was debited.');
+                }
+
+                // 6. Transition to "Your Gift Is Ready" Screen
+                await openGiftReadyModal(verifyData.slug, editorState.recipientName);
+
+              } catch (vErr) {
+                console.error('Payment verification error:', vErr);
+                if (publishErrorAlert && publishErrorMessage) {
+                  publishErrorMessage.textContent = vErr.message || 'Payment verification failed. Please try again.';
+                  publishErrorAlert.classList.remove('hidden');
+                  publishErrorAlert.classList.add('flex');
+                }
+              } finally {
+                btnPublish.disabled = false;
+                btnPublish.classList.remove('opacity-75', 'cursor-not-allowed');
+                if (btnPublishText) {
+                  btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
+                }
+              }
+            }
+          };
+
+          const rzpInstance = new window.Razorpay(rzpOptions);
+
+          rzpInstance.on('payment.failed', function(failureResponse) {
+            btnPublish.disabled = false;
+            btnPublish.classList.remove('opacity-75', 'cursor-not-allowed');
+            if (btnPublishText) {
+              btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
+            }
+            if (publishErrorAlert && publishErrorMessage) {
+              const failReason = failureResponse.error?.description || failureResponse.error?.reason || 'Transaction was declined.';
+              publishErrorMessage.textContent = `Payment failed: ${failReason} Please try again.`;
+              publishErrorAlert.classList.remove('hidden');
+              publishErrorAlert.classList.add('flex');
+            }
+          });
+
+          rzpInstance.open();
 
         } catch (err) {
-          console.error('Publish error:', err);
-          // Keep customer on Order Summary and display specific error
+          console.error('Checkout error:', err);
           if (publishErrorAlert && publishErrorMessage) {
-            publishErrorMessage.textContent = err.message || 'Could not complete publishing. Please check your connection and try again.';
+            publishErrorMessage.textContent = err.message || 'Could not start payment checkout. Please check your connection and try again.';
             publishErrorAlert.classList.remove('hidden');
             publishErrorAlert.classList.add('flex');
           }
-        } finally {
           btnPublish.disabled = false;
           btnPublish.classList.remove('opacity-75', 'cursor-not-allowed');
           if (btnPublishText) {
-            btnPublishText.textContent = 'Confirm & Get Link';
+            btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
           }
         }
       });

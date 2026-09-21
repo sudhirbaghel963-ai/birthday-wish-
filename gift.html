@@ -19,6 +19,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+  <script>
+    document.documentElement.classList.add('js');
+  </script>
+
   <link rel="stylesheet" href="./birthday.css" />
   <link rel="stylesheet" href="./theme-paper.css" />
   <link rel="stylesheet" href="./theme-glass.css" />
@@ -932,6 +936,15 @@
       // Load birthday film engine in isolated try/catch so film errors never trigger invalid screen
       try {
         await import('./birthday.js');
+        // Ensure Act 1 bow rig recalculates accurately once rendered in live layout
+        requestAnimationFrame(() => {
+          if (typeof window.refreshRig === 'function') window.refreshRig();
+          if (typeof window.resize === 'function') window.resize();
+        });
+        setTimeout(() => {
+          if (typeof window.refreshRig === 'function') window.refreshRig();
+          if (typeof window.resize === 'function') window.resize();
+        }, 150);
       } catch (engineErr) {
         console.error('Film engine warning:', engineErr);
       }

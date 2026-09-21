@@ -1162,6 +1162,12 @@ function applyNock(){
 }
 
 function refreshRig(){
+  if (!archery || !bow || !serving || !arrow) return;
+  // Ensure W and H have valid non-zero dimensions
+  if (!W || !H || W === 0 || H === 0) {
+    W = (canvas && canvas.clientWidth) || window.innerWidth || document.documentElement.clientWidth || 375;
+    H = (canvas && canvas.clientHeight) || window.innerHeight || document.documentElement.clientHeight || 667;
+  }
   // the grip is anchored here, and the heart sits at its layout centre (33% down,
   // centred) — using the layout point, not a live rect, keeps the aim steady even
   // while the heart is scaling in.
@@ -1181,20 +1187,20 @@ function refreshRig(){
   const bR = bow.getBoundingClientRect();
   const sR = serving.getBoundingClientRect();
   const rR = arrow.getBoundingClientRect();
-  svgScale = bR.width / 460;
-  const gripLX = (bR.left - aR.left) + 0.5 * bR.width;
-  const gripLY = (bR.top  - aR.top ) + (240 / 300) * bR.height;   // grip ~y240 in viewBox
-  const nockLX = (sR.left - aR.left) + 0.5 * sR.width;
-  const nockLY = (sR.top  - aR.top ) + 0.5 * sR.height;
-  arrowBaseX = nockLX - ((rR.left - aR.left) + 0.5 * rR.width);
-  arrowBaseY = nockLY - ((rR.top  - aR.top ) + (205 / 220) * rR.height);
+  svgScale = (bR.width > 0) ? (bR.width / 460) : 1;
+  const gripLX = (bR.left - aR.left) + 0.5 * (bR.width || 120);
+  const gripLY = (bR.top  - aR.top ) + (240 / 300) * (bR.height || 80);   // grip ~y240 in viewBox
+  const nockLX = (sR.left - aR.left) + 0.5 * (sR.width || 10);
+  const nockLY = (sR.top  - aR.top ) + 0.5 * (sR.height || 10);
+  arrowBaseX = nockLX - ((rR.left - aR.left) + 0.5 * (rR.width || 20));
+  arrowBaseY = nockLY - ((rR.top  - aR.top ) + (205 / 220) * (rR.height || 60));
 
   // anchor the grip at (gripX,gripY) and rotate the rig around it
   archery.style.left = (gripX - gripLX) + 'px';
   archery.style.top  = (gripY - gripLY) + 'px';
   gsap.set(archery, { transformOrigin: `${gripLX}px ${gripLY}px`, rotation: aimRad * 180 / Math.PI });
   gsap.set(arrow, { x: arrowBaseX, y: arrowBaseY });
-  maxDraw = Math.min(bR.height * 0.72, H * 0.16, 132);
+  maxDraw = Math.min((bR.height || 80) * 0.72, H * 0.16, 132);
   curDraw = 0;
 }
 
@@ -1588,9 +1594,12 @@ function resetAll(){
    ============================================================ */
 function resize(){
   dpr = Math.min(window.devicePixelRatio || 1, 2);
-  W = canvas.clientWidth; H = canvas.clientHeight;
-  canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  W = (canvas && canvas.clientWidth) || window.innerWidth || document.documentElement.clientWidth || 375;
+  H = (canvas && canvas.clientHeight) || window.innerHeight || document.documentElement.clientHeight || 667;
+  if (canvas) {
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
   buildSprites();
   buildScene();
   if (reduceMotion){ drawFinal(); return; }
@@ -4951,3 +4960,5 @@ window.duckMusic              = duckMusic;
 window.updateGiftData         = updateGiftData;
 window.applyGiftDataTheme     = applyGiftDataTheme;
 window.populateStaticContent  = populateStaticContent;
+window.refreshRig             = refreshRig;
+window.resize                 = resize;

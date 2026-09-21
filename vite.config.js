@@ -23,6 +23,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         preview: resolve(__dirname, 'preview.html'),
+        gift: resolve(__dirname, 'gift.html'),
         create: resolve(__dirname, 'create.html'),
         editor: resolve(__dirname, 'editor.html'),
         terms: resolve(__dirname, 'terms.html'),

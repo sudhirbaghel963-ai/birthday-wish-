@@ -593,8 +593,14 @@
               data.forEach(remoteExp => {
                 const local = EXPERIENCES.find(e => e.id === remoteExp.id);
                 if (local) {
-                  if (remoteExp.price) local.price = remoteExp.price;
-                  if (remoteExp.original_price) local.originalPrice = remoteExp.original_price;
+                  if (remoteExp.price) {
+                    const clean = String(remoteExp.price).replace(/[^0-9]/g, '');
+                    local.price = clean ? `₹${clean}` : remoteExp.price;
+                  }
+                  if (remoteExp.original_price) {
+                    const cleanOrig = String(remoteExp.original_price).replace(/[^0-9]/g, '');
+                    local.originalPrice = cleanOrig ? `₹${cleanOrig}` : remoteExp.original_price;
+                  }
                   if (typeof remoteExp.is_active === 'boolean') local.isAvailable = remoteExp.is_active;
                   if (remoteExp.name) local.name = remoteExp.name;
                 }

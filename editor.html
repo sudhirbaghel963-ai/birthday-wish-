@@ -1251,7 +1251,7 @@ Happy Birthday. I mean it.</textarea>
         </div>
         <div class="pt-2 border-t border-parchment-200 flex justify-between items-center text-sm font-bold text-ink-900">
           <span>Total Price:</span>
-          <span class="text-base text-rose-600 font-serif">₹100 <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span></span>
+          <span class="text-base text-rose-600 font-serif" id="summaryTotalPrice">₹100 <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span></span>
         </div>
       </div>
 
@@ -2953,7 +2953,7 @@ Happy Birthday. I mean it.</textarea>
     }
 
     // Step 6: Order Summary Modal
-    function openOrderSummary() {
+    async function openOrderSummary() {
       if (!orderModal) return;
       triggerAutosave();
 
@@ -2967,6 +2967,8 @@ Happy Birthday. I mean it.</textarea>
       
       const summaryExpEl = document.getElementById('summaryExperience');
       if (summaryExpEl) summaryExpEl.textContent = expName;
+
+      await syncCurrentExperiencePrice();
 
       orderModal.classList.remove('hidden');
       orderModal.classList.add('flex');
@@ -3074,9 +3076,44 @@ Happy Birthday. I mean it.</textarea>
       readyModal.classList.add('flex');
     }
 
-    // Single Flat Pricing Constant: ₹100 = 10,000 paise
-    const FLAT_PRICE_INR = 100;
-    const FLAT_PRICE_PAISE = 10000;
+    // Dynamic Experience Pricing State (INR)
+    let currentExperiencePriceInr = 100;
+
+    function updateOrderSummaryPriceUI() {
+      const summaryTotalEl = document.getElementById('summaryTotalPrice');
+      if (summaryTotalEl) {
+        summaryTotalEl.innerHTML = `₹${currentExperiencePriceInr} <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span>`;
+      }
+      if (btnPublish && !btnPublish.disabled) {
+        btnPublish.title = `Pay ₹${currentExperiencePriceInr} & get your shareable link`;
+      }
+      if (btnPublishText && !btnPublish.disabled) {
+        btnPublishText.textContent = `Pay Now · ₹${currentExperiencePriceInr}`;
+      }
+    }
+
+    async function syncCurrentExperiencePrice() {
+      const targetExpId = expParam || (editorState.themeId === 'glass' ? 'birthday-film-glass' : 'birthday-film');
+      try {
+        if (supabase) {
+          const { data, error } = await supabase
+            .from('experiences')
+            .select('price')
+            .eq('id', targetExpId)
+            .maybeSingle();
+
+          if (!error && data && data.price !== undefined && data.price !== null) {
+            const parsed = parseInt(String(data.price).replace(/[^0-9]/g, ''), 10);
+            if (!isNaN(parsed) && parsed > 0) {
+              currentExperiencePriceInr = parsed;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch live experience price:', err);
+      }
+      updateOrderSummaryPriceUI();
+    }
 
     function sanitizeRazorpayKey(raw) {
       let key = (typeof raw === 'string' ? raw : '').trim();
@@ -3211,10 +3248,7 @@ Happy Birthday. I mean it.</textarea>
     if (btnPublish) {
       btnPublish.disabled = false;
       btnPublish.classList.remove('opacity-50', 'cursor-not-allowed');
-      btnPublish.title = `Pay ₹${FLAT_PRICE_INR} & get your shareable link`;
-      if (btnPublishText) {
-        btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
-      }
+      updateOrderSummaryPriceUI();
 
       btnPublish.addEventListener('click', async () => {
         // Clear any previous error
@@ -3278,6 +3312,11 @@ Happy Birthday. I mean it.</textarea>
             throw new Error('Server did not return a valid Razorpay Order ID.');
           }
 
+          if (orderData.amount_inr) {
+            currentExperiencePriceInr = orderData.amount_inr;
+            updateOrderSummaryPriceUI();
+          }
+
           // 3. Dynamically Load Razorpay SDK
           await loadRazorpaySdk();
 
@@ -3290,7 +3329,7 @@ Happy Birthday. I mean it.</textarea>
 
           const rzpOptions = {
             key: rzpKey,
-            amount: orderData.amount || FLAT_PRICE_PAISE,
+            amount: orderData.amount || (currentExperiencePriceInr * 100),
             currency: 'INR',
             name: 'Velvet & Keepsake',
             description: `${editorState.recipientName || 'Elena'}'s Keepsake Birthday Film`,
@@ -3311,9 +3350,7 @@ Happy Birthday. I mean it.</textarea>
               ondismiss: function() {
                 btnPublish.disabled = false;
                 btnPublish.classList.remove('opacity-75', 'cursor-not-allowed');
-                if (btnPublishText) {
-                  btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
-                }
+                updateOrderSummaryPriceUI();
                 if (publishErrorAlert && publishErrorMessage) {
                   publishErrorMessage.textContent = 'Payment was cancelled. Your customized gift remains safely saved in your drafts.';
                   publishErrorAlert.classList.remove('hidden');
@@ -3352,9 +3389,7 @@ Happy Birthday. I mean it.</textarea>
               } finally {
                 btnPublish.disabled = false;
                 btnPublish.classList.remove('opacity-75', 'cursor-not-allowed');
-                if (btnPublishText) {
-                  btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
-                }
+                updateOrderSummaryPriceUI();
               }
             }
           };
@@ -3364,9 +3399,7 @@ Happy Birthday. I mean it.</textarea>
           rzpInstance.on('payment.failed', function(failureResponse) {
             btnPublish.disabled = false;
             btnPublish.classList.remove('opacity-75', 'cursor-not-allowed');
-            if (btnPublishText) {
-              btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
-            }
+            updateOrderSummaryPriceUI();
             if (publishErrorAlert && publishErrorMessage) {
               const failReason = failureResponse.error?.description || failureResponse.error?.reason || 'Transaction was declined.';
               publishErrorMessage.textContent = `Payment failed: ${failReason} Please try again.`;
@@ -3386,9 +3419,7 @@ Happy Birthday. I mean it.</textarea>
           }
           btnPublish.disabled = false;
           btnPublish.classList.remove('opacity-75', 'cursor-not-allowed');
-          if (btnPublishText) {
-            btnPublishText.textContent = `Pay Now · ₹${FLAT_PRICE_INR}`;
-          }
+          updateOrderSummaryPriceUI();
         }
       });
     }
@@ -3497,6 +3528,9 @@ Happy Birthday. I mean it.</textarea>
           showGiftReadyFallback();
         }
       }
+
+      // Initial fetch of experience price
+      syncCurrentExperiencePrice();
     })();
 
     // 21. Preview Frame Ready Listener

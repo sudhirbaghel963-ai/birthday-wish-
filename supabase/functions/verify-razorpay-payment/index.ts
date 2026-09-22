@@ -1,11 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 
-/**
- * Single Flat Price across all experiences & themes: ₹100 = 10,000 paise
- */
-export const FLAT_PRICE_INR = 100;
-export const FLAT_PRICE_PAISE = 10000;
+const DEFAULT_FALLBACK_PRICE_INR = 100;
 
 const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -151,7 +147,7 @@ serve(async (req: Request): Promise<Response> => {
     // 6. Fetch Existing Gift Row
     const { data: existingGift, error: fetchErr } = await supabase
       .from('gifts')
-      .select('id, status, slug, razorpay_order_id')
+      .select('id, status, slug, razorpay_order_id, experience_id, theme_id')
       .eq('id', giftId)
       .maybeSingle();
 
@@ -175,7 +171,24 @@ serve(async (req: Request): Promise<Response> => {
       }, 200);
     }
 
-    // 7. Generate Unique 9-Character Slug
+    // 7. Look up dynamic experience price
+    const expId = existingGift.experience_id || (existingGift.theme_id === 'glass' ? 'birthday-film-glass' : 'birthday-film');
+    let pricePaidInr = DEFAULT_FALLBACK_PRICE_INR;
+
+    const { data: expData } = await supabase
+      .from('experiences')
+      .select('price')
+      .eq('id', expId)
+      .maybeSingle();
+
+    if (expData && expData.price) {
+      const parsed = parseInt(String(expData.price).replace(/[^0-9]/g, ''), 10);
+      if (!isNaN(parsed) && parsed >= 1) {
+        pricePaidInr = parsed;
+      }
+    }
+
+    // 8. Generate Unique 9-Character Slug
     const MAX_SLUG_ATTEMPTS = 5;
     let chosenSlug = '';
     let isUnique = false;
@@ -199,7 +212,7 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse({ error: 'Could not generate a unique public slug. Please retry.' }, 500);
     }
 
-    // 8. Update Gift Row to 'paid'
+    // 9. Update Gift Row to 'paid'
     const { data: updatedGift, error: updateErr } = await supabase
       .from('gifts')
       .update({
@@ -208,7 +221,7 @@ serve(async (req: Request): Promise<Response> => {
         razorpay_order_id: orderId,
         razorpay_payment_id: paymentId,
         razorpay_signature: signature,
-        price_paid: FLAT_PRICE_INR, // Fixed flat price: ₹100.00
+        price_paid: pricePaidInr,
         updated_at: new Date().toISOString()
       })
       .eq('id', giftId)
@@ -223,7 +236,7 @@ serve(async (req: Request): Promise<Response> => {
 
     console.log(`[verify-razorpay-payment][${timestamp}] Gift ${giftId} successfully verified and paid! Slug: '${updatedGift.slug}', Price: ₹${updatedGift.price_paid}`);
 
-    // 9. Return Verified Slug to Client
+    // 10. Return Verified Slug to Client
     return jsonResponse({
       success: true,
       message: 'Payment verified and gift published successfully.',

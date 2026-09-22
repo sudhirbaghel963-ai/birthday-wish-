@@ -1,11 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 
-/**
- * Single Flat Price across all experiences & themes: ₹100 = 10,000 paise
- */
-export const FLAT_PRICE_INR = 100;
-export const FLAT_PRICE_PAISE = 10000;
+const DEFAULT_FALLBACK_PRICE_INR = 100;
 
 const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -77,7 +73,7 @@ serve(async (req: Request): Promise<Response> => {
     // 5. Fetch Draft Gift
     const { data: gift, error: fetchErr } = await supabase
       .from('gifts')
-      .select('id, status, slug, content')
+      .select('id, status, slug, content, experience_id, theme_id')
       .eq('id', giftId)
       .maybeSingle();
 
@@ -100,17 +96,37 @@ serve(async (req: Request): Promise<Response> => {
       }, 200);
     }
 
-    // 6. Create Razorpay Order via REST API
-    // Flat price across all experiences: ₹100 = 10000 paise
-    const amountInPaise = FLAT_PRICE_PAISE;
+    // 6. Look up dynamic Per-Experience Price from experiences table
+    const targetExpId = gift.experience_id || (gift.theme_id === 'glass' ? 'birthday-film-glass' : 'birthday-film');
+    let priceInInr = DEFAULT_FALLBACK_PRICE_INR;
+
+    const { data: expRow, error: expErr } = await supabase
+      .from('experiences')
+      .select('id, price, name')
+      .eq('id', targetExpId)
+      .maybeSingle();
+
+    if (expRow && expRow.price) {
+      const rawNum = parseInt(String(expRow.price).replace(/[^0-9]/g, ''), 10);
+      if (!isNaN(rawNum) && rawNum >= 1) {
+        priceInInr = rawNum;
+      }
+    } else if (expErr) {
+      console.warn(`[create-razorpay-order][${timestamp}] Could not lookup experience ${targetExpId}, falling back to default ₹${DEFAULT_FALLBACK_PRICE_INR}:`, expErr.message);
+    }
+
+    const amountInPaise = priceInInr * 100;
     const basicAuth = btoa(`${razorpayKeyId}:${razorpayKeySecret}`);
 
+    // 7. Create Razorpay Order via REST API
     const rzpOrderPayload = {
       amount: amountInPaise,
       currency: 'INR',
       receipt: `rcpt_${giftId.substring(0, 18)}`,
       notes: {
         gift_id: giftId,
+        experience_id: targetExpId,
+        experience_name: (expRow && expRow.name) || targetExpId,
         recipient: (gift.content && typeof gift.content === 'object' && gift.content.recipientName) || 'Elena',
         platform: 'Velvet & Keepsake'
       }
@@ -136,11 +152,12 @@ serve(async (req: Request): Promise<Response> => {
     const rzpOrder = await rzpResponse.json();
     const orderId = rzpOrder.id;
 
-    // 7. Store razorpay_order_id on Gift Row
+    // 8. Store razorpay_order_id on Gift Row
     const { error: updateErr } = await supabase
       .from('gifts')
       .update({
         razorpay_order_id: orderId,
+        experience_id: targetExpId,
         updated_at: new Date().toISOString()
       })
       .eq('id', giftId);
@@ -149,14 +166,14 @@ serve(async (req: Request): Promise<Response> => {
       console.warn(`[create-razorpay-order][${timestamp}] Could not record razorpay_order_id on gift row:`, updateErr);
     }
 
-    console.log(`[create-razorpay-order][${timestamp}] Created Razorpay Order ${orderId} for gift ${giftId} (₹${FLAT_PRICE_INR}).`);
+    console.log(`[create-razorpay-order][${timestamp}] Created Razorpay Order ${orderId} for gift ${giftId} [Experience: ${targetExpId}, Price: ₹${priceInInr} / ${amountInPaise} paise].`);
 
-    // 8. Return Order ID and Config to Client
+    // 9. Return Order ID and Config to Client
     return jsonResponse({
       success: true,
       order_id: orderId,
       amount: amountInPaise,
-      amount_inr: FLAT_PRICE_INR,
+      amount_inr: priceInInr,
       currency: 'INR',
       key_id: razorpayKeyId
     }, 200);

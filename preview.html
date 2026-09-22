@@ -1114,16 +1114,21 @@
     </a>
   </div>
 
-  <script>
-    (function() {
-      // Check if running inside iframe (e.g. within editor preview)
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    (async function initPreview() {
+      // Check if running inside iframe
       if (window.self !== window.top) {
         document.body.classList.add('is-embedded');
       }
 
-      // Sync experience parameter across back and customize CTAs
       const urlParams = new URLSearchParams(window.location.search);
       const exp = urlParams.get('experience') || 'birthday-film';
+      const versionId = urlParams.get('versionId');
+      const giftId = urlParams.get('giftId') || urlParams.get('id') || urlParams.get('draftId');
+      const versionNum = urlParams.get('v') || urlParams.get('version');
+
       const topCta = document.getElementById('previewTopCta');
       const floatCta = document.getElementById('previewFloatingCta');
       const backBtn = document.getElementById('previewBackBtn');
@@ -1131,9 +1136,79 @@
       if (topCta) topCta.href = `./editor.html?experience=${encodeURIComponent(exp)}`;
       if (floatCta) floatCta.href = `./editor.html?experience=${encodeURIComponent(exp)}`;
       if (backBtn) backBtn.href = `./create.html?experience=${encodeURIComponent(exp)}`;
+
+      const SUPABASE_URL = 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';
+
+      if (versionId || (giftId && versionNum) || giftId) {
+        try {
+          const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { persistSession: true }
+          });
+
+          let giftRecord = null;
+
+          if (versionId) {
+            const { data } = await supabase
+              .from('gift_versions')
+              .select('*')
+              .eq('id', versionId)
+              .maybeSingle();
+            giftRecord = data;
+          } else if (giftId && versionNum) {
+            const { data } = await supabase
+              .from('gift_versions')
+              .select('*')
+              .eq('gift_id', giftId)
+              .eq('version_number', parseInt(versionNum, 10))
+              .maybeSingle();
+            giftRecord = data;
+          }
+
+          if (!giftRecord && giftId) {
+            const { data } = await supabase
+              .from('gifts')
+              .select('*')
+              .eq('id', giftId)
+              .maybeSingle();
+            giftRecord = data;
+          }
+
+          if (giftRecord) {
+            const themeId = giftRecord.theme_id || (giftRecord.content && giftRecord.content.themeId) || (giftRecord.experience_id === 'birthday-film-glass' ? 'glass' : 'paper');
+            document.documentElement.setAttribute('data-theme', themeId);
+            document.body.classList.remove('theme-paper', 'theme-glass');
+            document.body.classList.add(`theme-${themeId}`);
+
+            const giftContent = (typeof giftRecord.content === 'object' && giftRecord.content !== null) ? giftRecord.content : {};
+            window.GIFT_DATA = {
+              ...giftContent,
+              themeId: themeId,
+              recipientName: giftContent.recipientName || 'Elena',
+              photo_urls: giftRecord.photo_urls || giftContent.photo_urls || [],
+              clip_urls: giftRecord.clip_urls || giftContent.clip_urls || [],
+              music: giftRecord.music || giftContent.music || { trackType: 'default', startSeconds: 27 },
+              scenes: {
+                ...(giftContent.scenes || {})
+              }
+            };
+
+            if (giftRecord.photo_urls && Array.isArray(giftRecord.photo_urls) && giftRecord.photo_urls.length) {
+              if (!window.GIFT_DATA.scenes.scene6_wallOfUs) window.GIFT_DATA.scenes.scene6_wallOfUs = {};
+              window.GIFT_DATA.scenes.scene6_wallOfUs.photos = giftRecord.photo_urls;
+            }
+            if (giftRecord.clip_urls && Array.isArray(giftRecord.clip_urls) && giftRecord.clip_urls.length) {
+              if (!window.GIFT_DATA.scenes.scene7_memoryReel) window.GIFT_DATA.scenes.scene7_memoryReel = {};
+              window.GIFT_DATA.scenes.scene7_memoryReel.clips = giftRecord.clip_urls;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not load version/gift data in preview:', e);
+        }
+      }
+
+      await import('./birthday.js');
     })();
   </script>
-
-  <script type="module" src="./birthday.js"></script>
 </body>
 </html>

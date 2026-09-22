@@ -1505,6 +1505,7 @@ Happy Birthday. I mean it.</textarea>
     const urlParams = new URLSearchParams(window.location.search);
     const expParam = urlParams.get('experience') || 'birthday-film';
     const themeParam = urlParams.get('theme') || 'paper';
+    let revisesGiftId = urlParams.get('revises') || null;
     const initialThemeId = (expParam === 'birthday-film-glass' || themeParam === 'glass') ? 'glass' : 'paper';
 
     function generateUuid() {
@@ -1743,19 +1744,23 @@ Happy Birthday. I mean it.</textarea>
 
       if (supabase) {
         supabase.from('gifts').select('*').eq('id', draftId).single().then(({ data, error }) => {
-          if (data && (data.content || data.data)) {
-            const remotePayload = data.content || data.data;
-            editorState = { ...editorState, ...remotePayload };
-            if (data.experience_id) editorState.experienceId = data.experience_id;
-            if (data.theme_id) editorState.themeId = data.theme_id;
-            if (!editorState.scenes.scene6_wallOfUs.photos) {
-              editorState.scenes.scene6_wallOfUs.photos = [null, null, null, null, null, null];
+          if (data) {
+            if (data.revises_gift_id) revisesGiftId = data.revises_gift_id;
+            if (data.content || data.data) {
+              const remotePayload = data.content || data.data;
+              editorState = { ...editorState, ...remotePayload };
+              if (data.experience_id) editorState.experienceId = data.experience_id;
+              if (data.theme_id) editorState.themeId = data.theme_id;
+              if (!editorState.scenes.scene6_wallOfUs.photos) {
+                editorState.scenes.scene6_wallOfUs.photos = [null, null, null, null, null, null];
+              }
+              if (!editorState.scenes.scene7_memoryReel.clips) {
+                editorState.scenes.scene7_memoryReel.clips = [null, null, null, null, null];
+              }
+              populateFormFromState();
+              pushUpdateToPreview();
+              updateOrderSummaryPriceUI();
             }
-            if (!editorState.scenes.scene7_memoryReel.clips) {
-              editorState.scenes.scene7_memoryReel.clips = [null, null, null, null, null];
-            }
-            populateFormFromState();
-            pushUpdateToPreview();
           }
         }).catch(() => {});
       }
@@ -2516,6 +2521,7 @@ Happy Birthday. I mean it.</textarea>
               id: draftId,
               experience_id: expParam || 'birthday-film',
               theme_id: editorState.themeId || 'paper',
+              revises_gift_id: revisesGiftId,
               content: editorState,
               photo_urls: editorState.scenes?.scene6_wallOfUs?.photos || [],
               clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
@@ -2957,9 +2963,11 @@ Happy Birthday. I mean it.</textarea>
       if (!orderModal) return;
       triggerAutosave();
 
-      const expName = editorState.themeId === 'glass' 
+      const baseExpName = editorState.themeId === 'glass' 
         ? 'Signature 11-Scene Film (Glass Edition)' 
         : 'Signature 11-Scene Film (Warm Paper Edition)';
+
+      const expName = revisesGiftId ? `${baseExpName} · Revision Update` : baseExpName;
 
       document.getElementById('summaryRecipient').textContent = editorState.recipientName || 'Elena';
       document.getElementById('summaryPin').textContent = editorState.scenes?.scene3_pinLock?.pin || '1234';
@@ -3030,7 +3038,7 @@ Happy Birthday. I mean it.</textarea>
     /**
      * Displays the celebratory Gift Ready screen
      */
-    async function openGiftReadyModal(slug, recipientName) {
+    async function openGiftReadyModal(slug, recipientName, isRevision = false) {
       if (!readyModal) return;
 
       if (!slug || typeof slug !== 'string' || slug.trim().length < 3) {
@@ -3042,14 +3050,23 @@ Happy Birthday. I mean it.</textarea>
       currentPublishedSlug = cleanSlug;
       const shareUrl = getShareableGiftUrl(cleanSlug);
       const recName = recipientName || editorState.recipientName || 'Elena';
+      const isRev = isRevision || Boolean(revisesGiftId);
 
       // Set visible content states
       if (readyValidContent) readyValidContent.classList.remove('hidden');
       if (readyFallbackContent) readyFallbackContent.classList.add('hidden');
 
       if (readyShareUrlInput) readyShareUrlInput.value = shareUrl;
+
+      const readyTitleEl = document.querySelector('#readyValidContent h2');
+      if (readyTitleEl) {
+        readyTitleEl.textContent = isRev ? 'Your Changes Are Live!' : 'Your Gift Is Ready!';
+      }
+
       if (readyRecipientGreeting) {
-        readyRecipientGreeting.textContent = `A personalized cinematic birthday film for ${recName} is published and permanently live.`;
+        readyRecipientGreeting.textContent = isRev
+          ? `Your personalized cinematic birthday film for ${recName} has been updated at your existing live link.`
+          : `A personalized cinematic birthday film for ${recName} is published and permanently live.`;
       }
       if (readyViewRecipientLink) {
         readyViewRecipientLink.href = shareUrl;
@@ -3085,10 +3102,14 @@ Happy Birthday. I mean it.</textarea>
         summaryTotalEl.innerHTML = `₹${currentExperiencePriceInr} <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span>`;
       }
       if (btnPublish && !btnPublish.disabled) {
-        btnPublish.title = `Pay ₹${currentExperiencePriceInr} & get your shareable link`;
+        btnPublish.title = revisesGiftId
+          ? `Confirm changes & update your live gift for ₹${currentExperiencePriceInr}`
+          : `Pay ₹${currentExperiencePriceInr} & get your shareable link`;
       }
       if (btnPublishText && !btnPublish.disabled) {
-        btnPublishText.textContent = `Pay Now · ₹${currentExperiencePriceInr}`;
+        btnPublishText.textContent = revisesGiftId
+          ? `Confirm & Publish Changes · ₹${currentExperiencePriceInr}`
+          : `Pay Now · ₹${currentExperiencePriceInr}`;
       }
     }
 
@@ -3275,6 +3296,7 @@ Happy Birthday. I mean it.</textarea>
             status: 'draft',
             experience_id: expParam || 'birthday-film',
             theme_id: editorState.themeId || 'paper',
+            revises_gift_id: revisesGiftId,
             content: editorState,
             photo_urls: editorState.scenes?.scene6_wallOfUs?.photos || [],
             clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
@@ -3304,7 +3326,7 @@ Happy Birthday. I mean it.</textarea>
 
           // If gift was already paid for previously, directly display confirmation
           if (orderData.already_paid && orderData.slug) {
-            await openGiftReadyModal(orderData.slug, editorState.recipientName);
+            await openGiftReadyModal(orderData.slug, editorState.recipientName, false);
             return;
           }
 
@@ -3377,7 +3399,7 @@ Happy Birthday. I mean it.</textarea>
                 }
 
                 // 6. Transition to "Your Gift Is Ready" Screen
-                await openGiftReadyModal(verifyData.slug, editorState.recipientName);
+                await openGiftReadyModal(verifyData.slug, editorState.recipientName, Boolean(verifyData.is_revision));
 
               } catch (vErr) {
                 console.error('Payment verification error:', vErr);

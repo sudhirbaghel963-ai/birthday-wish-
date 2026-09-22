@@ -147,7 +147,7 @@ serve(async (req: Request): Promise<Response> => {
     // 6. Fetch Existing Gift Row
     const { data: existingGift, error: fetchErr } = await supabase
       .from('gifts')
-      .select('id, status, slug, razorpay_order_id, experience_id, theme_id')
+      .select('id, status, slug, razorpay_order_id, experience_id, theme_id, revises_gift_id, content, photo_urls, clip_urls, music')
       .eq('id', giftId)
       .maybeSingle();
 
@@ -188,7 +188,95 @@ serve(async (req: Request): Promise<Response> => {
       }
     }
 
-    // 8. Generate Unique 9-Character Slug
+    // 8. Handle Revision vs New Gift
+    if (existingGift.revises_gift_id) {
+      console.log(`[verify-razorpay-payment][${timestamp}] Draft ${giftId} is a revision of original gift ${existingGift.revises_gift_id}.`);
+
+      // Fetch the original gift
+      const { data: originalGift, error: origErr } = await supabase
+        .from('gifts')
+        .select('*')
+        .eq('id', existingGift.revises_gift_id)
+        .maybeSingle();
+
+      if (origErr || !originalGift) {
+        console.error(`[verify-razorpay-payment][${timestamp}] Original gift ${existingGift.revises_gift_id} not found:`, origErr);
+        return jsonResponse({ error: 'Original gift referenced by this revision was not found.' }, 404);
+      }
+
+      const prevVersion = originalGift.version || 1;
+      const nextVersion = prevVersion + 1;
+
+      // a. Archive previous state into gift_versions
+      const { error: archiveErr } = await supabase
+        .from('gift_versions')
+        .insert({
+          gift_id: originalGift.id,
+          version_number: prevVersion,
+          content: originalGift.content,
+          photo_urls: originalGift.photo_urls || [],
+          clip_urls: originalGift.clip_urls || [],
+          music: originalGift.music || null,
+          theme_id: originalGift.theme_id || null,
+          experience_id: originalGift.experience_id || null,
+          price_paid: originalGift.price_paid || null,
+          razorpay_payment_id: originalGift.razorpay_payment_id || null,
+          razorpay_order_id: originalGift.razorpay_order_id || null,
+          published_at: originalGift.updated_at || originalGift.created_at || new Date().toISOString()
+        });
+
+      if (archiveErr) {
+        console.warn(`[verify-razorpay-payment][${timestamp}] Notice: failed to archive version snapshot:`, archiveErr.message);
+      }
+
+      // b. Overwrite original gift with updated revision content & payment info
+      const { data: updatedOriginal, error: updateOrigErr } = await supabase
+        .from('gifts')
+        .update({
+          content: existingGift.content,
+          photo_urls: existingGift.photo_urls || [],
+          clip_urls: existingGift.clip_urls || [],
+          music: existingGift.music || null,
+          theme_id: existingGift.theme_id || originalGift.theme_id,
+          experience_id: existingGift.experience_id || originalGift.experience_id,
+          razorpay_order_id: orderId,
+          razorpay_payment_id: paymentId,
+          razorpay_signature: signature,
+          price_paid: pricePaidInr,
+          version: nextVersion,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', originalGift.id)
+        .select('id, status, slug, price_paid, version')
+        .single();
+
+      if (updateOrigErr || !updatedOriginal) {
+        console.error(`[verify-razorpay-payment][${timestamp}] Failed updating original gift:`, updateOrigErr);
+        return jsonResponse({ error: `Failed to update original gift: ${updateOrigErr?.message || 'Unknown error'}` }, 500);
+      }
+
+      // c. Delete temporary revision draft row
+      await supabase
+        .from('gifts')
+        .delete()
+        .eq('id', giftId)
+        .eq('status', 'draft');
+
+      console.log(`[verify-razorpay-payment][${timestamp}] Successfully verified and applied revision for gift ${originalGift.id} (version ${nextVersion})! Live slug: '${updatedOriginal.slug}'.`);
+
+      return jsonResponse({
+        success: true,
+        is_revision: true,
+        message: 'Payment verified and live gift updated successfully.',
+        id: updatedOriginal.id,
+        slug: updatedOriginal.slug,
+        version: updatedOriginal.version,
+        status: 'paid',
+        price_paid: updatedOriginal.price_paid
+      }, 200);
+    }
+
+    // 9. Standard New Gift Flow: Generate Unique 9-Character Slug
     const MAX_SLUG_ATTEMPTS = 5;
     let chosenSlug = '';
     let isUnique = false;
@@ -212,12 +300,13 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse({ error: 'Could not generate a unique public slug. Please retry.' }, 500);
     }
 
-    // 9. Update Gift Row to 'paid'
+    // 10. Update New Gift Row to 'paid'
     const { data: updatedGift, error: updateErr } = await supabase
       .from('gifts')
       .update({
         status: 'paid',
         slug: chosenSlug,
+        version: 1,
         razorpay_order_id: orderId,
         razorpay_payment_id: paymentId,
         razorpay_signature: signature,
@@ -226,7 +315,7 @@ serve(async (req: Request): Promise<Response> => {
       })
       .eq('id', giftId)
       .eq('status', 'draft') // Concurrency lock
-      .select('id, status, slug, price_paid')
+      .select('id, status, slug, price_paid, version')
       .single();
 
     if (updateErr) {
@@ -236,12 +325,14 @@ serve(async (req: Request): Promise<Response> => {
 
     console.log(`[verify-razorpay-payment][${timestamp}] Gift ${giftId} successfully verified and paid! Slug: '${updatedGift.slug}', Price: ₹${updatedGift.price_paid}`);
 
-    // 10. Return Verified Slug to Client
+    // 11. Return Verified Slug to Client
     return jsonResponse({
       success: true,
+      is_revision: false,
       message: 'Payment verified and gift published successfully.',
       id: updatedGift.id,
       slug: updatedGift.slug,
+      version: updatedGift.version,
       status: updatedGift.status,
       price_paid: updatedGift.price_paid
     }, 200);

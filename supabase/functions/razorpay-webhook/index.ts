@@ -127,7 +127,7 @@ serve(async (req: Request): Promise<Response> => {
       });
 
       // Find gift by giftId or razorpay_order_id
-      let query = supabase.from('gifts').select('id, status, slug');
+      let query = supabase.from('gifts').select('id, status, slug, revises_gift_id, content, photo_urls, clip_urls, music, theme_id, experience_id, version');
       if (giftId) {
         query = query.eq('id', giftId);
       } else if (orderId) {
@@ -146,7 +146,56 @@ serve(async (req: Request): Promise<Response> => {
         return jsonResponse({ status: 'already_paid', slug: gift.slug }, 200);
       }
 
-      // Generate slug and transition
+      // If this is a revision of an already-paid gift
+      if (gift.revises_gift_id) {
+        const { data: originalGift } = await supabase
+          .from('gifts')
+          .select('*')
+          .eq('id', gift.revises_gift_id)
+          .maybeSingle();
+
+        if (originalGift) {
+          const prevVer = originalGift.version || 1;
+          const nextVer = prevVer + 1;
+
+          // 1. Archive previous state into gift_versions
+          await supabase.from('gift_versions').insert({
+            gift_id: originalGift.id,
+            version_number: prevVer,
+            content: originalGift.content,
+            photo_urls: originalGift.photo_urls || [],
+            clip_urls: originalGift.clip_urls || [],
+            music: originalGift.music || null,
+            theme_id: originalGift.theme_id || null,
+            experience_id: originalGift.experience_id || null,
+            price_paid: originalGift.price_paid || null,
+            razorpay_payment_id: originalGift.razorpay_payment_id || null,
+            razorpay_order_id: originalGift.razorpay_order_id || null,
+            published_at: originalGift.updated_at || originalGift.created_at || new Date().toISOString()
+          });
+
+          // 2. Update original gift
+          await supabase.from('gifts').update({
+            content: gift.content,
+            photo_urls: gift.photo_urls || [],
+            clip_urls: gift.clip_urls || [],
+            music: gift.music || null,
+            theme_id: gift.theme_id || originalGift.theme_id,
+            experience_id: gift.experience_id || originalGift.experience_id,
+            razorpay_order_id: orderId || null,
+            razorpay_payment_id: paymentId || null,
+            version: nextVer,
+            updated_at: new Date().toISOString()
+          }).eq('id', originalGift.id);
+
+          // 3. Delete revision draft
+          await supabase.from('gifts').delete().eq('id', gift.id).eq('status', 'draft');
+          console.log(`[razorpay-webhook][${timestamp}] Successfully verified and applied revision for gift ${originalGift.id} (version ${nextVer}) via webhook.`);
+          return jsonResponse({ status: 'success', is_revision: true, slug: originalGift.slug }, 200);
+        }
+      }
+
+      // Generate slug and transition for new gift
       let chosenSlug = '';
       for (let attempt = 1; attempt <= 5; attempt++) {
         const candidate = generateRandomSlug(9);
@@ -163,9 +212,9 @@ serve(async (req: Request): Promise<Response> => {
           .update({
             status: 'paid',
             slug: chosenSlug,
+            version: 1,
             razorpay_order_id: orderId || null,
             razorpay_payment_id: paymentId || null,
-            price_paid: FLAT_PRICE_INR,
             updated_at: new Date().toISOString()
           })
           .eq('id', gift.id)

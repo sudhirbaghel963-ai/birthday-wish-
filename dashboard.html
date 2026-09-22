@@ -232,6 +232,34 @@
   </div>
 
 
+  <!-- ============================================================
+       VERSION HISTORY MODAL
+       ============================================================ -->
+  <div id="versionModal" class="fixed inset-0 z-50 bg-velvet-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-parchment-200 relative">
+      <button type="button" id="btnCloseVersionModal" class="absolute top-4 right-4 text-ink-400 hover:text-ink-900 p-2 rounded-full hover:bg-parchment-100 cursor-pointer">
+        ✕
+      </button>
+
+      <div class="space-y-1">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-semibold mb-1">
+          <span>📜</span>
+          <span>Snapshot Archives</span>
+        </div>
+        <h3 class="font-serif text-2xl font-bold text-ink-900" id="versionModalTitle">
+          Version History
+        </h3>
+        <p class="text-xs text-ink-500">Access and preview every historical release of this gift.</p>
+      </div>
+
+      <!-- Versions List Container -->
+      <div id="versionModalList" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+
   <!-- Footer -->
   <footer class="w-full py-6 text-center text-xs text-ink-400 border-t border-parchment-300/60 bg-parchment-50/50">
     <p>&copy; 2026 Velvet &amp; Keepsake. All rights reserved.</p>
@@ -381,7 +409,7 @@
       const container = document.getElementById('giftsGrid');
       if (!container) return;
 
-      container.innerHTML = gifts.map(g => renderGiftCard(g)).join('');
+      container.innerHTML = gifts.map(g => renderGiftCard(g, gifts)).join('');
 
       // Bind Event Listeners
       container.querySelectorAll('.btn-copy-link').forEach(btn => {
@@ -404,6 +432,22 @@
         });
       });
 
+      container.querySelectorAll('.btn-edit-gift').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const giftId = btn.getAttribute('data-id');
+          btn.disabled = true;
+          btn.innerHTML = `<span class="inline-block w-3.5 h-3.5 border-2 border-rose-600 border-t-transparent rounded-full animate-spin"></span><span>Opening...</span>`;
+          await startGiftRevision(giftId);
+        });
+      });
+
+      container.querySelectorAll('.btn-version-history').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const giftId = btn.getAttribute('data-id');
+          await openVersionHistoryModal(giftId);
+        });
+      });
+
       container.querySelectorAll('.btn-delete-draft').forEach(btn => {
         btn.addEventListener('click', async () => {
           const gid = btn.getAttribute('data-id');
@@ -414,8 +458,10 @@
       });
     }
 
-    function renderGiftCard(gift) {
+    function renderGiftCard(gift, allGiftsList = []) {
       const isPaid = gift.status === 'paid';
+      const isRevision = Boolean(gift.revises_gift_id);
+      const versionNum = gift.version || 1;
       const recName = gift.content?.recipientName || 'Elena';
       const isGlass = gift.experience_id === 'birthday-film-glass' || gift.theme_id === 'glass';
       const expTitle = isGlass ? 'The Birthday Film (Glass Edition)' : 'The Birthday Film (Warm Paper)';
@@ -430,15 +476,35 @@
         : `${window.location.origin}/preview.html?draftId=${gift.id}`;
 
       // Status Badge
-      const statusBadge = isPaid
-        ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">
-             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-             <span>Paid &amp; Finalized</span>
-           </span>`
-        : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200 shadow-2xs">
-             <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-             <span>In-Progress Draft</span>
-           </span>`;
+      let statusBadge = '';
+      if (isPaid) {
+        statusBadge = `
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span>Paid &amp; Live</span>
+            </span>
+            <button type="button" class="btn-version-history inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 shadow-2xs transition-colors cursor-pointer" data-id="${gift.id}">
+              <span>v${versionNum}</span>
+              <span class="text-purple-400">📜 History</span>
+            </button>
+          </div>
+        `;
+      } else if (isRevision) {
+        statusBadge = `
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-100 text-purple-900 border border-purple-300 shadow-2xs">
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse"></span>
+            <span>Revision in Progress</span>
+          </span>
+        `;
+      } else {
+        statusBadge = `
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200 shadow-2xs">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span>In-Progress Draft</span>
+          </span>
+        `;
+      }
 
       // Actions
       let actionsHtml = '';
@@ -455,21 +521,29 @@
             <button type="button" class="btn-show-qr inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-parchment-50 text-ink-700 text-xs font-semibold border border-parchment-300 shadow-2xs transition-colors" data-url="${publicUrl}" data-title="${recName}'s Keepsake">
               <span>QR Code</span>
             </button>
+            <button type="button" class="btn-edit-gift inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold border border-rose-200 shadow-2xs transition-colors cursor-pointer" data-id="${gift.id}" title="Edit this published gift">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <span>Edit This Gift</span>
+            </button>
           </div>
           <div class="text-[11px] text-ink-400 italic flex items-center gap-1">
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span>This gift is finalized and can't be edited further.</span>
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Live link remains active. Changes go live upon confirmed re-payment.</span>
           </div>
         `;
       } else {
+        const editUrl = isRevision
+          ? `./editor.html?draftId=${gift.id}&revises=${gift.revises_gift_id}&experience=${gift.experience_id || 'birthday-film'}&theme=${gift.theme_id || 'paper'}`
+          : `./editor.html?draftId=${gift.id}&experience=${gift.experience_id || 'birthday-film'}&theme=${gift.theme_id || 'paper'}`;
+
         actionsHtml = `
           <div class="flex flex-wrap items-center gap-2">
-            <a href="./editor.html?draftId=${gift.id}&experience=${gift.experience_id || 'birthday-film'}&theme=${gift.theme_id || 'paper'}" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white text-xs sm:text-sm font-semibold shadow-md shadow-rose-600/20 transition-all transform hover:-translate-y-0.5">
-              <span>Continue Editing</span>
+            <a href="${editUrl}" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white text-xs sm:text-sm font-semibold shadow-md shadow-rose-600/20 transition-all transform hover:-translate-y-0.5">
+              <span>${isRevision ? 'Resume Revision' : 'Continue Editing'}</span>
               <span class="text-gold-300">→</span>
             </a>
             <a href="./preview.html?draftId=${gift.id}" target="_blank" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-full bg-white hover:bg-parchment-50 text-ink-700 text-xs font-semibold border border-parchment-300 shadow-2xs transition-colors">
-              <span>Preview</span>
+              <span>Preview Draft</span>
               <span>↗</span>
             </a>
             <button type="button" class="btn-delete-draft text-ink-400 hover:text-rose-600 p-2 rounded-full hover:bg-rose-50 transition-colors" data-id="${gift.id}" title="Delete Draft">
@@ -479,6 +553,7 @@
               </svg>
             </button>
           </div>
+          ${isRevision ? `<div class="text-[11px] text-purple-600 font-medium">Pending edits for published gift. Live link is unaffected.</div>` : ''}
         `;
       }
 
@@ -514,7 +589,136 @@
       `;
     }
 
-    // 5. Delete Draft Handler
+    // 5. Start Revision Draft Handler
+    async function startGiftRevision(parentGiftId) {
+      try {
+        if (!currentSession || !currentSession.user) return;
+
+        // Check if user already has an active revision draft for this parent gift
+        const existingDraft = myGifts.find(g => g.status === 'draft' && g.revises_gift_id === parentGiftId);
+        if (existingDraft) {
+          window.location.href = `./editor.html?draftId=${existingDraft.id}&revises=${parentGiftId}&experience=${existingDraft.experience_id || 'birthday-film'}&theme=${existingDraft.theme_id || 'paper'}`;
+          return;
+        }
+
+        const parentGift = myGifts.find(g => g.id === parentGiftId);
+        if (!parentGift) throw new Error('Parent gift not found.');
+
+        const newDraftId = crypto.randomUUID();
+        const payload = {
+          id: newDraftId,
+          owner_id: currentSession.user.id,
+          status: 'draft',
+          experience_id: parentGift.experience_id || 'birthday-film',
+          theme_id: parentGift.theme_id || 'paper',
+          content: parentGift.content,
+          photo_urls: parentGift.photo_urls || [],
+          clip_urls: parentGift.clip_urls || [],
+          music: parentGift.music || null,
+          revises_gift_id: parentGift.id,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+
+        const { error } = await supabase.from('gifts').insert(payload);
+        if (error) throw error;
+
+        window.location.href = `./editor.html?draftId=${newDraftId}&revises=${parentGift.id}&experience=${parentGift.experience_id || 'birthday-film'}&theme=${parentGift.theme_id || 'paper'}`;
+
+      } catch (err) {
+        console.error('Failed to initiate revision draft:', err);
+        alert('Could not start editing this gift: ' + (err.message || 'Please try again.'));
+        await fetchUserGifts();
+      }
+    }
+
+    // 6. Version History Modal Loader
+    async function openVersionHistoryModal(giftId) {
+      const modal = document.getElementById('versionModal');
+      const listContainer = document.getElementById('versionModalList');
+      const titleEl = document.getElementById('versionModalTitle');
+      if (!modal || !listContainer) return;
+
+      const parentGift = myGifts.find(g => g.id === giftId);
+      if (parentGift) {
+        const rName = parentGift.content?.recipientName || 'Elena';
+        titleEl.textContent = `${rName}'s Version History`;
+      }
+
+      listContainer.innerHTML = `
+        <div class="py-8 text-center text-ink-400">
+          <span class="inline-block w-6 h-6 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></span>
+          <p class="text-xs mt-2">Loading snapshot history...</p>
+        </div>
+      `;
+      modal.classList.remove('hidden');
+
+      try {
+        const { data: versions, error } = await supabase
+          .from('gift_versions')
+          .select('*')
+          .eq('gift_id', giftId)
+          .order('version_number', { ascending: false });
+
+        if (error) throw error;
+
+        const currentVerNum = parentGift?.version || 1;
+        let itemsHtml = `
+          <!-- Current Live Version Item -->
+          <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm text-ink-900">Version ${currentVerNum}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">Live Active</span>
+              </div>
+              <p class="text-xs text-ink-500 mt-0.5">Updated ${new Date(parentGift?.updated_at || parentGift?.created_at).toLocaleString()}</p>
+            </div>
+            <a href="./gift.html?slug=${parentGift?.slug}" target="_blank" class="px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs transition-colors">
+              View Live ↗
+            </a>
+          </div>
+        `;
+
+        if (versions && versions.length > 0) {
+          itemsHtml += versions.map(v => {
+            const vDate = new Date(v.published_at || v.created_at).toLocaleString();
+            const vRecName = v.content?.recipientName || 'Recipient';
+            return `
+              <div class="p-4 rounded-2xl bg-parchment-50 border border-parchment-200 flex items-center justify-between gap-4">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-sm text-ink-900">Version ${v.version_number}</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-200 text-slate-700">Archived Snapshot</span>
+                  </div>
+                  <p class="text-xs text-ink-500 mt-0.5">Published ${vDate} &bull; ${vRecName}</p>
+                </div>
+                <a href="./preview.html?versionId=${v.id}" target="_blank" class="px-3.5 py-1.5 rounded-full bg-white hover:bg-parchment-100 text-ink-800 border border-parchment-300 text-xs font-semibold shadow-2xs transition-colors">
+                  Preview v${v.version_number} ↗
+                </a>
+              </div>
+            `;
+          }).join('');
+        } else {
+          itemsHtml += `
+            <div class="p-4 rounded-2xl bg-parchment-50/50 border border-parchment-200 text-center text-xs text-ink-400 italic">
+              This is the original version of this gift. Any future edits will be archived here as version snapshots.
+            </div>
+          `;
+        }
+
+        listContainer.innerHTML = itemsHtml;
+
+      } catch (e) {
+        console.error('Error fetching versions:', e);
+        listContainer.innerHTML = `<div class="p-4 text-center text-xs text-rose-600">Failed to load history: ${e.message}</div>`;
+      }
+    }
+
+    document.getElementById('btnCloseVersionModal')?.addEventListener('click', () => {
+      document.getElementById('versionModal')?.classList.add('hidden');
+    });
+
+    // 7. Delete Draft Handler
     async function deleteDraft(draftId) {
       try {
         const { error } = await supabase
@@ -524,7 +728,6 @@
           .eq('status', 'draft');
 
         if (!error) {
-          // If deleted draft matches local draft id, remove it
           if (localStorage.getItem('gift_draft_id') === draftId) {
             localStorage.removeItem('gift_draft_id');
           }
@@ -537,7 +740,7 @@
       }
     }
 
-    // 6. QR Code Modal
+    // 8. QR Code Modal
     function openQrModal(url, title) {
       const modal = document.getElementById('qrModal');
       const img = document.getElementById('qrCodeImage');
@@ -564,7 +767,7 @@
       }
     });
 
-    // 7. Logout Handler
+    // 9. Logout Handler
     document.getElementById('btnLogout')?.addEventListener('click', async () => {
       await supabase.auth.signOut();
       window.location.replace('./login.html');

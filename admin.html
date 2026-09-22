@@ -414,6 +414,30 @@
           </div>
         </div>
 
+        <!-- Pending Revision Notice Bar (if editing a live gift) -->
+        <div id="detailRevisionBar" class="hidden p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <div>
+            <span class="font-bold">⚠️ Pending Revision Draft</span> — editing live gift <span id="detailRevisesIdText" class="font-mono font-semibold"></span>. Changes will not go live until paid.
+          </div>
+          <button id="btnInspectOriginalGift" type="button" class="px-3 py-1 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-[11px] transition-colors flex-shrink-0">
+            Inspect Live Original &rarr;
+          </button>
+        </div>
+
+        <!-- Version History Selector (v1, v2, etc.) -->
+        <div id="detailVersionsContainer" class="hidden p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-800 uppercase tracking-wider">Version History</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-mono font-bold" id="detailVersionCountBadge">1 version</span>
+            </div>
+            <span id="detailVersionNotice" class="text-[11px] text-slate-500 font-medium">Viewing Active Version</span>
+          </div>
+          <div id="detailVersionTabs" class="flex flex-wrap gap-2 pt-0.5">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
         <!-- Public Share URL Bar (if paid) -->
         <div id="detailSlugBar" class="hidden p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-3 text-xs">
           <div class="flex items-center gap-2 truncate">
@@ -872,11 +896,20 @@
         statusBadge += ` <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-100 text-amber-800">Refunded</span>`;
       }
 
+      const versionBadge = `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200">v${g.version || 1}</span>`;
+      const revisionBadge = g.revises_gift_id ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200" title="Revision for ${g.revises_gift_id}">Revision</span>` : '';
+
       return `
         <tr class="hover:bg-slate-50/80 transition-colors">
           <td class="py-3 px-4 font-bold text-slate-900">${recName}</td>
           <td class="py-3 px-4 text-slate-600">${expName} <span class="text-slate-400">(${themeName})</span></td>
-          <td class="py-3 px-4">${statusBadge}</td>
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              ${statusBadge}
+              ${versionBadge}
+              ${revisionBadge}
+            </div>
+          </td>
           <td class="py-3 px-4 font-bold ${isPaid ? 'text-emerald-700' : 'text-slate-400'}">${price}</td>
           <td class="py-3 px-4 text-slate-500 font-normal">${dateStr}</td>
           <td class="py-3 px-4">${identifier}</td>
@@ -890,6 +923,9 @@
     }
 
     // 9. Order Detail Inspector & Live Preview Sync
+    let currentModalGift = null;
+    let currentModalVersions = [];
+
     function buildGiftPayload(gift) {
       if (!gift) return null;
       const giftContent = (typeof gift.content === 'object' && gift.content !== null) ? gift.content : {};
@@ -920,12 +956,13 @@
       return payload;
     }
 
-    function syncPreviewIframe(targetScene = 1) {
-      if (!currentSelectedGift) return;
+    function syncPreviewIframe(targetScene = 1, customGift = null) {
+      const gift = customGift || currentSelectedGift;
+      if (!gift) return;
       const iframe = document.getElementById('adminPreviewIframe');
       if (!iframe || !iframe.contentWindow) return;
       
-      const payload = buildGiftPayload(currentSelectedGift);
+      const payload = buildGiftPayload(gift);
       if (!payload) return;
 
       try {
@@ -939,21 +976,74 @@
       }
     }
 
-    function openOrderDetail(gift) {
+    function renderModalAssetsAndMeta(record, isArchived = false, versionNumber = null) {
+      const recName = record.content?.recipientName || 'Elena';
+      document.getElementById('detailRecipientTitle').textContent = `${recName}'s Birthday Experience ${isArchived ? `(v${versionNumber} Snapshot)` : `(v${record.version || 1})`}`;
+      
+      const expSlug = record.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film';
+      const themeId = record.theme_id || record.content?.themeId || (expSlug === 'birthday-film-glass' ? 'glass' : 'paper');
+      document.getElementById('detailExpTheme').textContent = `${expSlug} (${themeId})`;
+      
+      if (isArchived) {
+        document.getElementById('detailPricePaid').textContent = record.price_paid ? `₹${parseFloat(record.price_paid).toFixed(2)} (Archived)` : '—';
+        document.getElementById('detailPaymentId').textContent = record.razorpay_payment_id || 'None';
+        document.getElementById('detailCreatedDate').textContent = `${new Date(record.created_at).toLocaleString()} (Archived)`;
+        document.getElementById('detailVersionNotice').textContent = `Viewing Archived Snapshot v${versionNumber}`;
+      } else {
+        document.getElementById('detailPricePaid').textContent = record.status === 'paid' ? `₹${parseFloat(record.price_paid || 100).toFixed(2)}` : '₹0.00 (Draft)';
+        document.getElementById('detailPaymentId').textContent = record.razorpay_payment_id || 'None (Unpaid)';
+        document.getElementById('detailCreatedDate').textContent = new Date(record.created_at).toLocaleString();
+        document.getElementById('detailVersionNotice').textContent = `Viewing Live Active Version v${record.version || 1}`;
+      }
+
+      // Photos
+      const photosContainer = document.getElementById('detailPhotosList');
+      const photos = (record.photo_urls && Array.isArray(record.photo_urls)) ? record.photo_urls.filter(Boolean) : (record.content?.scenes?.scene6_wallOfUs?.photos || []).filter(Boolean);
+      if (photos.length > 0) {
+        photosContainer.innerHTML = photos.map((url, i) => `
+          <a href="${url}" target="_blank" class="block w-14 h-14 rounded-lg overflow-hidden border border-slate-300 hover:border-slate-800 transition-colors shadow-2xs group relative" title="View photo slot ${i + 1}">
+            <img src="${url}" class="w-full h-full object-cover" />
+          </a>
+        `).join('');
+      } else {
+        photosContainer.innerHTML = `<span class="text-slate-400 italic">No custom photos uploaded</span>`;
+      }
+
+      // Clips
+      const clipsContainer = document.getElementById('detailClipsList');
+      const clips = (record.clip_urls && Array.isArray(record.clip_urls)) ? record.clip_urls.filter(Boolean) : (record.content?.scenes?.scene7_memoryReel?.clips || []).filter(Boolean);
+      if (clips.length > 0) {
+        clipsContainer.innerHTML = clips.map((url, i) => `
+          <a href="${url}" target="_blank" class="block w-14 h-14 rounded-lg overflow-hidden border border-slate-300 bg-black hover:border-slate-800 transition-colors relative" title="Play clip ${i + 1}">
+            <video src="${url}" class="w-full h-full object-cover" muted></video>
+            <div class="absolute inset-0 flex items-center justify-center text-white bg-black/30 font-bold text-xs">▶</div>
+          </a>
+        `).join('');
+      } else {
+        clipsContainer.innerHTML = `<span class="text-slate-400 italic">No custom video clips uploaded</span>`;
+      }
+
+      // Music
+      const musicInfo = document.getElementById('detailMusicInfo');
+      const musicObj = record.music || record.content?.music;
+      if (musicObj?.trackType === 'custom' && musicObj?.customTrackUrl) {
+        musicInfo.innerHTML = `
+          <div class="font-semibold text-slate-800">Custom Audio Track</div>
+          <audio controls src="${musicObj.customTrackUrl}" class="w-full h-8 mt-1"></audio>
+          <div class="text-slate-500 text-[10px]">Starts loop at ${musicObj.startSeconds || 0}s</div>
+        `;
+      } else {
+        musicInfo.innerHTML = `<span class="text-slate-600">Default film track (starts loop at ${musicObj?.startSeconds || 27}s)</span>`;
+      }
+    }
+
+    async function openOrderDetail(gift) {
       currentSelectedGift = gift;
+      currentModalGift = gift;
       const modal = document.getElementById('orderDetailModal');
       if (!modal) return;
 
-      const recName = gift.content?.recipientName || 'Elena';
-      document.getElementById('detailRecipientTitle').textContent = `${recName}'s Birthday Experience`;
       document.getElementById('detailIdDisplay').textContent = `ID: ${gift.id}`;
-      
-      const expSlug = gift.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film';
-      const themeId = gift.theme_id || gift.content?.themeId || (expSlug === 'birthday-film-glass' ? 'glass' : 'paper');
-      document.getElementById('detailExpTheme').textContent = `${expSlug} (${themeId})`;
-      document.getElementById('detailPricePaid').textContent = gift.status === 'paid' ? `₹${parseFloat(gift.price_paid || 100).toFixed(2)}` : '₹0.00 (Draft)';
-      document.getElementById('detailPaymentId').textContent = gift.razorpay_payment_id || 'None (Unpaid)';
-      document.getElementById('detailCreatedDate').textContent = new Date(gift.created_at).toLocaleString();
 
       const statusBadge = document.getElementById('detailStatusBadge');
       const statusDot = document.getElementById('detailStatusDot');
@@ -970,6 +1060,20 @@
       }
 
       refundBadge.classList.toggle('hidden', !gift.refunded);
+
+      // Revision Notice
+      const revBar = document.getElementById('detailRevisionBar');
+      if (gift.revises_gift_id) {
+        revBar.classList.remove('hidden');
+        document.getElementById('detailRevisesIdText').textContent = gift.revises_gift_id;
+        document.getElementById('btnInspectOriginalGift').onclick = () => {
+          const original = allGifts.find(g => g.id === gift.revises_gift_id);
+          if (original) openOrderDetail(original);
+          else alert('Original live gift not found in current loaded list.');
+        };
+      } else {
+        revBar.classList.add('hidden');
+      }
 
       // Public Slug Bar
       const slugBar = document.getElementById('detailSlugBar');
@@ -989,50 +1093,108 @@
         refundBtn.classList.toggle('hidden', gift.status !== 'paid');
       }
 
-      // Populate Media Assets
-      const photosContainer = document.getElementById('detailPhotosList');
-      const photos = (gift.photo_urls && Array.isArray(gift.photo_urls)) ? gift.photo_urls.filter(Boolean) : (gift.content?.scenes?.scene6_wallOfUs?.photos || []).filter(Boolean);
-      if (photos.length > 0) {
-        photosContainer.innerHTML = photos.map((url, i) => `
-          <a href="${url}" target="_blank" class="block w-14 h-14 rounded-lg overflow-hidden border border-slate-300 hover:border-slate-800 transition-colors shadow-2xs group relative" title="View photo slot ${i + 1}">
-            <img src="${url}" class="w-full h-full object-cover" />
-          </a>
-        `).join('');
-      } else {
-        photosContainer.innerHTML = `<span class="text-slate-400 italic">No custom photos uploaded</span>`;
+      // Render default live meta & assets
+      renderModalAssetsAndMeta(gift, false);
+
+      // Fetch Version History from Supabase
+      const versionsContainer = document.getElementById('detailVersionsContainer');
+      const versionTabs = document.getElementById('detailVersionTabs');
+      const versionCountBadge = document.getElementById('detailVersionCountBadge');
+      
+      const targetGiftId = gift.revises_gift_id || gift.id;
+      currentModalVersions = [];
+
+      if (supabase) {
+        try {
+          const { data: vData } = await supabase
+            .from('gift_versions')
+            .select('*')
+            .eq('gift_id', targetGiftId)
+            .order('version_number', { ascending: true });
+          
+          if (vData && vData.length > 0) {
+            currentModalVersions = vData;
+          }
+        } catch (e) {
+          console.warn('Failed to load version history for admin:', e);
+        }
       }
 
-      const clipsContainer = document.getElementById('detailClipsList');
-      const clips = (gift.clip_urls && Array.isArray(gift.clip_urls)) ? gift.clip_urls.filter(Boolean) : (gift.content?.scenes?.scene7_memoryReel?.clips || []).filter(Boolean);
-      if (clips.length > 0) {
-        clipsContainer.innerHTML = clips.map((url, i) => `
-          <a href="${url}" target="_blank" class="block w-14 h-14 rounded-lg overflow-hidden border border-slate-300 bg-black hover:border-slate-800 transition-colors relative" title="Play clip ${i + 1}">
-            <video src="${url}" class="w-full h-full object-cover" muted></video>
-            <div class="absolute inset-0 flex items-center justify-center text-white bg-black/30 font-bold text-xs">▶</div>
-          </a>
-        `).join('');
-      } else {
-        clipsContainer.innerHTML = `<span class="text-slate-400 italic">No custom video clips uploaded</span>`;
-      }
+      const totalVersionCount = currentModalVersions.length + (gift.status === 'paid' ? 1 : (gift.version || 1 > 1 ? 1 : 0));
+      
+      if (currentModalVersions.length > 0 || (gift.version && gift.version > 1)) {
+        versionsContainer.classList.remove('hidden');
+        versionCountBadge.textContent = `${currentModalVersions.length + 1} versions`;
 
-      const musicInfo = document.getElementById('detailMusicInfo');
-      const musicObj = gift.music || gift.content?.music;
-      if (musicObj?.trackType === 'custom' && musicObj?.customTrackUrl) {
-        musicInfo.innerHTML = `
-          <div class="font-semibold text-slate-800">Custom Audio Track</div>
-          <audio controls src="${musicObj.customTrackUrl}" class="w-full h-8 mt-1"></audio>
-          <div class="text-slate-500 text-[10px]">Starts loop at ${musicObj.startSeconds || 0}s</div>
+        // Render Tabs
+        let tabsHtml = '';
+        currentModalVersions.forEach(v => {
+          tabsHtml += `
+            <button type="button" class="btn-version-tab px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-800 bg-white text-slate-700 font-semibold text-xs transition-all shadow-2xs flex items-center gap-1.5" data-version-id="${v.id}" data-version-num="${v.version_number}">
+              <span class="font-mono font-bold text-slate-900">v${v.version_number}</span>
+              <span class="text-[10px] text-slate-500 font-normal">(Archived)</span>
+            </button>
+          `;
+        });
+
+        // Active Live Tab
+        const liveVerNum = gift.version || (currentModalVersions.length + 1);
+        tabsHtml += `
+          <button type="button" class="btn-version-tab active-tab px-3 py-1.5 rounded-lg border border-emerald-600 bg-emerald-600 text-white font-semibold text-xs transition-all shadow-2xs flex items-center gap-1.5" data-live="true">
+            <span class="font-mono font-bold">v${liveVerNum}</span>
+            <span class="text-[10px] font-bold text-emerald-100">(Active Live)</span>
+          </button>
         `;
+
+        versionTabs.innerHTML = tabsHtml;
+
+        // Wire Tab Click Listeners
+        versionTabs.querySelectorAll('.btn-version-tab').forEach(tabBtn => {
+          tabBtn.addEventListener('click', () => {
+            versionTabs.querySelectorAll('.btn-version-tab').forEach(b => {
+              b.classList.remove('active-tab', 'border-emerald-600', 'bg-emerald-600', 'text-white');
+              b.classList.add('border-slate-300', 'bg-white', 'text-slate-700');
+            });
+            tabBtn.classList.add('active-tab', 'border-emerald-600', 'bg-emerald-600', 'text-white');
+            tabBtn.classList.remove('border-slate-300', 'bg-white', 'text-slate-700');
+
+            const isLive = tabBtn.getAttribute('data-live') === 'true';
+            if (isLive) {
+              renderModalAssetsAndMeta(gift, false);
+              const expSlug = gift.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film';
+              const themeId = gift.theme_id || gift.content?.themeId || (expSlug === 'birthday-film-glass' ? 'glass' : 'paper');
+              const iframe = document.getElementById('adminPreviewIframe');
+              if (iframe) {
+                iframe.onload = () => syncPreviewIframe(1, gift);
+                iframe.src = `./preview.html?experience=${encodeURIComponent(expSlug)}&theme=${encodeURIComponent(themeId)}&admin=true`;
+              }
+            } else {
+              const vId = tabBtn.getAttribute('data-version-id');
+              const vRecord = currentModalVersions.find(v => v.id === vId);
+              if (vRecord) {
+                renderModalAssetsAndMeta(vRecord, true, vRecord.version_number);
+                const iframe = document.getElementById('adminPreviewIframe');
+                if (iframe) {
+                  iframe.onload = null;
+                  iframe.src = `./preview.html?versionId=${encodeURIComponent(vRecord.id)}&admin=true`;
+                }
+              }
+            }
+          });
+        });
+
       } else {
-        musicInfo.innerHTML = `<span class="text-slate-600">Default film track (starts loop at ${musicObj?.startSeconds || 27}s)</span>`;
+        versionsContainer.classList.add('hidden');
       }
 
       // Sync Live Preview Iframe with gift's GIFT_DATA
+      const expSlug = gift.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film';
+      const themeId = gift.theme_id || gift.content?.themeId || (expSlug === 'birthday-film-glass' ? 'glass' : 'paper');
       const iframe = document.getElementById('adminPreviewIframe');
       if (iframe) {
         iframe.onload = () => {
-          syncPreviewIframe(1);
-          setTimeout(() => syncPreviewIframe(1), 300);
+          syncPreviewIframe(1, gift);
+          setTimeout(() => syncPreviewIframe(1, gift), 300);
         };
         iframe.src = `./preview.html?experience=${encodeURIComponent(expSlug)}&theme=${encodeURIComponent(themeId)}&admin=true`;
       }

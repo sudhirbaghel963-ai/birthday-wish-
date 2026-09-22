@@ -73,7 +73,7 @@ serve(async (req: Request): Promise<Response> => {
     // 5. Fetch Draft Gift
     const { data: gift, error: fetchErr } = await supabase
       .from('gifts')
-      .select('id, status, slug, content, experience_id, theme_id')
+      .select('id, status, slug, content, experience_id, theme_id, revises_gift_id')
       .eq('id', giftId)
       .maybeSingle();
 
@@ -125,6 +125,7 @@ serve(async (req: Request): Promise<Response> => {
       receipt: `rcpt_${giftId.substring(0, 18)}`,
       notes: {
         gift_id: giftId,
+        revises_gift_id: gift.revises_gift_id || null,
         experience_id: targetExpId,
         experience_name: (expRow && expRow.name) || targetExpId,
         recipient: (gift.content && typeof gift.content === 'object' && gift.content.recipientName) || 'Elena',

@@ -1253,6 +1253,16 @@ Happy Birthday. I mean it.</textarea>
           <span>Total Price:</span>
           <span class="text-base text-rose-600 font-serif" id="summaryTotalPrice">₹100 <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span></span>
         </div>
+
+        <!-- Admin discount row (hidden by default) -->
+        <div id="adminDiscountRow" class="hidden pt-2 border-t border-emerald-200 flex justify-between items-center text-xs font-semibold text-emerald-700">
+          <span>✦ Admin Complimentary Discount:</span>
+          <span id="adminDiscountAmount">−₹100</span>
+        </div>
+        <div id="adminTotalRow" class="hidden flex justify-between items-center text-sm font-bold text-emerald-700">
+          <span>Total Due:</span>
+          <span class="text-base font-serif">₹0.00 <span class="text-xs font-sans font-normal">(Free)</span></span>
+        </div>
       </div>
 
       <!-- Publish Error Notification -->
@@ -1262,14 +1272,20 @@ Happy Birthday. I mean it.</textarea>
       </div>
 
       <div class="space-y-3">
-        <!-- Razorpay Secure Checkout Button -->
+        <!-- Razorpay Secure Checkout Button (hidden when admin) -->
         <button id="btnTestModePublish" type="button" class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-velvet-900 via-velvet-800 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-sm transition-all shadow-md shadow-rose-600/25 flex items-center justify-center gap-2 transform hover:-translate-y-0.5 cursor-pointer">
           <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
           <span id="btnPublishText">Pay Now · ₹100</span>
           <span class="text-gold-300">✦</span>
         </button>
 
-        <div class="flex items-center justify-center gap-2 text-[11px] text-ink-400">
+        <!-- Admin Free Publish Button (shown only when admin logged in) -->
+        <button id="btnAdminFreePublish" type="button" class="hidden w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-emerald-700 to-emerald-500 hover:from-emerald-600 hover:to-emerald-400 text-white font-semibold text-sm transition-all shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2 transform hover:-translate-y-0.5 cursor-pointer">
+          <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          <span id="btnAdminFreePublishText">✦ Publish for Free (Admin)</span>
+        </button>
+
+        <div id="securePaymentBadge" class="flex items-center justify-center gap-2 text-[11px] text-ink-400">
           <span>🔒 256-bit SSL Encrypted</span>
           <span>•</span>
           <span>Razorpay Secure</span>
@@ -1553,6 +1569,25 @@ Happy Birthday. I mean it.</textarea>
           .update({ owner_id: currentUser.id })
           .eq('id', draftId)
           .is('owner_id', null);
+
+        // --- Admin Detection ---
+        window.isAdminUser = false;
+        if (currentUser && currentUser.email) {
+          try {
+            const { data: adminRow } = await supabase
+              .from('admin_users')
+              .select('id')
+              .eq('email', currentUser.email.toLowerCase().trim())
+              .maybeSingle();
+            if (adminRow) {
+              window.isAdminUser = true;
+              console.log('[editor] Admin user detected:', currentUser.email);
+            }
+          } catch (_e) {
+            // non-critical
+          }
+        }
+        applyAdminUI();
       } catch (err) {
         console.warn('Auth check failed:', err);
       }
@@ -3266,6 +3301,92 @@ Happy Birthday. I mean it.</textarea>
     }
 
     // Connect Pay Now Razorpay Checkout button
+    // ── Admin UI Toggle ──────────────────────────────────────────
+    const btnAdminFreePublish   = document.getElementById('btnAdminFreePublish');
+    const btnAdminFreePublishTx = document.getElementById('btnAdminFreePublishText');
+    const adminDiscountRow      = document.getElementById('adminDiscountRow');
+    const adminDiscountAmount   = document.getElementById('adminDiscountAmount');
+    const adminTotalRow         = document.getElementById('adminTotalRow');
+    const securePaymentBadge    = document.getElementById('securePaymentBadge');
+
+    function applyAdminUI() {
+      if (!window.isAdminUser) return;
+      // Swap buttons
+      if (btnPublish)           { btnPublish.classList.add('hidden'); }
+      if (btnAdminFreePublish)  { btnAdminFreePublish.classList.remove('hidden'); }
+      // Show discount rows
+      if (adminDiscountRow)     { adminDiscountRow.classList.remove('hidden'); adminDiscountRow.classList.add('flex'); }
+      if (adminTotalRow)        { adminTotalRow.classList.remove('hidden'); adminTotalRow.classList.add('flex'); }
+      // Hide Razorpay secure badge (irrelevant for free publish)
+      if (securePaymentBadge)   { securePaymentBadge.classList.add('hidden'); }
+      // Update discount amount label
+      if (adminDiscountAmount)  { adminDiscountAmount.textContent = `−₹${currentExperiencePriceInr}`; }
+    }
+
+    // Admin Free Publish click handler
+    if (btnAdminFreePublish) {
+      btnAdminFreePublish.addEventListener('click', async () => {
+        if (!window.isAdminUser) { alert('Unauthorized: Admin only.'); return; }
+
+        btnAdminFreePublish.disabled = true;
+        if (btnAdminFreePublishTx) btnAdminFreePublishTx.textContent = 'Publishing…';
+
+        try {
+          // 1. Save the latest draft to Supabase first
+          if (supabase && currentUser) {
+            await supabase.from('gifts').upsert({
+              id: draftId,
+              owner_id: currentUser.id,
+              experience_id: expParam || 'birthday-film',
+              theme_id: editorState.themeId || 'paper',
+              revises_gift_id: revisesGiftId || null,
+              content: editorState,
+              photo_urls: editorState.scenes?.scene6_wallOfUs?.photos || [],
+              clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
+              music: editorState.music || {},
+              status: 'draft',
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'id' });
+          }
+
+          // 2. Call publish-admin-gift edge function
+          const endpoint = `${SUPABASE_URL}/functions/v1/publish-admin-gift`;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+            body: JSON.stringify({
+              gift_id: draftId,
+              admin_email: 'sudhirbaghel963@gmail.com',
+              admin_password: 'Qwerty#2005',
+            }),
+          });
+
+          const result = await response.json();
+          if (!response.ok || !result.success) {
+            throw new Error(result?.error || `Admin publish failed (${response.status})`);
+          }
+
+          const publishedSlug = result.slug;
+
+          // 3. Show the gift-ready modal (same as after Razorpay success)
+          await openGiftReadyModal(publishedSlug, editorState.recipientName, result.is_revision || false);
+
+        } catch (err) {
+          console.error('[admin-publish] Error:', err);
+          const alertEl = document.getElementById('publishErrorAlert');
+          const msgEl   = document.getElementById('publishErrorMessage');
+          if (alertEl && msgEl) {
+            msgEl.textContent = err.message || 'Admin publish failed. Please try again.';
+            alertEl.classList.remove('hidden');
+            alertEl.classList.add('flex');
+          }
+        } finally {
+          btnAdminFreePublish.disabled = false;
+          if (btnAdminFreePublishTx) btnAdminFreePublishTx.textContent = '✦ Publish for Free (Admin)';
+        }
+      });
+    }
+
     if (btnPublish) {
       btnPublish.disabled = false;
       btnPublish.classList.remove('opacity-50', 'cursor-not-allowed');

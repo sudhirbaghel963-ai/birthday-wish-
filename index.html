@@ -8,10 +8,10 @@
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 
-  <!-- Google Fonts: Cormorant Garamond & Plus Jakarta Sans -->
+  <!-- Google Fonts: Cormorant Garamond, Plus Jakarta Sans, Fraunces -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CSS v3 with Plugins -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -21,31 +21,39 @@
         extend: {
           colors: {
             brand: {
-              dark: '#080506',
-              surface: '#110c0e',
-              card: '#161013',
-              cardBorder: 'rgba(217, 168, 155, 0.16)',
-              rose: '#f4c7bf',
-              roseHover: '#ffd5cd',
-              accent: '#d9a89b',
-              gold: '#e0b88f',
-              muted: '#9e8d91'
+              bg: '#fcf8f5',
+              cream: '#fbf3ee',
+              card: '#ffffff',
+              cardBorder: 'rgba(235, 203, 192, 0.45)',
+              ink: '#2b131c',
+              inkSoft: '#5e434c',
+              muted: '#8e757e',
+              rose: '#d4235c',
+              roseHover: '#bd184e',
+              roseLight: '#fde8ef',
+              roseSoft: '#f7cfdb',
+              gold: '#c98a2c',
+              goldLight: '#fdf3dd',
             }
           },
           fontFamily: {
             serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
             sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          },
+          boxShadow: {
+            'luxury-soft': '0 12px 36px -8px rgba(184, 84, 110, 0.08), 0 2px 10px rgba(0, 0, 0, 0.03)',
+            'luxury-hover': '0 20px 45px -10px rgba(184, 84, 110, 0.16), 0 4px 16px rgba(212, 35, 92, 0.08)',
+            'rose-pill': '0 6px 22px rgba(212, 35, 92, 0.28)',
           }
         }
       }
     }
   </script>
 
-  <!-- Custom Typography & Glow Effects -->
-  <style data-purpose="custom-typography-and-effects">
+  <style>
     body {
-      background-color: #080506;
-      color: #ede4e5;
+      background-color: #fcf8f5;
+      color: #2b131c;
       font-family: 'Plus Jakarta Sans', sans-serif;
       overflow-x: hidden;
     }
@@ -53,84 +61,86 @@
       font-family: 'Cormorant Garamond', Georgia, serif;
     }
     .glow-radial-hero {
-      background: radial-gradient(circle at 75% 35%, rgba(198, 120, 102, 0.22) 0%, rgba(138, 64, 76, 0.12) 35%, transparent 70%);
+      background: radial-gradient(circle at 70% 30%, rgba(253, 218, 226, 0.6) 0%, rgba(251, 243, 238, 0.4) 40%, transparent 75%);
     }
-    .glow-radial-center {
-      background: radial-gradient(circle at 50% 20%, rgba(184, 114, 98, 0.15) 0%, transparent 65%);
+    .glow-radial-sub {
+      background: radial-gradient(circle at 50% 50%, rgba(254, 230, 236, 0.7) 0%, transparent 70%);
     }
     .glow-radial-phone {
-      background: radial-gradient(circle at 70% 50%, rgba(217, 168, 155, 0.25) 0%, rgba(115, 52, 65, 0.15) 45%, transparent 75%);
+      background: radial-gradient(circle at 30% 50%, rgba(253, 222, 215, 0.55) 0%, transparent 70%);
     }
-    .card-glass {
-      background: linear-gradient(180deg, rgba(28, 19, 23, 0.85) 0%, rgba(16, 11, 13, 0.95) 100%);
-      border: 1px solid rgba(220, 175, 163, 0.15);
+    .card-luxury {
+      background: #ffffff;
+      border: 1px solid rgba(235, 203, 192, 0.55);
       transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .card-glass:hover {
-      border-color: rgba(244, 199, 191, 0.45);
+    .card-luxury:hover {
+      border-color: rgba(212, 35, 92, 0.35);
       transform: translateY(-4px);
-      box-shadow: 0 12px 30px -10px rgba(217, 168, 155, 0.2);
+      box-shadow: 0 16px 36px -8px rgba(184, 84, 110, 0.14);
     }
     .custom-scrollbar::-webkit-scrollbar {
       height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(22, 16, 19, 0.6);
+      background: rgba(245, 225, 220, 0.5);
       border-radius: 9999px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(220, 175, 163, 0.3);
+      background: rgba(212, 35, 92, 0.35);
       border-radius: 9999px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: rgba(244, 199, 191, 0.5);
+      background: rgba(212, 35, 92, 0.6);
     }
-    @keyframes floatSlow {
-      0%, 100% { transform: translateY(0px) rotate(-12deg); }
-      50% { transform: translateY(-8px) rotate(-10deg); }
+    @keyframes floatPetal {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(5deg); }
     }
-    @keyframes floatSlowReverse {
-      0%, 100% { transform: translateY(0px) rotate(6deg); }
-      50% { transform: translateY(-10px) rotate(8deg); }
-    }
-    .floating-card-1 {
-      animation: floatSlow 6s ease-in-out infinite;
-    }
-    .floating-card-2 {
-      animation: floatSlowReverse 7s ease-in-out infinite;
+    .floating-petal {
+      animation: floatPetal 5s ease-in-out infinite;
     }
   </style>
 </head>
-<body class="selection:bg-brand-rose/20 selection:text-brand-rose relative bg-brand-dark min-h-screen flex flex-col">
+<body class="selection:bg-brand-roseLight selection:text-brand-rose relative bg-brand-bg min-h-screen flex flex-col antialiased">
+
+  <!-- Floating Ambient Petals -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+    <div class="floating-petal absolute top-24 left-[8%] text-rose-300/40 text-2xl">🌸</div>
+    <div class="floating-petal absolute top-[40%] right-[6%] text-rose-300/35 text-xl" style="animation-delay: 1.5s;">🌸</div>
+    <div class="floating-petal absolute top-[70%] left-[4%] text-rose-300/30 text-lg" style="animation-delay: 3s;">🌸</div>
+    <div class="floating-petal absolute top-[85%] right-[10%] text-rose-300/40 text-2xl" style="animation-delay: 2.2s;">🌸</div>
+  </div>
 
   <!-- BEGIN: NavigationBar -->
-  <header class="w-full relative z-40 border-b border-brand-cardBorder/30 backdrop-blur-md bg-brand-dark/80 sticky top-0" data-purpose="site-navigation">
-    <div class="max-w-7xl mx-auto px-6 sm:px-8 py-5 flex items-center justify-between">
+  <header class="w-full relative z-40 border-b border-brand-cardBorder/40 backdrop-blur-md bg-[#fcf8f5]/85 sticky top-0" data-purpose="site-navigation">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
+      
       <!-- Brand Logo -->
-      <a class="flex items-center gap-3 group" href="#home">
-        <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shadow-[0_0_12px_rgba(224,184,143,0.35)] transition-transform group-hover:scale-105" />
-        <span class="font-serif-luxury text-xl sm:text-2xl tracking-[0.22em] font-normal uppercase text-brand-rose drop-shadow-[0_2px_8px_rgba(244,199,191,0.2)]">
+      <a class="flex items-center gap-3 group focus:outline-none" href="#home">
+        <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shadow-sm transition-transform group-hover:scale-105" />
+        <span class="font-serif-luxury text-xl sm:text-2xl tracking-[0.18em] font-normal uppercase text-brand-ink drop-shadow-xs">
           Valvet &amp; Keepsake
         </span>
       </a>
 
       <!-- Desktop Navigation Links -->
-      <nav aria-label="Main Navigation" class="hidden md:flex items-center space-x-9 text-xs sm:text-sm tracking-widest uppercase font-light text-[#c3b1b4]">
-        <a class="hover:text-brand-rose transition-colors" href="#home">Home</a>
+      <nav aria-label="Main Navigation" class="hidden md:flex items-center space-x-8 text-xs sm:text-sm tracking-wider uppercase font-medium text-brand-inkSoft">
         <a class="hover:text-brand-rose transition-colors" href="#experiences">Experiences</a>
+        <a class="hover:text-brand-rose transition-colors" href="#how-it-works">How It Works</a>
         <a class="hover:text-brand-rose transition-colors" href="./preview.html">Watch Demo</a>
         <a class="hover:text-brand-rose transition-colors" id="navAuthLink" href="./login.html">Login</a>
       </nav>
 
       <!-- Nav Actions -->
       <div class="flex items-center space-x-4 sm:space-x-6">
-        <a class="cta-create-link bg-brand-rose text-brand-dark hover:bg-brand-roseHover px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium tracking-wide transition-all shadow-[0_0_20px_rgba(244,199,191,0.25)] hidden sm:inline-flex items-center gap-1.5" href="./login.html">
-          <span>Create Your Experience</span>
+        <a class="cta-create-link bg-gradient-to-r from-rose-600 to-brand-rose hover:from-rose-700 hover:to-brand-roseHover text-white px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-rose-pill hover:shadow-lg transform hover:-translate-y-0.5 hidden sm:inline-flex items-center gap-1.5" href="./login.html">
+          <span>Create an Experience</span>
           <span aria-hidden="true">&rarr;</span>
         </a>
 
         <!-- Mobile Menu Toggle Button -->
-        <button id="mobileMenuBtn" aria-label="Toggle navigation menu" class="md:hidden text-[#c3b1b4] hover:text-brand-rose p-1.5 focus:outline-none">
+        <button id="mobileMenuBtn" aria-label="Toggle navigation menu" class="md:hidden text-brand-ink hover:text-brand-rose p-1.5 focus:outline-none">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
@@ -139,14 +149,14 @@
     </div>
 
     <!-- Mobile Drawer Navigation -->
-    <div id="mobileMenu" class="hidden md:hidden border-t border-brand-cardBorder/20 bg-brand-surface/95 backdrop-blur-xl px-6 py-6 space-y-4">
-      <a class="mobile-nav-link block text-sm tracking-widest uppercase font-light text-[#c3b1b4] hover:text-brand-rose py-1.5" href="#home">Home</a>
-      <a class="mobile-nav-link block text-sm tracking-widest uppercase font-light text-[#c3b1b4] hover:text-brand-rose py-1.5" href="#experiences">Experiences</a>
-      <a class="mobile-nav-link block text-sm tracking-widest uppercase font-light text-[#c3b1b4] hover:text-brand-rose py-1.5" href="./preview.html">Watch Demo</a>
-      <a class="mobile-nav-link block text-sm tracking-widest uppercase font-light text-[#c3b1b4] hover:text-brand-rose py-1.5" id="mobileNavAuthLink" href="./login.html">Login</a>
+    <div id="mobileMenu" class="hidden md:hidden border-t border-brand-cardBorder/30 bg-[#fcf8f5]/95 backdrop-blur-xl px-6 py-5 space-y-3.5">
+      <a class="mobile-nav-link block text-sm tracking-wider uppercase font-medium text-brand-inkSoft hover:text-brand-rose py-1.5" href="#experiences">Experiences</a>
+      <a class="mobile-nav-link block text-sm tracking-wider uppercase font-medium text-brand-inkSoft hover:text-brand-rose py-1.5" href="#how-it-works">How It Works</a>
+      <a class="mobile-nav-link block text-sm tracking-wider uppercase font-medium text-brand-inkSoft hover:text-brand-rose py-1.5" href="./preview.html">Watch Demo</a>
+      <a class="mobile-nav-link block text-sm tracking-wider uppercase font-medium text-brand-inkSoft hover:text-brand-rose py-1.5" id="mobileNavAuthLink" href="./login.html">Login</a>
       <div class="pt-2">
-        <a class="cta-create-link w-full bg-brand-rose text-brand-dark hover:bg-brand-roseHover py-3 rounded-full text-xs font-semibold tracking-wide transition-all shadow-[0_0_20px_rgba(244,199,191,0.25)] flex items-center justify-center gap-1.5" href="./login.html">
-          <span>Create Your Experience</span>
+        <a class="cta-create-link w-full bg-gradient-to-r from-rose-600 to-brand-rose text-white py-3 rounded-full text-xs font-semibold tracking-wide transition-all shadow-rose-pill flex items-center justify-center gap-1.5" href="./login.html">
+          <span>Create an Experience</span>
           <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
@@ -154,503 +164,476 @@
   </header>
   <!-- END: NavigationBar -->
 
-  <main class="flex-grow">
-    <!-- BEGIN: HeroSection -->
-    <section class="relative overflow-hidden min-h-[700px] lg:min-h-[820px] flex items-center pt-8 pb-20 glow-radial-hero" data-purpose="hero-section" id="home">
-      <div class="max-w-7xl mx-auto px-6 sm:px-8 w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+  <main class="flex-grow relative z-10">
+    
+    <!-- ============================================================
+         1. HERO SECTION
+         ============================================================ -->
+    <section class="relative overflow-hidden pt-8 pb-16 sm:pb-24 glow-radial-hero" id="home">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         
         <!-- Hero Left Column: Headline and Call-To-Action -->
         <div class="lg:col-span-6 space-y-7 text-left">
-          <!-- Tagline with line accents -->
-          <div class="flex items-center space-x-3 text-brand-accent tracking-[0.25em] text-[11px] sm:text-xs uppercase font-light">
-            <span class="w-8 h-[1px] bg-brand-accent/50"></span>
-            <span>More Than A Wish</span>
-            <span class="w-8 h-[1px] bg-brand-accent/50"></span>
-          </div>
-
+          
           <!-- Main Title -->
-          <h1 class="font-serif-luxury text-4xl sm:text-6xl xl:text-7xl font-light text-[#f9edf0] leading-[1.12] tracking-tight">
-            Don’t just send<br />
-            a wish.<br />
-            <span class="italic text-brand-rose font-normal block mt-1">Make it an experience.</span>
+          <h1 class="font-serif-luxury text-4xl sm:text-6xl xl:text-7xl font-light text-brand-ink leading-[1.12] tracking-tight">
+            Don’t just send a wish.<br />
+            <span class="italic font-normal text-rose-600 block mt-1">Make it an experience.</span>
           </h1>
 
           <!-- Body Description -->
-          <p class="text-[#baabb0] text-sm sm:text-base max-w-md font-light leading-relaxed">
-            Create interactive digital birthday experiences that they can open, explore and remember — forever.
+          <p class="text-brand-inkSoft text-sm sm:text-base max-w-md font-light leading-relaxed">
+            Create a beautiful, interactive birthday experience made entirely for someone special.
           </p>
 
           <!-- Buttons Row -->
-          <div class="pt-2 flex flex-wrap items-center gap-4 sm:gap-6">
-            <a class="cta-create-link inline-flex items-center space-x-2 bg-brand-rose text-brand-dark px-7 py-3 rounded-full text-xs sm:text-sm font-medium tracking-wide shadow-[0_4px_25px_rgba(244,199,191,0.3)] hover:bg-brand-roseHover transition-all" href="./login.html">
-              <span>Create Your Experience</span>
+          <div class="pt-2 flex flex-wrap items-center gap-4 sm:gap-5">
+            <a class="cta-create-link inline-flex items-center space-x-2 bg-gradient-to-r from-rose-600 to-brand-rose hover:from-rose-700 hover:to-brand-roseHover text-white px-7 sm:px-8 py-3.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide shadow-rose-pill hover:shadow-lg transition-all transform hover:-translate-y-0.5" href="./login.html">
+              <span>Create Their Experience</span>
               <span class="text-sm" aria-hidden="true">&rarr;</span>
             </a>
-            <a href="./preview.html" class="inline-flex items-center space-x-3 text-[#dcd0d3] hover:text-white transition-colors text-xs sm:text-sm tracking-wide group">
-              <span class="w-8 h-8 rounded-full border border-brand-accent/40 flex items-center justify-center group-hover:border-brand-rose transition-colors">
-                <svg class="w-3 h-3 text-brand-rose fill-current ml-0.5" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"></path>
-                </svg>
-              </span>
-              <span>Watch How It Works</span>
+            <a href="./preview.html" class="inline-flex items-center space-x-2 bg-white hover:bg-brand-cream border border-brand-cardBorder/80 text-brand-ink px-6 sm:px-7 py-3.5 rounded-full text-xs sm:text-sm font-medium tracking-wide shadow-xs hover:border-brand-rose/40 transition-all">
+              <span>See How It Works</span>
             </a>
+          </div>
+
+          <!-- Delicate filigree heart flourish -->
+          <div class="text-rose-400 text-lg pt-1">
+            ♡
           </div>
         </div>
 
         <!-- Hero Right Column: Glowing Opened Gift Box with Floating Keepsake Cards -->
         <div class="lg:col-span-6 relative flex justify-center items-center">
-          <!-- Ambient lighting spheres -->
-          <div class="absolute w-72 h-72 sm:w-96 sm:h-96 bg-brand-accent/20 rounded-full blur-[90px] -z-10 pointer-events-none"></div>
-
-          <!-- Luminous Visual Stage -->
-          <div class="relative w-full max-w-[500px] aspect-[4/4] flex items-center justify-center">
-            
-            <!-- Floating Glowing Cards -->
-            <!-- Card 1: Glowing Birthday Cake -->
-            <div class="floating-card-1 absolute -top-4 sm:top-2 left-6 sm:left-10 w-28 sm:w-36 aspect-[4/5] rounded-xl bg-brand-surface/90 border border-brand-accent/40 shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_25px_rgba(244,199,191,0.25)] overflow-hidden z-20">
-              <div class="w-full h-full bg-gradient-to-b from-[#2d151c] to-[#0f090b] p-3 flex flex-col justify-between items-center text-center">
-                <div class="w-12 h-12 rounded-full bg-brand-accent/20 flex items-center justify-center my-auto shadow-[0_0_20px_rgba(224,184,143,0.4)]">
-                  <span class="text-2xl">🎂</span>
-                </div>
-                <div class="w-8 h-1 bg-brand-rose/40 rounded-full mb-1"></div>
-              </div>
-            </div>
-
-            <!-- Card 2: Glowing "Happy Birthday" Keepsake Card -->
-            <div class="floating-card-2 absolute top-2 sm:top-8 right-8 sm:right-14 w-32 sm:w-40 aspect-[3.8/5] rounded-xl bg-brand-surface/95 border border-brand-rose/50 shadow-[0_15px_40px_rgba(0,0,0,0.85),0_0_35px_rgba(244,199,191,0.35)] overflow-hidden z-30">
-              <div class="w-full h-full bg-gradient-to-br from-[#3b1e25] via-[#241318] to-[#0f080a] p-4 flex flex-col justify-center items-center text-center relative">
-                <div class="absolute inset-0 bg-gradient-to-t from-transparent via-brand-rose/10 to-transparent pointer-events-none"></div>
-                <p class="font-serif-luxury italic text-xl sm:text-2xl text-[#ffe3dc] leading-tight">Happy<br />Birthday</p>
-                <div class="w-6 h-[1px] bg-brand-accent/60 my-2"></div>
-                <span class="text-[10px] uppercase tracking-widest text-brand-rose/80 font-light">With Love</span>
-              </div>
-            </div>
-
-            <!-- Card 3: Mini Heart Keepsake Card -->
-            <div class="absolute top-20 right-0 w-20 sm:w-24 aspect-[4/5] rounded-lg bg-brand-surface border border-brand-accent/30 shadow-xl overflow-hidden transform rotate-12 z-20">
-              <div class="w-full h-full bg-[#1e1115] flex items-center justify-center text-center p-2">
-                <span class="text-brand-rose text-xl drop-shadow-[0_0_10px_rgba(244,199,191,0.6)]">♥</span>
-              </div>
-            </div>
-
-            <!-- The Velvet Keepsake Gift Box Base -->
-            <div class="relative w-72 sm:w-88 aspect-[1.15/1] rounded-2xl bg-gradient-to-b from-[#1c1216] via-[#100a0d] to-[#070405] border border-brand-accent/30 shadow-[0_20px_50px_rgba(0,0,0,0.9),0_0_50px_rgba(180,90,105,0.25)] flex flex-col items-center justify-end p-6 z-10">
-              <!-- Golden Ribbon Accent on Box -->
-              <div class="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-brand-accent/20 to-transparent pointer-events-none"></div>
-              <!-- Monogram Logo on Box Front -->
-              <div class="mb-3 flex flex-col items-center">
-                <img src="./logo.png" alt="VK Logo Emblem" class="w-12 h-12 rounded-full object-cover shadow-[0_0_15px_rgba(224,184,143,0.5)] border border-brand-accent/40" />
-                <div class="w-10 h-[1px] bg-brand-accent/30 mt-2"></div>
-              </div>
-              <!-- Floating Petals Decorative Accents -->
-              <span class="absolute -bottom-2 -left-4 text-brand-rose/60 text-lg blur-[0.5px]">🌸</span>
-              <span class="absolute top-1/2 -right-6 text-brand-accent/50 text-base blur-[0.5px]">🌸</span>
-            </div>
-
+          <div class="relative w-full max-w-[480px] sm:max-w-[520px] aspect-square rounded-3xl overflow-hidden p-2 sm:p-3 bg-gradient-to-b from-white/90 to-brand-cream/80 border border-brand-cardBorder/60 shadow-luxury-soft">
+            <img src="./assets/hero-gift-box.jpg" alt="Luxury Birthday Keepsake Gift Box" class="w-full h-full object-cover rounded-2xl shadow-inner transform hover:scale-[1.02] transition-transform duration-700" />
           </div>
         </div>
 
       </div>
     </section>
-    <!-- END: HeroSection -->
 
-    <!-- BEGIN: ExperiencesShowcase (11 Scenes in Exact Sequence) -->
-    <section class="py-24 relative z-10 border-t border-brand-cardBorder/20 glow-radial-center" data-purpose="experiences-carousel" id="experiences">
+    <!-- ============================================================
+         2. NARRATIVE SUB-HERO: "SOME MOMENTS DESERVE MORE THAN A MESSAGE"
+         ============================================================ -->
+    <section class="py-16 sm:py-20 relative glow-radial-sub text-center border-t border-brand-cardBorder/30">
+      <div class="max-w-4xl mx-auto px-6 space-y-4">
+        <p class="text-brand-gold uppercase tracking-[0.25em] text-[11px] sm:text-xs font-semibold">
+          More Than A Birthday Wish
+        </p>
+        <div class="text-rose-400 text-base" aria-hidden="true">♡</div>
+        <h2 class="font-serif-luxury text-3xl sm:text-5xl font-light text-brand-ink leading-tight">
+          Some moments deserve<br />
+          <span class="italic text-rose-600">more</span> than a message.
+        </h2>
+        <p class="text-brand-inkSoft text-xs sm:text-sm max-w-lg mx-auto font-light leading-relaxed">
+          Turn a simple birthday wish into a little journey they’ll open, explore and remember.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         3. 11 MOMENTS SHOWCASE (ONE UNFORGETTABLE EXPERIENCE)
+         ============================================================ -->
+    <section class="py-20 sm:py-24 relative border-t border-brand-cardBorder/30 bg-white/40" id="experiences">
       <div class="max-w-7xl mx-auto px-6 sm:px-8">
         
         <!-- Section Header -->
-        <div class="text-center max-w-2xl mx-auto mb-14 space-y-4">
-          <p class="text-brand-accent uppercase tracking-[0.25em] text-[11px] sm:text-xs font-light">
-            Choose Your Experience
-          </p>
-          <h2 class="font-serif-luxury text-3xl sm:text-5xl font-light text-[#f9edf0] leading-snug">
-            A world of moments,<br />
-            <span class="italic text-brand-rose">just for them.</span>
+        <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+          <h2 class="font-serif-luxury text-3xl sm:text-5xl font-light text-brand-ink leading-snug">
+            11 moments.<br />
+            <span class="italic text-rose-600">One unforgettable experience.</span>
           </h2>
-          <p class="text-[#a49699] text-xs sm:text-sm font-light leading-relaxed">
-            From playful surprises to heartfelt memories — explore the 11 cinematic scenes that make their day truly unforgettable.
-          </p>
+          <div class="text-rose-400 text-base" aria-hidden="true">♡</div>
         </div>
 
-        <!-- Experiences Cards Container: Horizontal Scroll on Mobile, Refined Responsive Grid -->
-        <div class="flex xl:grid xl:grid-cols-11 gap-3 sm:gap-4 overflow-x-auto pb-6 custom-scrollbar snap-x touch-pan-x">
+        <!-- 11 Scenes Visual Cards Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
           
-          <!-- Scene 1: Bow & Arrow (Act 1) -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🏹</span>
+          <!-- Scene 1: Bow & Arrow -->
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">1</span>
+              <img src="./assets/scene-1-bow.jpg" alt="Bow &amp; Arrow" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Bow &amp; Arrow</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">Draw the bow, find their heart.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">Bow &amp; Arrow</h3>
+              <p class="text-[11px] text-brand-muted font-light">It all begins with a smile.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview Bow & Arrow Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview Bow &amp; Arrow">&rarr;</a>
           </article>
 
           <!-- Scene 2: Gift Box -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎁</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">2</span>
+              <img src="./assets/scene-2-gift.jpg" alt="Gift Box" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Gift Box</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">A beautiful surprise, waiting to be opened.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">Gift Box</h3>
+              <p class="text-[11px] text-brand-muted font-light">A special delivery, just for them.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview Gift Box Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview Gift Box">&rarr;</a>
           </article>
 
           <!-- Scene 3: Secret PIN Lock -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🔒</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">3</span>
+              <img src="./assets/scene-3-pin.jpg" alt="Secret PIN Lock" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Secret PIN Lock</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">Unlock a world of surprises.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">Secret PIN Lock</h3>
+              <p class="text-[11px] text-brand-muted font-light">A little secret opens the door.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview Secret PIN Lock Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview Secret PIN Lock">&rarr;</a>
           </article>
 
           <!-- Scene 4: Curtain Reveal -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎭</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">4</span>
+              <img src="./assets/scene-4-curtain.jpg" alt="Curtain Reveal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Curtain Reveal</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">Let the magic unfold.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">Curtain Reveal</h3>
+              <p class="text-[11px] text-brand-muted font-light">A moment worth the wait.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview Curtain Reveal Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview Curtain Reveal">&rarr;</a>
           </article>
 
           <!-- Scene 5: Cake & Countdown -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎂</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">5</span>
+              <img src="./assets/scene-5-cake.jpg" alt="Cake &amp; Countdown" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Cake &amp; Candles</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">Because every birthday deserves a celebration.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">Cake &amp; Candles</h3>
+              <p class="text-[11px] text-brand-muted font-light">The countdown to their day!</p>
             </div>
-            <a href="./preview.html" aria-label="Preview Cake & Countdown Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview Cake &amp; Countdown">&rarr;</a>
           </article>
 
           <!-- Scene 6: Wall of Us -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🖼️</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">6</span>
+              <img src="./assets/scene-6-wall.jpg" alt="Wall of Us" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Wall of Us</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">Every moment, pinned to memory.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">Wall of Us</h3>
+              <p class="text-[11px] text-brand-muted font-light">Memories that mean everything.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview Wall of Us Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview Wall of Us">&rarr;</a>
           </article>
 
           <!-- Scene 7: Memory Reel -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎞️</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">7</span>
+              <img src="./assets/scene-7-reel.jpg" alt="Memory Reel" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Memory Reel</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">Relive the moments that matter.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">Memory Reel</h3>
+              <p class="text-[11px] text-brand-muted font-light">A reel full of our moments.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview Memory Reel Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview Memory Reel">&rarr;</a>
           </article>
 
           <!-- Scene 8: Balloon Pop -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎈</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">8</span>
+              <img src="./assets/scene-8-balloon.jpg" alt="Balloon Pop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Balloon Pop</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">Pop the wishes, one by one.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">Balloon Pop</h3>
+              <p class="text-[11px] text-brand-muted font-light">Pop the wishes, one by one.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview Balloon Pop Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview Balloon Pop">&rarr;</a>
           </article>
 
           <!-- Scene 9: The Letter -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">💌</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">9</span>
+              <img src="./assets/scene-9-letter.jpg" alt="The Letter" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">The Letter</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">A message from the heart.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">The Letter</h3>
+              <p class="text-[11px] text-brand-muted font-light">Words straight from the heart.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview The Letter Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview The Letter">&rarr;</a>
           </article>
 
           <!-- Scene 10: Fireworks -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎆</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">10</span>
+              <img src="./assets/scene-10-fireworks.jpg" alt="Fireworks" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Fireworks</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">Because some moments deserve to light up.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">Fireworks</h3>
+              <p class="text-[11px] text-brand-muted font-light">Because this moment shines.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview Fireworks Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview Fireworks">&rarr;</a>
           </article>
 
           <!-- Scene 11: The Final Toast -->
-          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
-            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
-              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🥂</span>
+          <article class="card-luxury rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between items-center text-center group col-span-2 sm:col-span-1">
+            <div class="w-full aspect-square rounded-xl overflow-hidden mb-3 relative bg-brand-cream border border-brand-cardBorder/40">
+              <span class="absolute top-2 left-2 z-10 w-5 h-5 rounded-full bg-brand-gold text-white text-[10px] font-bold flex items-center justify-center shadow-xs">11</span>
+              <img src="./assets/scene-11-toast.jpg" alt="The Final Toast" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
-            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
-              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">The Final Toast</h3>
-              <p class="text-[10px] text-[#938487] font-light leading-snug">Here’s to more beautiful tomorrows.</p>
+            <div class="space-y-0.5 mb-2">
+              <h3 class="font-serif-luxury text-sm sm:text-base font-semibold text-brand-ink">The Final Toast</h3>
+              <p class="text-[11px] text-brand-muted font-light">Here’s to them, today and always.</p>
             </div>
-            <a href="./preview.html" aria-label="Preview The Final Toast Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
-              <span class="text-xs" aria-hidden="true">&rarr;</span>
-            </a>
+            <a href="./preview.html" class="w-6 h-6 rounded-full border border-brand-cardBorder flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-white transition-all text-xs" aria-label="Preview The Final Toast">&rarr;</a>
           </article>
 
         </div>
       </div>
     </section>
-    <!-- END: ExperiencesShowcase -->
 
-    <!-- BEGIN: ValuePropositionSection -->
-    <section class="py-24 relative overflow-hidden bg-[#0d090b] border-t border-brand-cardBorder/20 glow-radial-phone" data-purpose="features-and-preview">
+    <!-- ============================================================
+         4. HOW IT WORKS (MADE FOR THEM. CREATED BY YOU.)
+         ============================================================ -->
+    <section class="py-20 sm:py-24 relative border-t border-brand-cardBorder/30" id="how-it-works">
       <div class="max-w-7xl mx-auto px-6 sm:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        
+        <!-- Header -->
+        <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+          <h2 class="font-serif-luxury text-3xl sm:text-5xl font-light text-brand-ink leading-tight">
+            Made for them.<br />
+            <span class="italic text-rose-600">Created by you.</span>
+          </h2>
+          <div class="text-rose-400 text-base" aria-hidden="true">♡</div>
+        </div>
+
+        <!-- 3-Step Process Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative max-w-4xl mx-auto">
           
-          <!-- Features List (Left) -->
-          <div class="lg:col-span-6 space-y-12">
-            <!-- Section Header Tag -->
-            <div class="space-y-3">
-              <div class="flex items-center space-x-3 text-brand-accent tracking-[0.25em] text-[11px] sm:text-xs uppercase font-light">
-                <span class="w-8 h-[1px] bg-brand-accent/50"></span>
-                <span>Why Valvet &amp; Keepsake?</span>
-                <span class="w-8 h-[1px] bg-brand-accent/50"></span>
-              </div>
-              <h2 class="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-light text-[#f9edf0] leading-tight">
-                More than a gift.<br />
-                <span class="italic text-brand-rose">It’s a feeling.</span>
-              </h2>
+          <!-- Step 1 -->
+          <div class="card-luxury rounded-3xl p-6 sm:p-8 text-center space-y-4 relative">
+            <div class="w-10 h-10 mx-auto rounded-full bg-brand-roseLight border border-rose-200 text-brand-rose font-bold text-sm flex items-center justify-center shadow-xs">
+              01
             </div>
-
-            <!-- Feature Points Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10 pt-2">
-              
-              <!-- Feature 1 -->
-              <div class="space-y-2.5">
-                <div class="w-8 h-8 flex items-center text-brand-rose text-xl mb-1">
-                  ✦
-                </div>
-                <h3 class="font-serif-luxury text-lg sm:text-xl text-[#f5eaec] font-normal tracking-wide">
-                  Unique Experiences
-                </h3>
-                <p class="text-xs sm:text-sm text-[#9f9094] font-light leading-relaxed">
-                  Thoughtfully crafted for every kind of celebration.
-                </p>
-              </div>
-
-              <!-- Feature 2 -->
-              <div class="space-y-2.5">
-                <div class="w-8 h-8 flex items-center text-brand-rose text-xl mb-1">
-                  <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" stroke-linecap="round" stroke-linejoin="round"></path>
-                  </svg>
-                </div>
-                <h3 class="font-serif-luxury text-lg sm:text-xl text-[#f5eaec] font-normal tracking-wide">
-                  Personalized Just for Them
-                </h3>
-                <p class="text-xs sm:text-sm text-[#9f9094] font-light leading-relaxed">
-                  Names, photos, messages — make it truly theirs.
-                </p>
-              </div>
-
-              <!-- Feature 3 -->
-              <div class="space-y-2.5">
-                <div class="w-8 h-8 flex items-center text-brand-rose text-xl mb-1">
-                  <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" stroke-linecap="round" stroke-linejoin="round"></path>
-                  </svg>
-                </div>
-                <h3 class="font-serif-luxury text-lg sm:text-xl text-[#f5eaec] font-normal tracking-wide">
-                  Access Anywhere
-                </h3>
-                <p class="text-xs sm:text-sm text-[#9f9094] font-light leading-relaxed">
-                  Instantly shareable link or QR code.
-                </p>
-              </div>
-
-              <!-- Feature 4 -->
-              <div class="space-y-2.5">
-                <div class="w-8 h-8 flex items-center text-brand-rose text-xl mb-1">
-                  <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" stroke-linecap="round" stroke-linejoin="round"></path>
-                  </svg>
-                </div>
-                <h3 class="font-serif-luxury text-lg sm:text-xl text-[#f5eaec] font-normal tracking-wide">
-                  Lasting Memories
-                </h3>
-                <p class="text-xs sm:text-sm text-[#9f9094] font-light leading-relaxed">
-                  Because the best gifts aren’t forgotten.
-                </p>
-              </div>
-
+            <div class="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-xs border border-brand-cardBorder/60">
+              <img src="./assets/scene-2-gift.jpg" alt="Choose Step" class="w-full h-full object-cover" />
             </div>
+            <h3 class="font-serif-luxury text-xl font-bold text-brand-ink">Choose</h3>
+            <p class="text-xs sm:text-sm text-brand-inkSoft font-light leading-relaxed">
+              Pick the birthday edition and visual atmosphere that feels just right.
+            </p>
           </div>
 
-          <!-- Smartphone Interactive Preview Mockup (Right) -->
-          <div class="lg:col-span-6 flex justify-center items-center relative py-6">
-            <!-- Background Floral Ribbon Aesthetics -->
-            <div class="absolute -inset-4 bg-gradient-to-r from-brand-accent/10 via-brand-rose/10 to-transparent blur-3xl -z-10 pointer-events-none"></div>
-
-            <!-- Realistic Smartphone Frame -->
-            <div class="relative w-[280px] sm:w-[320px] aspect-[9/18.5] rounded-[48px] p-3.5 bg-gradient-to-b from-[#2e2327] via-[#1a1215] to-[#0c080a] border border-brand-accent/40 shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_45px_rgba(244,199,191,0.2)]">
-              
-              <!-- Inner Phone Screen -->
-              <div class="w-full h-full rounded-[38px] bg-gradient-to-b from-[#180e12] via-[#241319] to-[#0d070a] p-5 flex flex-col justify-between items-center text-center overflow-hidden relative border border-white/5">
-                <!-- Phone Speaker / Dynamic Island bar -->
-                <div class="w-20 h-4 bg-black/60 rounded-full mb-3 flex items-center justify-center">
-                  <div class="w-2.5 h-2.5 rounded-full bg-[#1e1e1e]"></div>
-                </div>
-
-                <!-- Glowing Experience Display Inside Phone -->
-                <div class="my-auto space-y-4 w-full">
-                  <p class="font-serif-luxury italic text-3xl sm:text-4xl text-[#fff0ed] drop-shadow-[0_2px_10px_rgba(244,199,191,0.5)]">
-                    Happy
-                  </p>
-
-                  <!-- Animated Birthday Cake Visual with Glowing Candles -->
-                  <div class="relative py-2 flex justify-center">
-                    <div class="w-20 h-20 rounded-full bg-brand-rose/20 blur-xl absolute inset-0 m-auto"></div>
-                    <div class="relative z-10 text-5xl filter drop-shadow-[0_0_15px_rgba(255,200,180,0.8)]">
-                      🎂
-                    </div>
-                  </div>
-
-                  <p class="font-serif-luxury italic text-3xl sm:text-4xl text-[#fff0ed] drop-shadow-[0_2px_10px_rgba(244,199,191,0.5)]">
-                    Birthday
-                  </p>
-
-                  <div class="pt-2 px-2">
-                    <p class="text-xs text-[#d8c3c7] font-light leading-relaxed">
-                      May your days be as beautiful<br />as your heart. ✨
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Phone Bottom Action -->
-                <div class="w-full flex justify-center pb-2">
-                  <div class="w-8 h-8 rounded-full border border-brand-accent/40 flex items-center justify-center text-brand-rose text-sm">
-                    ♥
-                  </div>
-                </div>
-              </div>
-
+          <!-- Step 2 -->
+          <div class="card-luxury rounded-3xl p-6 sm:p-8 text-center space-y-4 relative">
+            <div class="w-10 h-10 mx-auto rounded-full bg-brand-roseLight border border-rose-200 text-brand-rose font-bold text-sm flex items-center justify-center shadow-xs">
+              02
             </div>
+            <div class="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-xs border border-brand-cardBorder/60">
+              <img src="./assets/scene-6-wall.jpg" alt="Personalize Step" class="w-full h-full object-cover" />
+            </div>
+            <h3 class="font-serif-luxury text-xl font-bold text-brand-ink">Personalize</h3>
+            <p class="text-xs sm:text-sm text-brand-inkSoft font-light leading-relaxed">
+              Add their name, photos, memories, custom music and heartfelt message.
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="card-luxury rounded-3xl p-6 sm:p-8 text-center space-y-4 relative">
+            <div class="w-10 h-10 mx-auto rounded-full bg-brand-roseLight border border-rose-200 text-brand-rose font-bold text-sm flex items-center justify-center shadow-xs">
+              03
+            </div>
+            <div class="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-xs border border-brand-cardBorder/60">
+              <img src="./assets/scene-9-letter.jpg" alt="Share Step" class="w-full h-full object-cover" />
+            </div>
+            <h3 class="font-serif-luxury text-xl font-bold text-brand-ink">Share</h3>
+            <p class="text-xs sm:text-sm text-brand-inkSoft font-light leading-relaxed">
+              Send their private experience through a beautiful instant link or QR code.
+            </p>
           </div>
 
         </div>
+
       </div>
     </section>
-    <!-- END: ValuePropositionSection -->
 
-    <!-- BEGIN: BottomCTASection -->
-    <section class="relative py-28 sm:py-32 overflow-hidden border-t border-brand-cardBorder/20 bg-gradient-to-b from-[#0a0608] via-[#1a0e14] to-[#080506]" data-purpose="call-to-action-banner">
-      <!-- Atmospheric Backdrop Visual (Fairytale glowing twilight mood) -->
-      <div class="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-700/30 via-rose-950/20 to-transparent pointer-events-none"></div>
+    <!-- ============================================================
+         5. SMARTPHONE SHOWCASE: "SOMETHING THEY EXPERIENCE"
+         ============================================================ -->
+    <section class="py-20 sm:py-24 relative overflow-hidden bg-gradient-to-r from-brand-roseLight/40 via-brand-bg to-brand-cream/60 border-t border-brand-cardBorder/30">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Interactive Phone Mockup Card -->
+        <div class="lg:col-span-6 flex justify-center items-center relative">
+          <div class="relative w-[280px] sm:w-[320px] aspect-[9/18.5] rounded-[48px] p-3.5 bg-gradient-to-b from-[#2e2327] via-[#1a1215] to-[#0c080a] border border-brand-gold/40 shadow-2xl">
+            <!-- Inner Phone Screen -->
+            <div class="w-full h-full rounded-[38px] bg-gradient-to-b from-[#fdf8f5] via-[#faedf1] to-[#f7dde5] p-5 flex flex-col justify-between items-center text-center overflow-hidden relative border border-white/50">
+              <!-- Dynamic Island bar -->
+              <div class="w-20 h-4 bg-black/80 rounded-full mb-3 flex items-center justify-center">
+                <div class="w-2.5 h-2.5 rounded-full bg-[#333]"></div>
+              </div>
 
-      <div class="max-w-7xl mx-auto px-6 sm:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-        <!-- Text & Action -->
-        <div class="lg:col-span-7 space-y-6 text-left">
-          <div class="flex items-center space-x-3 text-brand-accent tracking-[0.25em] text-[11px] sm:text-xs uppercase font-light">
-            <span class="w-8 h-[1px] bg-brand-accent/50"></span>
-            <span>Valvet &amp; Keepsake</span>
-            <span class="w-8 h-[1px] bg-brand-accent/50"></span>
+              <!-- Phone Content -->
+              <div class="my-auto space-y-4 w-full">
+                <p class="font-serif-luxury italic text-3xl sm:text-4xl text-brand-ink drop-shadow-xs">
+                  Happy Birthday,
+                </p>
+                <p class="font-serif-luxury italic text-2xl text-rose-600 font-bold">
+                  Aarav
+                </p>
+
+                <div class="w-20 h-20 mx-auto rounded-2xl overflow-hidden shadow-md border border-rose-200">
+                  <img src="./assets/scene-5-cake.jpg" alt="Cake Preview" class="w-full h-full object-cover" />
+                </div>
+
+                <div class="pt-2">
+                  <span class="inline-block bg-rose-600 text-white text-xs font-semibold px-5 py-2 rounded-full shadow-sm">
+                    Open My Experience
+                  </span>
+                </div>
+              </div>
+
+              <!-- Phone Bottom Action -->
+              <div class="w-full flex justify-center pb-2 text-rose-500 text-sm">
+                ♥
+              </div>
+            </div>
           </div>
+        </div>
 
-          <h2 class="font-serif-luxury text-3xl sm:text-5xl lg:text-6xl font-light text-[#f9edf0] leading-tight">
-            Ready to create<br />
-            <span class="italic text-brand-rose">something unforgettable?</span>
+        <!-- Right: Description Copy -->
+        <div class="lg:col-span-6 space-y-6 text-left">
+          <h2 class="font-serif-luxury text-3xl sm:text-5xl font-light text-brand-ink leading-tight">
+            Not just something they read.<br />
+            <span class="italic text-rose-600">Something they experience.</span>
           </h2>
-
-          <p class="text-[#b3a4a8] text-sm sm:text-base font-light max-w-md">
-            Turn their next birthday into a story they’ll always want to relive.
+          <p class="text-brand-inkSoft text-sm sm:text-base max-w-md font-light leading-relaxed">
+            Every scene is designed to make the moment feel personal, playful and unforgettable.
           </p>
-
           <div class="pt-2">
-            <a class="cta-create-link inline-flex items-center space-x-2 bg-brand-rose text-brand-dark px-8 py-3.5 rounded-full text-xs sm:text-sm font-medium tracking-wide shadow-[0_4px_30px_rgba(244,199,191,0.35)] hover:bg-brand-roseHover transition-all" href="./login.html">
-              <span>Create Your Experience</span>
-              <span class="text-sm" aria-hidden="true">&rarr;</span>
+            <a class="cta-create-link inline-flex items-center space-x-2 bg-gradient-to-r from-rose-600 to-brand-rose hover:from-rose-700 hover:to-brand-roseHover text-white px-7 py-3.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide shadow-rose-pill transition-all" href="./login.html">
+              <span>Start Personalizing</span>
+              <span aria-hidden="true">&rarr;</span>
             </a>
           </div>
         </div>
 
-        <!-- Silhouette illustration for fairytale moment & twilight glow -->
-        <div class="lg:col-span-5 flex justify-center lg:justify-end">
-          <div class="w-60 h-60 sm:w-72 sm:h-72 rounded-full bg-gradient-to-tr from-amber-500/10 via-rose-400/20 to-purple-900/30 border border-brand-accent/20 flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_80px_rgba(224,184,143,0.15)]">
-            <span class="text-6xl filter drop-shadow-[0_0_20px_rgba(244,199,191,0.4)] mb-2">🏰</span>
-            <div class="text-center text-[11px] tracking-widest uppercase font-light text-brand-rose/80 px-4">
-              A fairy-tale moment
-            </div>
-          </div>
-        </div>
       </div>
     </section>
-    <!-- END: BottomCTASection -->
+
+    <!-- ============================================================
+         6. PERSONALIZATION PILLARS ("MAKE IT THEIRS")
+         ============================================================ -->
+    <section class="py-16 sm:py-20 relative border-t border-brand-cardBorder/30 text-center">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 space-y-8">
+        
+        <div class="space-y-2">
+          <h2 class="font-serif-luxury text-3xl sm:text-4xl font-light text-brand-ink">
+            Make it theirs.
+          </h2>
+          <div class="text-rose-400 text-base" aria-hidden="true">♡</div>
+          <p class="text-brand-muted text-xs sm:text-sm font-light">
+            Because the best gifts don’t feel like templates.
+          </p>
+        </div>
+
+        <!-- 5 Pillared Badges -->
+        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-2">
+          
+          <div class="card-luxury rounded-2xl px-5 py-3 flex items-center gap-3">
+            <span class="text-rose-500 font-serif italic text-lg font-bold">Aa</span>
+            <span class="text-xs sm:text-sm font-medium text-brand-ink">Their Name</span>
+          </div>
+
+          <div class="card-luxury rounded-2xl px-5 py-3 flex items-center gap-3">
+            <span class="text-rose-500 text-base">🖼️</span>
+            <span class="text-xs sm:text-sm font-medium text-brand-ink">Their Photos</span>
+          </div>
+
+          <div class="card-luxury rounded-2xl px-5 py-3 flex items-center gap-3">
+            <span class="text-rose-500 text-base">🎞️</span>
+            <span class="text-xs sm:text-sm font-medium text-brand-ink">Their Memories</span>
+          </div>
+
+          <div class="card-luxury rounded-2xl px-5 py-3 flex items-center gap-3">
+            <span class="text-rose-500 text-base">💌</span>
+            <span class="text-xs sm:text-sm font-medium text-brand-ink">Their Message</span>
+          </div>
+
+          <div class="card-luxury rounded-2xl px-5 py-3 flex items-center gap-3">
+            <span class="text-rose-500 text-base">✨</span>
+            <span class="text-xs sm:text-sm font-medium text-brand-ink">Their Story</span>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         7. BOTTOM CTA BANNER: "SOMEONE'S BIRTHDAY IS COMING"
+         ============================================================ -->
+    <section class="relative py-20 sm:py-28 overflow-hidden border-t border-brand-cardBorder/30 bg-gradient-to-b from-[#f9ece6] via-[#f7dde5] to-[#fcf8f5]">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 text-center space-y-6 relative z-10">
+        
+        <h2 class="font-serif-luxury text-3xl sm:text-5xl lg:text-6xl font-light text-brand-ink leading-tight">
+          Someone’s birthday is coming.<br />
+          <span class="italic text-rose-600">Make it a memory they’ll keep.</span>
+        </h2>
+
+        <div class="pt-4 flex justify-center">
+          <a class="cta-create-link inline-flex items-center space-x-2 bg-gradient-to-r from-rose-600 to-brand-rose hover:from-rose-700 hover:to-brand-roseHover text-white px-8 sm:px-10 py-4 rounded-full text-xs sm:text-sm font-semibold tracking-wide shadow-rose-pill hover:shadow-xl transition-all transform hover:-translate-y-0.5" href="./login.html">
+            <span>Create Their Experience</span>
+            <span class="text-sm" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
   </main>
 
   <!-- BEGIN: SiteFooter -->
-  <footer class="py-14 border-t border-brand-cardBorder/30 bg-[#060405] text-center relative" data-purpose="site-footer">
+  <footer class="py-12 border-t border-brand-cardBorder/40 bg-white/70 text-center relative" data-purpose="site-footer">
     <div class="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center space-y-4">
-      <!-- Footer Logo Emblem -->
-      <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="w-14 h-14 rounded-full object-cover shadow-[0_0_20px_rgba(224,184,143,0.4)] border border-brand-accent/40 mb-1" />
+      
+      <!-- Footer Logo & Title -->
+      <a href="#home" class="flex items-center gap-2.5 group">
+        <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="w-8 h-8 rounded-full object-cover shadow-xs" />
+        <span class="font-serif-luxury text-lg tracking-[0.2em] uppercase text-brand-ink font-semibold">
+          Valvet &amp; Keepsake
+        </span>
+      </a>
 
-      <!-- Footer Brand Title -->
-      <div class="font-serif-luxury text-lg sm:text-xl tracking-[0.25em] uppercase text-[#f7ebee]">
-        Valvet &amp; Keepsake
-      </div>
-
-      <!-- Footer Subtitle -->
-      <p class="text-xs tracking-widest uppercase font-light text-[#8e7e82]">
+      <p class="text-xs tracking-widest uppercase font-light text-brand-muted">
         Digital Birthday Experiences
       </p>
 
       <!-- Legal Links -->
-      <div class="flex items-center justify-center space-x-6 pt-2 text-xs text-[#9e8d91]">
+      <div class="flex items-center justify-center space-x-6 pt-1 text-xs text-brand-inkSoft">
+        <a href="#experiences" class="hover:text-brand-rose transition-colors">Experiences</a>
+        <span class="text-brand-cardBorder">&bull;</span>
+        <a href="#how-it-works" class="hover:text-brand-rose transition-colors">How It Works</a>
+        <span class="text-brand-cardBorder">&bull;</span>
         <a href="./terms.html" class="hover:text-brand-rose transition-colors">Terms of Service</a>
         <span class="text-brand-cardBorder">&bull;</span>
         <a href="./privacy.html" class="hover:text-brand-rose transition-colors">Privacy Policy</a>
       </div>
 
-      <!-- Delicate Flourish Border Divider -->
-      <div class="w-full max-w-xs flex items-center justify-center space-x-3 pt-3 text-brand-accent/40">
-        <span class="h-[1px] flex-1 bg-brand-accent/20"></span>
-        <span class="text-xs">✦</span>
-        <span class="h-[1px] flex-1 bg-brand-accent/20"></span>
+      <!-- Delicate Flourish Heart Divider -->
+      <div class="w-full max-w-xs flex items-center justify-center space-x-3 pt-2 text-rose-300">
+        <span class="h-[1px] flex-1 bg-brand-cardBorder"></span>
+        <span class="text-sm">♡</span>
+        <span class="h-[1px] flex-1 bg-brand-cardBorder"></span>
       </div>
 
       <!-- Copyright Notice -->
-      <p class="text-[11px] text-[#716366] font-light pt-1">
+      <p class="text-[11px] text-brand-muted font-light pt-1">
         &copy; 2026 Valvet &amp; Keepsake. All rights reserved.
       </p>
     </div>
@@ -691,11 +674,11 @@
       if (session && session.user) {
         if (navAuthLink) {
           navAuthLink.href = './dashboard.html';
-          navAuthLink.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span><span>My Gifts</span>`;
+          navAuthLink.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span><span>My Gifts</span>`;
         }
         if (mobileNavAuthLink) {
           mobileNavAuthLink.href = './dashboard.html';
-          mobileNavAuthLink.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span><span>My Gifts</span>`;
+          mobileNavAuthLink.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span><span>My Gifts</span>`;
         }
         // If already logged in, CTA links navigate directly to create experience
         document.querySelectorAll('.cta-create-link').forEach(link => {

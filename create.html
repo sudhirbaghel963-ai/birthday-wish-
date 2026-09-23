@@ -317,9 +317,10 @@
       const container = document.getElementById('experienceGrid');
       if (!container) return;
 
-      const filtered = filter === 'all' 
+      const filtered = (filter === 'all' 
         ? EXPERIENCES 
-        : EXPERIENCES.filter(exp => exp.category === filter || (filter === 'birthday' && exp.category === 'birthday') || (filter === 'milestone' && exp.category === 'milestone'));
+        : EXPERIENCES.filter(exp => exp.category === filter || (filter === 'birthday' && exp.category === 'birthday') || (filter === 'milestone' && exp.category === 'milestone'))
+      ).filter(exp => !exp.isDeleted);
 
       container.innerHTML = filtered.map(exp => {
         if (exp.isAvailable) {
@@ -588,9 +589,10 @@
           if (res.ok) {
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0) {
-              data.forEach(remoteExp => {
-                const local = EXPERIENCES.find(e => e.id === remoteExp.id);
-                if (local) {
+              const remoteIds = new Set(data.map(d => d.id));
+              EXPERIENCES.forEach(local => {
+                const remoteExp = data.find(e => e.id === local.id);
+                if (remoteExp) {
                   if (remoteExp.price) {
                     const clean = String(remoteExp.price).replace(/[^0-9]/g, '');
                     local.price = clean ? `₹${clean}` : remoteExp.price;
@@ -601,6 +603,10 @@
                   }
                   if (typeof remoteExp.is_active === 'boolean') local.isAvailable = remoteExp.is_active;
                   if (remoteExp.name) local.name = remoteExp.name;
+                  local.isDeleted = false;
+                } else {
+                  local.isAvailable = false;
+                  local.isDeleted = true;
                 }
               });
               renderExperienceGrid('all');

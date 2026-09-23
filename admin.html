@@ -694,14 +694,14 @@
           .select('*')
           .order('sort_order', { ascending: true });
 
-        if (expData && !expError && expData.length > 0) {
+        if (expData && !expError) {
           allExperiences = expData;
-        } else {
-          // Fallback defaults if table empty
+        } else if (expError) {
+          console.warn('Error fetching experiences, using fallbacks:', expError);
+          // Fallback defaults only if table query failed
           allExperiences = [
-            { id: 'birthday-film', name: 'The Birthday Film (Warm Paper Edition)', category: 'birthday', price: '₹100', original_price: '₹199', is_active: true, tagline: 'Signature 11-Scene Interactive Journey' },
-            { id: 'birthday-film-glass', name: 'The Birthday Film (Glass Edition)', category: 'birthday', price: '₹100', original_price: '₹199', is_active: true, tagline: 'Luminous Dark Jewel & Frosted Glass' },
-            { id: 'milestone-anniversary', name: 'The Milestone Anniversary', category: 'milestone', price: '₹100', original_price: '₹199', is_active: false, tagline: 'Chapter-by-Chapter Keepsake' }
+            { id: 'birthday-film', name: 'The Birthday Film (Warm Paper Edition)', category: 'birthday', price: '100', original_price: '199', is_active: true, tagline: 'Signature 11-Scene Interactive Journey' },
+            { id: 'birthday-film-glass', name: 'The Birthday Film (Glass Edition)', category: 'birthday', price: '100', original_price: '199', is_active: true, tagline: 'Luminous Dark Jewel & Frosted Glass' }
           ];
         }
 
@@ -713,15 +713,33 @@
       }
     }
 
+    // Helper: Identify whether a gift is an Admin Free/Complimentary publish
+    function isGiftAdminFree(g) {
+      if (!g) return false;
+      const pid = String(g.razorpay_payment_id || '').toLowerCase();
+      if (pid === 'admin_complimentary' || pid === 'admin_free_publish' || pid === 'admin_free') {
+        return true;
+      }
+      if (g.status === 'paid' && g.price_paid !== null && Number(g.price_paid) === 0) {
+        return true;
+      }
+      return false;
+    }
+
     // 6. Render Dashboard Overview & KPIs
     function renderDashboard() {
       const totalGifts = allGifts.length;
-      const paidGifts = allGifts.filter(g => g.status === 'paid');
-      const refundedGifts = allGifts.filter(g => g.refunded);
-      const paidCount = paidGifts.length;
-      const draftCount = totalGifts - paidCount;
+      
+      // Genuine paid customer sales (excluding admin free publishes)
+      const paidCustomerGifts = allGifts.filter(g => g.status === 'paid' && !isGiftAdminFree(g));
+      const adminFreeGifts = allGifts.filter(g => g.status === 'paid' && isGiftAdminFree(g));
+      const draftGifts = allGifts.filter(g => g.status !== 'paid');
+      
+      const paidCount = paidCustomerGifts.length;
+      const draftCount = draftGifts.length;
 
-      const totalRevenue = paidGifts.reduce((sum, g) => sum + (parseFloat(g.price_paid) || 100.00), 0);
+      // Revenue is the exact sum of price_paid from genuine paid customer orders
+      const totalRevenue = paidCustomerGifts.reduce((sum, g) => sum + (parseFloat(g.price_paid) || 0), 0);
       const avgOrder = paidCount > 0 ? (totalRevenue / paidCount) : 0;
       const conversionRate = totalGifts > 0 ? ((paidCount / totalGifts) * 100).toFixed(1) : 0;
 
@@ -735,7 +753,7 @@
       document.getElementById('kpiTotalRevenue').textContent = `₹${totalRevenue.toFixed(2)}`;
       document.getElementById('kpiAvgOrder').textContent = `Avg: ₹${avgOrder.toFixed(2)} / order`;
       document.getElementById('kpiPaidOrders').textContent = String(paidCount);
-      document.getElementById('kpiConversion').textContent = `Conversion: ${conversionRate}%`;
+      document.getElementById('kpiConversion').textContent = `Conversion: ${conversionRate}% (${adminFreeGifts.length} admin free)`;
       document.getElementById('kpiTotalGifts').textContent = String(totalGifts);
       document.getElementById('kpiDraftsCount').textContent = `${draftCount} in-progress drafts`;
       document.getElementById('kpiRecentWeek').textContent = String(createdWeek);
@@ -776,7 +794,7 @@
           return cd >= d && cd < nextD;
         });
 
-        const paid = dayGifts.filter(g => g.status === 'paid').length;
+        const paid = dayGifts.filter(g => g.status === 'paid' && !isGiftAdminFree(g)).length;
         const draft = dayGifts.length - paid;
 
         counts.push({ date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), paid, draft, total: dayGifts.length });
@@ -873,10 +891,10 @@
       const recName = g.content?.recipientName || 'Elena';
       const isPaid = g.status === 'paid';
       const isRefunded = Boolean(g.refunded);
-      const isAdminFree = g.razorpay_payment_id === 'admin_complimentary';
+      const isAdminFree = isGiftAdminFree(g);
       const expName = g.experience_id === 'birthday-film-glass' ? 'Glass Edition' : 'Warm Paper';
       const themeName = g.theme_id || (g.experience_id === 'birthday-film-glass' ? 'glass' : 'paper');
-      const priceVal = isAdminFree ? '₹0.00 (Admin)' : (isPaid ? `₹${parseFloat(g.price_paid || 100).toFixed(2)}` : '—');
+      const priceVal = isAdminFree ? '₹0.00 (Admin)' : (isPaid ? `₹${parseFloat(g.price_paid || 0).toFixed(2)}` : '—');
       const dateStr = new Date(g.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       const identifier = g.slug ? `<span class="font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">${g.slug}</span>` : `<span class="font-mono text-slate-400">${(g.id || '').substring(0, 8)}...</span>`;
 
@@ -1320,15 +1338,20 @@
             <p class="text-[11px] text-slate-400">Independently charged at checkout for this specific edition (whole rupees, min ₹1).</p>
           </div>
 
-          <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100 gap-3">
             <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
               <input type="checkbox" class="exp-active-toggle rounded border-slate-300 text-slate-900 focus:ring-0" ${exp.is_active ? 'checked' : ''} />
               <span>Visible on Storefront</span>
             </label>
 
-            <button type="button" class="btn-save-exp px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors shadow-2xs">
-              Save Changes
-            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" class="btn-delete-exp px-3 py-2 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs transition-colors shadow-2xs">
+                Delete
+              </button>
+              <button type="button" class="btn-save-exp px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors shadow-2xs">
+                Save Changes
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -1388,6 +1411,51 @@
 
           btn.disabled = false;
           btn.textContent = 'Save Changes';
+        });
+      });
+
+      // Wire delete handlers
+      container.querySelectorAll('.btn-delete-exp').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const card = e.target.closest('[data-exp-id]');
+          const expId = card.getAttribute('data-exp-id');
+          const targetExp = allExperiences.find(x => x.id === expId);
+          const expName = targetExp?.name || expId;
+
+          const isCoreExperience = expId === 'birthday-film' || expId === 'birthday-film-glass';
+          const confirmMsg = isCoreExperience
+            ? `⚠️ "${expName}" (${expId}) is a core active theme edition. Are you sure you want to permanently delete it from the catalog?`
+            : `Are you sure you want to permanently delete "${expName}" (${expId}) from the catalog?`;
+
+          if (!confirm(confirmMsg)) return;
+
+          btn.textContent = 'Deleting...';
+          btn.disabled = true;
+
+          if (supabase) {
+            try {
+              const { error } = await supabase
+                .from('experiences')
+                .delete()
+                .eq('id', expId);
+
+              if (!error) {
+                allExperiences = allExperiences.filter(x => x.id !== expId);
+                renderExperiencesAdmin();
+                alert(`Experience "${expName}" was permanently deleted.`);
+                return;
+              } else {
+                console.error('Delete experience error:', error);
+                alert(`Could not delete experience: ${error.message}`);
+              }
+            } catch (err) {
+              console.error('Delete experience exception:', err);
+              alert(`Delete failed: ${err.message}`);
+            }
+          }
+
+          btn.disabled = false;
+          btn.textContent = 'Delete';
         });
       });
     }

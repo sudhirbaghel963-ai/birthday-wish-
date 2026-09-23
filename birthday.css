@@ -2488,7 +2488,7 @@ body{
 /* 0. Optional Closing Keepsake Photo Frame (Scene 11) */
 .toast-photo-wrap{
   position:relative;
-  display:none;
+  display:block;
   margin-bottom:clamp(0.8rem, 2vh, 1.4rem);
   z-index:6;
   opacity:0;

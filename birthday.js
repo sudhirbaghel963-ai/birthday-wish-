@@ -605,11 +605,11 @@ function populateStaticContent(data) {
     if (photoUrl && typeof photoUrl === 'string' && photoUrl.trim().length > 0) {
       photoImg.src = photoUrl.trim();
       photoWrap.classList.remove('is-hidden');
-      photoWrap.style.display = 'block';
+      photoWrap.setAttribute('aria-hidden', 'false');
     } else {
       photoImg.src = '';
       photoWrap.classList.add('is-hidden');
-      photoWrap.style.display = 'none';
+      photoWrap.setAttribute('aria-hidden', 'true');
     }
   }
 
@@ -4502,7 +4502,7 @@ function resetScene11(){
   // Reset closing keepsake photo
   const toastPhoto = $('toastPhotoWrap');
   if (toastPhoto){
-    gsap.set(toastPhoto, { clearProps: 'all' });
+    gsap.set(toastPhoto, { clearProps: 'opacity,transform' });
   }
 
   // Reset glasses

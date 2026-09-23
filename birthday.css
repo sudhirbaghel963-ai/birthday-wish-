@@ -2223,37 +2223,73 @@ body{
 }
 
 /* ============================================================
-   GLOBAL AMBIENT PARTICLES (Shared across all scenes)
+   GLOBAL AMBIENT PARTICLES (Theme-Swapped)
+   - Glass Theme: Canvas-based glowing particles with physics sway, pulse & glow halo (falling_1.html style)
+   - Paper Theme: CSS-based falling petals with organic rotation & fade (falling_2.html style)
    ============================================================ */
-.global-ambient-particles{
+.ambient-layer-container{
   position:fixed; inset:0;
   pointer-events:none; overflow:hidden;
   z-index:50;
 }
 
-/* Individual particle base */
-.g-particle{
-  position:absolute; top:0; left:0;
-  pointer-events:none; user-select:none;
-  will-change:transform, opacity;
-  display:flex; align-items:center; justify-content:center;
-}
-
-/* Type 1 — Glyphs (Heart, Sparkle, Blossom Petal) */
-.g-particle--glyph{
-  width:clamp(11px, 2.2vw, 17px);
-  height:clamp(11px, 2.2vw, 17px);
-}
-.g-particle--glyph .particle-svg{
+/* Glass Theme Canvas */
+.ambient-canvas{
+  position:absolute; inset:0;
   width:100%; height:100%;
-  filter:drop-shadow(0 0 5px currentColor);
+  pointer-events:none;
+  display:none;
+}
+[data-theme="glass"] .ambient-canvas,
+.theme-glass .ambient-canvas{
+  display:block;
 }
 
-/* Type 2 — Soft Glowing Dots (Ambient embers / dust) */
-.g-particle--dot{
-  border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 6px currentColor, 0 0 14px currentColor;
+/* Paper Theme Petals Container */
+.ambient-petals{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  pointer-events:none; overflow:hidden;
+  display:block;
+}
+[data-theme="glass"] .ambient-petals,
+.theme-glass .ambient-petals{
+  display:none;
+}
+
+/* Individual falling petal for Paper theme */
+.ambient-petal{
+  position:absolute;
+  top:-50px;
+  pointer-events:none;
+  user-select:none;
+  will-change:transform, opacity;
+  animation-name:ambientPetalFall;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+}
+
+.ambient-petal svg{
+  width:100%; height:100%;
+  display:block;
+  filter:drop-shadow(0 2px 5px rgba(180, 50, 80, 0.18));
+}
+
+@keyframes ambientPetalFall{
+  0%{
+    transform:translate3d(0, -40px, 0) rotate(0deg) scale(0.65);
+    opacity:0;
+  }
+  8%{
+    opacity:var(--petal-max-opacity, 0.75);
+  }
+  85%{
+    opacity:var(--petal-max-opacity, 0.75);
+  }
+  100%{
+    transform:translate3d(var(--petal-sway, 50px), calc(100vh + 60px), 0) rotate(var(--petal-rot, 360deg)) scale(1);
+    opacity:0;
+  }
 }
 
 /* ============================================================
@@ -2779,7 +2815,7 @@ body{
   .typewriter-cursor{ display:none !important; }
   .letter-card-container{ transition:none !important; }
   .envelope-wrapper{ transition:none !important; }
-  .global-ambient-particles{ display:none !important; }
+  .ambient-layer-container{ display:none !important; }
   .fireworks-launch-pad{ display:none !important; }
   .fireworks-closing-inner{ opacity:1 !important; transform:none !important; }
   .launch-ember{ animation:none !important; }

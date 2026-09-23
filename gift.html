@@ -991,8 +991,11 @@
 
   </main>
 
-  <!-- Ambient Body Layers -->
-  <div class="global-ambient-particles" id="ambientParticles" aria-hidden="true"></div>
+  <!-- Ambient Global Particle Layer (Theme-Swapped: Canvas Glow for Glass, Petals for Paper) -->
+  <div id="ambientLayerContainer" class="ambient-layer-container" aria-hidden="true">
+    <canvas id="ambientCanvas" class="ambient-canvas"></canvas>
+    <div id="ambientPetals" class="ambient-petals"></div>
+  </div>
   <div class="grade" aria-hidden="true">
     <div class="grade__vignette"></div>
     <div class="grade__grain"></div>

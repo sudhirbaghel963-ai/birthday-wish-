@@ -217,6 +217,10 @@ function applyGiftDataTheme(theme, explicitThemeId) {
     document.body.classList.add('theme-' + currentThemeId);
   }
 
+  if (typeof syncAmbientParticlesTheme === 'function') {
+    syncAmbientParticlesTheme(currentThemeId);
+  }
+
   if (!theme) return;
   const root = document.documentElement.style;
   const rose = theme.primaryColor || theme.rose || '#d4235c';
@@ -4647,149 +4651,287 @@ if (btnReplayAll){
 }
 
 /* ============================================================
-   GLOBAL AMBIENT PARTICLES (Shared across all scenes)
+   GLOBAL AMBIENT PARTICLES SYSTEM (Theme-Swapped)
+   1. Glass Theme: Canvas-based glowing particles with physics sway,
+      opacity pulse & glow halo (adapted from falling_1.html).
+   2. Paper Theme: Programmatic CSS-animated falling petals with
+      organic rotation, sway & fade (adapted from falling_2.html).
+   - Swapped seamlessly when data-theme changes (paper vs glass).
+   - Only ONE variant executes/renders at a time.
+   - Respects prefers-reduced-motion.
    ============================================================ */
-const ambientContainer = $('ambientParticles');
 
-const GLYPH_SVG_TEMPLATES = [
-  // 1. Heart
-  '<svg class="particle-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>',
-  // 2. Sparkle
-  '<svg class="particle-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="currentColor"/></svg>',
-  // 3. Blossom Petal
-  '<svg class="particle-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 C7 7, 5 13, 12 22 C19 13, 17 7, 12 2 Z" fill="currentColor"/></svg>'
-];
+const ambientLayerContainer = $('ambientLayerContainer');
+const ambientCanvas = $('ambientCanvas');
+const ambientPetals = $('ambientPetals');
 
-const GLYPH_COLORS = [
-  'var(--rose-lift)',
-  'var(--gold-1)',
-  'var(--gold-2)',
-  'var(--rose)'
-];
-
-const DOT_COLORS = [
-  'var(--gold-1)',
-  'var(--gold-2)'
-];
-
-function startAmbientParticles(){
-  if (!ambientContainer || reduceMotion) return;
-
-  const isMobile = (window.innerWidth || 360) < 600;
-  const TOTAL_PARTICLES = isMobile ? 10 : 20; // 10 on mobile, 20 on desktop
-
-  function spawnParticle(isInitial){
-    if (!ambientContainer) return;
-    const el = document.createElement('div');
-    el.className = 'g-particle';
-
-    const isGlyph = Math.random() < 0.52; // roughly 50/50 split
-
-    if (isGlyph){
-      el.classList.add('g-particle--glyph');
-      const tmpl = GLYPH_SVG_TEMPLATES[Math.floor(Math.random() * GLYPH_SVG_TEMPLATES.length)];
-      el.innerHTML = tmpl;
-      el.style.color = GLYPH_COLORS[Math.floor(Math.random() * GLYPH_COLORS.length)];
-      const size = 11 + Math.random() * 6; // 11px - 17px
-      el.style.width = `${size}px`;
-      el.style.height = `${size}px`;
-    } else {
-      el.classList.add('g-particle--dot');
-      el.style.color = DOT_COLORS[Math.floor(Math.random() * DOT_COLORS.length)];
-      const size = 3 + Math.random() * 3.5; // 3px - 6.5px
-      el.style.width = `${size}px`;
-      el.style.height = `${size}px`;
+// Helper: parse hex/rgb/var color to "rgba(r, g, b, " prefix for canvas opacity appending
+function colorToRgbaPrefix(colorStr, fallback = 'rgba(255, 255, 255, ') {
+  if (!colorStr || typeof colorStr !== 'string') return fallback;
+  const str = colorStr.trim();
+  if (str.startsWith('#')) {
+    let hex = str.slice(1);
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    if (hex.length === 6) {
+      const r = parseInt(hex.slice(0, 2), 16);
+      const g = parseInt(hex.slice(2, 4), 16);
+      const b = parseInt(hex.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, `;
     }
-
-    ambientContainer.appendChild(el);
-
-    const winW = window.innerWidth || 360;
-    const winH = window.innerHeight || 640;
-    const startX = Math.random() * winW;
-    // If initial spawn, distribute across viewport height so it's active immediately
-    const startY = isInitial
-      ? Math.random() * winH
-      : winH + 15 + Math.random() * 35;
-
-    const duration = 12 + Math.random() * 10; // 12s - 22s slow drift
-    const swayAmount = 25 + Math.random() * 40;
-    const swayDuration = 3 + Math.random() * 3;
-    const maxOpacity = isGlyph ? 0.45 + Math.random() * 0.35 : 0.6 + Math.random() * 0.35;
-    const rotation = (180 + Math.random() * 360) * (Math.random() < 0.5 ? 1 : -1);
-
-    // Initial positioning
-    gsap.set(el, {
-      x: startX,
-      y: startY,
-      opacity: 0,
-      scale: isGlyph ? 0.6 : 0,
-      rotation: 0
-    });
-
-    const lifeDuration = isInitial ? duration * (startY / winH) : duration;
-
-    // Animate lifecycle
-    const tl = gsap.timeline({
-      onComplete: () => {
-        el.remove();
-        if (!reduceMotion && ambientContainer){
-          spawnParticle(false);
-        }
-      }
-    });
-
-    // Vertical drift
-    tl.to(el, {
-      y: -50,
-      duration: lifeDuration,
-      ease: 'none'
-    }, 0);
-
-    // Horizontal sinusoidal sway
-    tl.to(el, {
-      x: `+=${(Math.random() < 0.5 ? 1 : -1) * swayAmount}`,
-      duration: swayDuration,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1
-    }, 0);
-
-    // Rotation (for glyphs)
-    if (isGlyph){
-      tl.to(el, {
-        rotation: rotation,
-        duration: lifeDuration,
-        ease: 'none'
-      }, 0);
+  } else if (str.startsWith('rgb(')) {
+    const parts = str.slice(4, -1).split(',').map(s => s.trim());
+    if (parts.length >= 3) {
+      return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, `;
     }
+  } else if (str.startsWith('rgba(')) {
+    const parts = str.slice(5, -1).split(',').map(s => s.trim());
+    if (parts.length >= 3) {
+      return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, `;
+    }
+  }
+  return fallback;
+}
 
-    // Fade / Scale in and out
-    const fadeInTime = Math.min(2.5, Math.max(0.6, lifeDuration * 0.2));
-    const fadeOutTime = Math.min(3.0, Math.max(0.8, lifeDuration * 0.25));
+// ────────────────────────────────────────────────────────────
+// GLASS THEME: CANVAS SYSTEM (falling_1.html port)
+// ────────────────────────────────────────────────────────────
+let glassCanvasAnimationId = null;
+let glassParticles = [];
+let glassCanvasCtx = null;
+let glassWidth = 0;
+let glassHeight = 0;
+let glassColors = [];
 
-    tl.to(el, {
-      opacity: maxOpacity,
-      scale: 1,
-      duration: fadeInTime,
-      ease: 'power1.out'
-    }, 0);
+function getGlassThemeColors() {
+  const rootStyle = getComputedStyle(document.documentElement);
+  const roseLift = rootStyle.getPropertyValue('--rose-lift').trim() || '#ff4785';
+  const gold1 = rootStyle.getPropertyValue('--gold-1').trim() || '#fce18b';
+  const gold2 = rootStyle.getPropertyValue('--gold-2').trim() || '#f3b749';
 
-    tl.to(el, {
-      opacity: 0,
-      scale: isGlyph ? 0.8 : 0,
-      duration: fadeOutTime,
-      ease: 'power1.in'
-    }, Math.max(fadeInTime, lifeDuration - fadeOutTime));
+  return [
+    colorToRgbaPrefix(gold1, 'rgba(252, 225, 139, '),    // Crystal Gold
+    colorToRgbaPrefix(roseLift, 'rgba(255, 71, 133, '),  // Luminous Soft Rose
+    'rgba(255, 255, 255, ',                             // White Glow
+    colorToRgbaPrefix(gold2, 'rgba(243, 183, 73, ')      // Warm Amber Flame
+  ];
+}
+
+class GlassParticle {
+  constructor(initialSpawn = false) {
+    this.reset(initialSpawn);
   }
 
-  // Pre-seed particles across viewport
-  for (let i = 0; i < TOTAL_PARTICLES; i++){
-    spawnParticle(true);
+  reset(initialSpawn = false) {
+    this.x = Math.random() * (glassWidth || window.innerWidth || 360);
+    this.y = initialSpawn ? Math.random() * (glassHeight || window.innerHeight || 640) : -20;
+    this.radius = Math.random() * 2.4 + 1.2; // 1.2px to 3.6px
+    this.speedY = Math.random() * 0.75 + 0.3; // Fall speed
+    this.speedX = Math.sin(Math.random() * Math.PI) * 0.35; // Gentle horizontal drift
+
+    // Sway / Oscillate Physics
+    this.angle = Math.random() * Math.PI * 2;
+    this.angularSpeed = Math.random() * 0.02 + 0.005;
+    this.swayDistance = Math.random() * 1.5 + 0.5;
+
+    // Twinkle / Opacity Pulse
+    this.colorBase = glassColors[Math.floor(Math.random() * glassColors.length)] || 'rgba(255, 223, 112, ';
+    this.alpha = Math.random() * 0.6 + 0.2;
+    this.alphaSpeed = Math.random() * 0.015 + 0.005;
+    this.maxAlpha = Math.random() * 0.4 + 0.5;
+    this.minAlpha = 0.15;
+  }
+
+  update() {
+    this.y += this.speedY;
+    this.angle += this.angularSpeed;
+    this.x += Math.sin(this.angle) * this.swayDistance + this.speedX;
+
+    // Opacity pulsing
+    this.alpha += this.alphaSpeed;
+    if (this.alpha > this.maxAlpha || this.alpha < this.minAlpha) {
+      this.alphaSpeed = -this.alphaSpeed;
+    }
+
+    // Loop seamlessly when particle leaves bottom or sides
+    if (this.y > glassHeight + 20) {
+      this.reset(false);
+    }
+    if (this.x < -20) this.x = glassWidth + 20;
+    if (this.x > glassWidth + 20) this.x = -20;
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+
+    // Glowing Halo
+    ctx.shadowColor = this.colorBase + '0.85)';
+    ctx.shadowBlur = this.radius * 4;
+    ctx.fillStyle = this.colorBase + `${this.alpha})`;
+    ctx.fill();
+    ctx.restore();
   }
 }
 
-// Start once on script load
-startAmbientParticles();
+function initGlassCanvas() {
+  if (!ambientCanvas) return;
+  glassCanvasCtx = ambientCanvas.getContext('2d');
+  resizeGlassCanvas();
+}
+
+function resizeGlassCanvas() {
+  if (!ambientCanvas) return;
+  glassWidth = ambientCanvas.width = window.innerWidth || 360;
+  glassHeight = ambientCanvas.height = window.innerHeight || 640;
+}
+
+function startGlassCanvasSystem() {
+  if (!ambientCanvas || reduceMotion) return;
+  if (glassCanvasAnimationId) return; // Already running
+
+  if (!glassCanvasCtx) {
+    initGlassCanvas();
+  }
+
+  glassColors = getGlassThemeColors();
+  resizeGlassCanvas();
+
+  const isMobile = (window.innerWidth || 360) < 600;
+  const count = isMobile ? 35 : 65;
+
+  glassParticles = Array.from({ length: count }, () => new GlassParticle(true));
+
+  function animateGlass() {
+    if (!glassCanvasCtx || !ambientCanvas) return;
+    glassCanvasCtx.clearRect(0, 0, glassWidth, glassHeight);
+    for (let i = 0; i < glassParticles.length; i++) {
+      glassParticles[i].update();
+      glassParticles[i].draw(glassCanvasCtx);
+    }
+    glassCanvasAnimationId = requestAnimationFrame(animateGlass);
+  }
+
+  glassCanvasAnimationId = requestAnimationFrame(animateGlass);
+}
+
+function stopGlassCanvasSystem() {
+  if (glassCanvasAnimationId) {
+    cancelAnimationFrame(glassCanvasAnimationId);
+    glassCanvasAnimationId = null;
+  }
+  if (glassCanvasCtx && ambientCanvas) {
+    glassCanvasCtx.clearRect(0, 0, glassWidth, glassHeight);
+  }
+}
+
+
+// ────────────────────────────────────────────────────────────
+// PAPER THEME: CSS FALLING PETALS SYSTEM (falling_2.html port)
+// ────────────────────────────────────────────────────────────
+const PAPER_PETAL_SVGS = [
+  // Organic Petal Shape
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 C7 7, 5 13, 12 22 C19 13, 17 7, 12 2 Z" fill="currentColor"/></svg>',
+  // Heart Blossom Petal
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 C8 3, 4 7, 6 13 C8 19, 12 21.5, 12 21.5 C12 21.5, 16 19, 18 13 C20 7, 16 3, 12 3 Z" fill="currentColor"/></svg>',
+  // Soft Rounded Leaf/Petal
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 C6 8, 7 16, 12 22 C17 16, 18 8, 12 2 Z" fill="currentColor"/></svg>'
+];
+
+const PAPER_PETAL_COLORS = [
+  'var(--rose, #d4235c)',
+  'var(--rose-lift, #ff5f86)',
+  'var(--gold-1, #f5b838)',
+  'var(--gold-2, #e8a23d)',
+  'var(--paper-2, #f2c9b8)'
+];
+
+function initPaperPetalsSystem() {
+  if (!ambientPetals || reduceMotion) return;
+  ambientPetals.innerHTML = '';
+
+  const isMobile = (window.innerWidth || 360) < 600;
+  const count = isMobile ? 12 : 20;
+
+  for (let i = 0; i < count; i++) {
+    const petal = document.createElement('div');
+    petal.className = 'ambient-petal';
+
+    const tmpl = PAPER_PETAL_SVGS[Math.floor(Math.random() * PAPER_PETAL_SVGS.length)];
+    petal.innerHTML = tmpl;
+
+    const size = 13 + Math.random() * 9; // 13px - 22px
+    const leftPct = (Math.random() * 96 + 2).toFixed(1); // 2% to 98%
+    const duration = (8 + Math.random() * 8).toFixed(1); // 8s to 16s
+    const delay = (-Math.random() * 14).toFixed(1); // negative delay so pre-seeded mid-air
+    const sway = `${(Math.random() < 0.5 ? 1 : -1) * (25 + Math.random() * 55)}px`;
+    const rotation = `${(180 + Math.random() * 360) * (Math.random() < 0.5 ? 1 : -1)}deg`;
+    const maxOpacity = (0.45 + Math.random() * 0.38).toFixed(2);
+    const color = PAPER_PETAL_COLORS[Math.floor(Math.random() * PAPER_PETAL_COLORS.length)];
+
+    petal.style.width = `${size}px`;
+    petal.style.height = `${size * 1.15}px`;
+    petal.style.left = `${leftPct}%`;
+    petal.style.color = color;
+    petal.style.animationDuration = `${duration}s`;
+    petal.style.animationDelay = `${delay}s`;
+    petal.style.setProperty('--petal-sway', sway);
+    petal.style.setProperty('--petal-rot', rotation);
+    petal.style.setProperty('--petal-max-opacity', maxOpacity);
+
+    ambientPetals.appendChild(petal);
+  }
+}
+
+function stopPaperPetalsSystem() {
+  if (ambientPetals) {
+    ambientPetals.innerHTML = '';
+  }
+}
+
+
+// ────────────────────────────────────────────────────────────
+// MASTER AMBIENT PARTICLES CONTROLLER
+// ────────────────────────────────────────────────────────────
+let currentActiveAmbientTheme = null;
+
+function syncAmbientParticlesTheme(themeId) {
+  if (reduceMotion) {
+    stopGlassCanvasSystem();
+    stopPaperPetalsSystem();
+    return;
+  }
+
+  const targetTheme = themeId === 'glass' ? 'glass' : 'paper';
+
+  if (targetTheme === 'glass') {
+    // Switch to Glass Canvas
+    stopPaperPetalsSystem();
+    if (ambientPetals) ambientPetals.style.display = 'none';
+    if (ambientCanvas) ambientCanvas.style.display = 'block';
+    startGlassCanvasSystem();
+  } else {
+    // Switch to Paper Petals
+    stopGlassCanvasSystem();
+    if (ambientCanvas) ambientCanvas.style.display = 'none';
+    if (ambientPetals) ambientPetals.style.display = 'block';
+    initPaperPetalsSystem();
+  }
+
+  currentActiveAmbientTheme = targetTheme;
+}
+
+// Handle window resize for canvas
+window.addEventListener('resize', () => {
+  if (currentActiveAmbientTheme === 'glass') {
+    resizeGlassCanvas();
+  }
+});
+
+// Initial boot for ambient particles
+const initialAmbientTheme = document.documentElement.getAttribute('data-theme') || (window.GIFT_DATA?.themeId) || 'paper';
+syncAmbientParticlesTheme(initialAmbientTheme);
+
 
 /* ============================================================
    GLOBAL BACKGROUND MUSIC CONTROLLER
@@ -5004,7 +5146,8 @@ window.resetScene11           = resetScene11;
 window.resetAll               = resetAll;
 window.deactivateAllScenesExcept = deactivateAllScenesExcept;
 window.openEnvelope           = openEnvelope;
-window.startAmbientParticles  = startAmbientParticles;
+window.syncAmbientParticlesTheme = syncAmbientParticlesTheme;
+window.startAmbientParticles  = (themeId) => syncAmbientParticlesTheme(themeId || document.documentElement.getAttribute('data-theme') || 'paper');
 window.goToScene              = goToScene;
 window.hideTreeCanvas         = hideTreeCanvas;
 window.showTreeCanvas         = showTreeCanvas;

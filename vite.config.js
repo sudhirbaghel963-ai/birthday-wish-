@@ -20,6 +20,14 @@ export default defineConfig({
               return next();
             }
 
+            // Handle /preview/:experienceId
+            if (pathname.startsWith('/preview/') && !pathname.includes('.')) {
+              const parts = pathname.split('/');
+              const expSlug = parts[parts.length - 1];
+              req.url = `/preview.html?experience=${encodeURIComponent(expSlug)}${search ? '&' + search : ''}`;
+              return next();
+            }
+
             // Handle clean URLs: /admin -> /admin.html, /login -> /login.html, etc.
             const cleanRoutes = ['admin', 'login', 'dashboard', 'editor', 'create', 'gift', 'preview', 'terms', 'privacy'];
             const match = pathname.replace(/^\//, '').replace(/\/$/, '');

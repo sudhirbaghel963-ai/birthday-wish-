@@ -8,6 +8,7 @@
     { "source": "/create", "destination": "/create.html" },
     { "source": "/gift", "destination": "/gift.html" },
     { "source": "/preview", "destination": "/preview.html" },
+    { "source": "/preview/:experienceId", "destination": "/preview.html?experience=:experienceId" },
     { "source": "/terms", "destination": "/terms.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/gift/:slug", "destination": "/gift.html?slug=:slug" },

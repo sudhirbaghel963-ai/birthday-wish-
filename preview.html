@@ -17,8 +17,15 @@
     document.documentElement.classList.add('js');
     (function() {
       const urlParams = new URLSearchParams(window.location.search);
-      const exp = urlParams.get('experience');
+      let exp = urlParams.get('experience');
       const theme = urlParams.get('theme');
+      if (!exp && window.location.pathname.startsWith('/preview/')) {
+        const parts = window.location.pathname.split('/');
+        const last = parts[parts.length - 1];
+        if (last && last !== 'preview.html' && last !== 'preview' && !last.includes('.')) {
+          exp = last;
+        }
+      }
       if (exp === 'birthday-film-glass' || theme === 'glass') {
         document.documentElement.setAttribute('data-theme', 'glass');
       }
@@ -1128,6 +1135,27 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+    // Demo Content Configuration per Experience / Theme
+    // Single source of truth for demo gifts. To change or assign a demo gift, update the slug here.
+    const DEMO_EXPERIENCE_CONFIG = {
+      'birthday-film-glass': {
+        themeId: 'glass',
+        demoGiftSlug: 'vsue8h8kx', // Official published demo for Velvet & Glass Edition (Khushali)
+      },
+      'glass': {
+        themeId: 'glass',
+        demoGiftSlug: 'vsue8h8kx',
+      },
+      'birthday-film': {
+        themeId: 'paper',
+        demoGiftSlug: null, // Uses default template placeholders for Paper theme
+      },
+      'paper': {
+        themeId: 'paper',
+        demoGiftSlug: null,
+      }
+    };
+
     (async function initPreview() {
       // Check if running inside iframe
       if (window.self !== window.top) {
@@ -1135,7 +1163,19 @@
       }
 
       const urlParams = new URLSearchParams(window.location.search);
-      const exp = urlParams.get('experience') || 'birthday-film';
+      let exp = urlParams.get('experience');
+      const themeParam = urlParams.get('theme');
+
+      // Support clean URL /preview/:experienceId if opened directly
+      if (!exp && window.location.pathname.startsWith('/preview/')) {
+        const parts = window.location.pathname.split('/');
+        const last = parts[parts.length - 1];
+        if (last && last !== 'preview.html' && last !== 'preview' && !last.includes('.')) {
+          exp = last;
+        }
+      }
+      if (!exp) exp = (themeParam === 'glass' ? 'birthday-film-glass' : 'birthday-film');
+
       const versionId = urlParams.get('versionId');
       const giftId = urlParams.get('giftId') || urlParams.get('id') || urlParams.get('draftId');
       const versionNum = urlParams.get('v') || urlParams.get('version');
@@ -1151,12 +1191,13 @@
       const SUPABASE_URL = 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
       const SUPABASE_ANON_KEY = 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';
 
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: true }
+      });
+
+      // 1. If an explicit gift/version ID was requested (e.g. from dashboard or admin inspector):
       if (versionId || (giftId && versionNum) || giftId) {
         try {
-          const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            auth: { persistSession: true }
-          });
-
           let giftRecord = null;
 
           if (versionId) {
@@ -1214,7 +1255,59 @@
             }
           }
         } catch (e) {
-          console.warn('Could not load version/gift data in preview:', e);
+          console.warn('[preview.html] Could not load version/gift data in preview:', e);
+        }
+      } else {
+        // 2. Experience Demo Mode (e.g. previewing Glass or Paper theme demo)
+        const expConfig = DEMO_EXPERIENCE_CONFIG[exp] || (themeParam ? DEMO_EXPERIENCE_CONFIG[themeParam] : null) || DEMO_EXPERIENCE_CONFIG['birthday-film'];
+        const themeId = expConfig.themeId || 'paper';
+
+        document.documentElement.setAttribute('data-theme', themeId);
+        document.body.classList.remove('theme-paper', 'theme-glass');
+        document.body.classList.add(`theme-${themeId}`);
+
+        if (expConfig.demoGiftSlug) {
+          try {
+            const { data: demoGift, error } = await supabase
+              .from('gifts')
+              .select('*')
+              .eq('slug', expConfig.demoGiftSlug)
+              .eq('status', 'paid')
+              .maybeSingle();
+
+            if (demoGift && !error) {
+              const giftContent = (typeof demoGift.content === 'object' && demoGift.content !== null) ? demoGift.content : {};
+              window.GIFT_DATA = {
+                ...giftContent,
+                themeId: themeId,
+                recipientName: giftContent.recipientName || 'Elena',
+                photo_urls: demoGift.photo_urls || giftContent.photo_urls || [],
+                clip_urls: demoGift.clip_urls || giftContent.clip_urls || [],
+                music: demoGift.music || giftContent.music || { trackType: 'default', startSeconds: 27 },
+                scenes: {
+                  ...(giftContent.scenes || {})
+                }
+              };
+
+              if (demoGift.photo_urls && Array.isArray(demoGift.photo_urls) && demoGift.photo_urls.length) {
+                if (!window.GIFT_DATA.scenes.scene6_wallOfUs) window.GIFT_DATA.scenes.scene6_wallOfUs = {};
+                window.GIFT_DATA.scenes.scene6_wallOfUs.photos = demoGift.photo_urls;
+              }
+              if (demoGift.clip_urls && Array.isArray(demoGift.clip_urls) && demoGift.clip_urls.length) {
+                if (!window.GIFT_DATA.scenes.scene7_memoryReel) window.GIFT_DATA.scenes.scene7_memoryReel = {};
+                window.GIFT_DATA.scenes.scene7_memoryReel.clips = demoGift.clip_urls;
+              }
+            } else {
+              console.warn('[preview.html] Demo gift unavailable or not paid, falling back to default placeholders:', error || 'No paid row');
+              window.GIFT_DATA = { themeId: themeId, theme: themeId };
+            }
+          } catch (demoErr) {
+            console.warn('[preview.html] Error fetching demo gift, falling back to default placeholders:', demoErr);
+            window.GIFT_DATA = { themeId: themeId, theme: themeId };
+          }
+        } else {
+          // Paper theme / default fallback
+          window.GIFT_DATA = { themeId: themeId, theme: themeId };
         }
       }
 

@@ -146,7 +146,8 @@ const defaultGiftData = {
     scene11_finalToast: {
       eyebrow: "and so, once more —",
       heroLine: "Happy Birthday, {recipientName}",
-      subtext: "here’s to another year of us being a little bit unstoppable together."
+      subtext: "here’s to another year of us being a little bit unstoppable together.",
+      closingPhotoUrl: null
     }
   },
   music: {
@@ -595,6 +596,22 @@ function populateStaticContent(data) {
     tHero.textContent = rawHero.replace(/\{recipientName\}/gi, recName);
   }
   const tSub = $('toastSub'); if (tSub && s11.subtext) tSub.textContent = s11.subtext;
+
+  // Scene 11 Closing Keepsake Photo (Optional)
+  const photoWrap = $('toastPhotoWrap');
+  const photoImg = $('toastPhotoImg');
+  if (photoWrap && photoImg) {
+    const photoUrl = s11.closingPhotoUrl;
+    if (photoUrl && typeof photoUrl === 'string' && photoUrl.trim().length > 0) {
+      photoImg.src = photoUrl.trim();
+      photoWrap.classList.remove('is-hidden');
+      photoWrap.style.display = 'block';
+    } else {
+      photoImg.src = '';
+      photoWrap.classList.add('is-hidden');
+      photoWrap.style.display = 'none';
+    }
+  }
 
   // --- Dynamic Music Sync ---
   if (gd.music) {
@@ -4482,6 +4499,12 @@ function resetScene11(){
     toastParticles.innerHTML = '';
   }
 
+  // Reset closing keepsake photo
+  const toastPhoto = $('toastPhotoWrap');
+  if (toastPhoto){
+    gsap.set(toastPhoto, { clearProps: 'all' });
+  }
+
   // Reset glasses
   if (glassLeft){
     gsap.set(glassLeft, { clearProps: 'all' });
@@ -4524,8 +4547,11 @@ function playScene11(){
   hideTreeCanvas();
   resetScene11();
 
+  const toastPhoto = $('toastPhotoWrap');
+
   if (reduceMotion){
     if (toastVeil) gsap.set(toastVeil, { opacity: 0 });
+    if (toastPhoto && !toastPhoto.classList.contains('is-hidden')) gsap.set(toastPhoto, { opacity: 1, y: 0, scale: 1 });
     if (glassLeft) gsap.set(glassLeft, { opacity: 1, x: 0, rotation: 12 });
     if (glassRight) gsap.set(glassRight, { opacity: 1, x: 0, rotation: -12 });
     if (toastEyebrow) gsap.set(toastEyebrow, { opacity: 1, y: 0, filter: 'blur(0px)' });
@@ -4548,6 +4574,15 @@ function playScene11(){
       { opacity: 0.95 },
       { opacity: 0, duration: 1.25, ease: 'power2.out' },
       0
+    );
+  }
+
+  // 1b. Optional Closing Keepsake Photo Frame reveals gently
+  if (toastPhoto && !toastPhoto.classList.contains('is-hidden')){
+    tl.fromTo(toastPhoto,
+      { opacity: 0, y: 16, scale: 0.94 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: 'power2.out' },
+      0.65
     );
   }
 

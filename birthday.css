@@ -2481,8 +2481,66 @@ body{
 .toast-stage{
   position:relative; width:100%; height:100%;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:clamp(1.5rem, 4vh, 3rem) clamp(1.2rem, 4vw, 2.5rem);
+  padding:clamp(1rem, 3.5vh, 2.5rem) clamp(1.2rem, 4vw, 2.5rem);
   box-sizing:border-box; z-index:3;
+}
+
+/* 0. Optional Closing Keepsake Photo Frame (Scene 11) */
+.toast-photo-wrap{
+  position:relative;
+  display:none;
+  margin-bottom:clamp(0.8rem, 2vh, 1.4rem);
+  z-index:6;
+  opacity:0;
+  transform:translateY(14px) scale(0.94);
+  will-change:transform, opacity;
+}
+.toast-photo-wrap.is-hidden{
+  display:none !important;
+}
+
+.toast-photo-card{
+  position:relative;
+  background:rgba(255, 252, 248, 0.96);
+  padding:clamp(6px, 1.5vw, 9px) clamp(6px, 1.5vw, 9px) clamp(10px, 2.2vw, 15px) clamp(6px, 1.5vw, 9px);
+  border-radius:18px;
+  border:1px solid rgba(232, 162, 61, 0.45);
+  box-shadow:
+    0 10px 30px -6px rgba(120, 20, 50, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95);
+  max-width:clamp(170px, 42vw, 240px);
+  transform:rotate(-1.5deg);
+  transition:transform 0.4s cubic-bezier(.2,.7,.2,1);
+}
+.toast-photo-card:hover{
+  transform:rotate(0deg) scale(1.02);
+}
+
+.toast-photo-inner{
+  width:100%;
+  aspect-ratio:4/3;
+  border-radius:12px;
+  overflow:hidden;
+  background:#f7ede0;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.toast-photo-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.toast-photo-pin{
+  position:absolute;
+  top:-6px;
+  right:14px;
+  font-size:12px;
+  color:var(--gold-2, #e8a23d);
+  text-shadow:0 0 6px rgba(255, 215, 120, 0.8);
+  pointer-events:none;
 }
 
 /* 1. Clinking Glasses Wrap */

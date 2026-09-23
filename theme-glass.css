@@ -798,3 +798,21 @@ body.theme-glass {
 .theme-glass .balloon-string {
   background: rgba(255, 255, 255, 0.35) !important;
 }
+
+/* ============================================================
+   SCENE 11 — CLOSING KEEPSAKE PHOTO FRAME (Glass Theme)
+   ============================================================ */
+[data-theme="glass"] .toast-photo-card,
+.theme-glass .toast-photo-card {
+  background: rgba(22, 9, 32, 0.78) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border-gold) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(212, 35, 92, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-theme="glass"] .toast-photo-inner,
+.theme-glass .toast-photo-inner {
+  background: #0d0417 !important;
+}
+

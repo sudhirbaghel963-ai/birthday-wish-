@@ -1004,6 +1004,64 @@ Happy Birthday. I mean it.</textarea>
             <label class="block text-xs font-semibold text-ink-800 mb-1">Subtext</label>
             <textarea id="s11Subtext" rows="2" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none leading-relaxed">here’s to another year of us being a little bit unstoppable together.</textarea>
           </div>
+
+          <!-- Closing Keepsake Photo Upload (Optional) -->
+          <div class="pt-2 border-t border-parchment-200">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-semibold text-ink-800">
+                A final keepsake photo <span class="text-ink-400 font-normal">(optional)</span>
+              </label>
+              <span class="text-[10px] text-ink-400">Appears framed in Scene 11</span>
+            </div>
+
+            <!-- Upload dropzone & preview container -->
+            <div id="s11PhotoSlotWrap" class="relative rounded-2xl border-2 border-dashed border-parchment-300 bg-parchment-50/70 p-3 hover:border-rose-400 transition-colors">
+              <input type="file" id="s11PhotoFileInput" accept="image/*" class="hidden" />
+
+              <!-- State A: Empty (Prompt to upload) -->
+              <label id="s11PhotoEmptyState" for="s11PhotoFileInput" class="flex flex-col items-center justify-center py-3.5 px-3 cursor-pointer text-center group">
+                <div class="w-9 h-9 rounded-full bg-rose-50 border border-rose-200/80 text-rose-600 flex items-center justify-center text-base mb-1.5 group-hover:scale-110 transition-transform">
+                  📷
+                </div>
+                <span class="text-xs font-semibold text-ink-800 group-hover:text-rose-600 transition-colors">Upload a final photo</span>
+                <span class="text-[11px] text-ink-400 mt-0.5">Click to browse or drag &amp; drop (JPG, PNG, WEBP)</span>
+              </label>
+
+              <!-- State B: Uploaded Thumbnail Preview -->
+              <div id="s11PhotoFilledState" class="hidden flex items-center gap-3">
+                <div class="w-14 h-14 rounded-xl overflow-hidden border border-parchment-300 bg-parchment-200 flex-shrink-0 shadow-xs">
+                  <img id="s11PhotoThumbnail" src="" alt="Closing photo preview" class="w-full h-full object-cover" />
+                </div>
+                <div class="flex-1 min-w-0 space-y-1">
+                  <p class="text-xs font-semibold text-ink-900 truncate">Final Keepsake Photo</p>
+                  <p class="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                    <span>✓</span> <span>Framed in finale toast</span>
+                  </p>
+                  <div class="flex items-center gap-2 pt-0.5">
+                    <label for="s11PhotoFileInput" class="text-xs font-semibold text-rose-600 hover:text-rose-700 underline cursor-pointer">
+                      Replace
+                    </label>
+                    <span class="text-parchment-300">•</span>
+                    <button type="button" id="btnRemoveS11Photo" class="text-xs font-semibold text-ink-500 hover:text-rose-600 underline cursor-pointer">
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Loading overlay & progress bar -->
+              <div id="s11PhotoLoadingOverlay" class="hidden absolute inset-0 bg-white/90 backdrop-blur-xs rounded-2xl flex flex-col items-center justify-center p-3 z-10">
+                <div class="w-5 h-5 border-2 border-rose-600 border-t-transparent rounded-full animate-spin mb-1"></div>
+                <p class="text-xs font-semibold text-ink-800">Uploading photo...</p>
+                <div class="w-28 h-1.5 bg-parchment-200 rounded-full mt-1.5 overflow-hidden">
+                  <div id="s11PhotoProgressBar" class="h-full bg-rose-600 transition-all duration-150" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error message container -->
+            <div id="s11PhotoUploadError" class="hidden mt-2 p-2 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium"></div>
+          </div>
         </div>
       </div>
 
@@ -1729,7 +1787,8 @@ Happy Birthday. I mean it.</textarea>
         scene11_finalToast: {
           eyebrow: "and so, once more —",
           heroLine: "Happy Birthday, {recipientName}",
-          subtext: "here’s to another year of us being a little bit unstoppable together."
+          subtext: "here’s to another year of us being a little bit unstoppable together.",
+          closingPhotoUrl: null
         }
       }
     };
@@ -1922,6 +1981,7 @@ Happy Birthday. I mean it.</textarea>
       updateHeroPreviewToken();
       renderScene6PairedSlots();
       renderScene7PairedSlots();
+      renderScene11PhotoSlot();
       updateValidationAndProgress();
     }
 
@@ -2529,6 +2589,100 @@ Happy Birthday. I mean it.</textarea>
       }
     }
 
+    // 14b. Scene 11 Closing Keepsake Photo Handler
+    function renderScene11PhotoSlot() {
+      const emptyState = document.getElementById('s11PhotoEmptyState');
+      const filledState = document.getElementById('s11PhotoFilledState');
+      const thumbnail = document.getElementById('s11PhotoThumbnail');
+      const photoUrl = editorState.scenes?.scene11_finalToast?.closingPhotoUrl;
+
+      if (photoUrl && typeof photoUrl === 'string' && photoUrl.trim().length > 0) {
+        if (thumbnail) thumbnail.src = photoUrl.trim();
+        if (emptyState) emptyState.classList.add('hidden');
+        if (filledState) filledState.classList.remove('hidden');
+      } else {
+        if (thumbnail) thumbnail.src = '';
+        if (emptyState) emptyState.classList.remove('hidden');
+        if (filledState) filledState.classList.add('hidden');
+      }
+    }
+
+    async function handleS11PhotoSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      await uploadS11Photo(file);
+    }
+
+    async function uploadS11Photo(file) {
+      const errorEl = document.getElementById('s11PhotoUploadError');
+      const loadingOverlay = document.getElementById('s11PhotoLoadingOverlay');
+      const progressBar = document.getElementById('s11PhotoProgressBar');
+      if (errorEl) errorEl.classList.add('hidden');
+
+      const isImage = (file.type && file.type.startsWith('image/')) || /\.(jpg|jpeg|png|webp|gif|heic|heif)$/i.test(file.name);
+      if (!isImage) {
+        if (errorEl) { errorEl.textContent = 'Please select a valid image file (JPG, PNG, WEBP, HEIC).'; errorEl.classList.remove('hidden'); }
+        return;
+      }
+      if (file.size > 30 * 1024 * 1024) {
+        if (errorEl) { errorEl.textContent = 'File is too large. Maximum source size is 30MB.'; errorEl.classList.remove('hidden'); }
+        return;
+      }
+
+      if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+      if (progressBar) progressBar.style.width = '0%';
+
+      try {
+        if (!supabase) throw new Error('Supabase client is not initialized.');
+
+        // Compress before upload
+        let uploadFile = file;
+        if (file.type !== 'image/gif') {
+          try { uploadFile = await compressImageFile(file, 1600, 0.82); } catch (ce) { console.warn('Compression skipped:', ce); }
+        }
+
+        const fileName = `${draftId}_s11_photo_${Date.now()}.webp`;
+        const contentType = 'image/webp';
+
+        const { data, error } = await supabase.storage
+          .from('gift-photos')
+          .upload(fileName, uploadFile, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: contentType,
+            onUploadProgress: (p) => {
+              if (progressBar && p.totalBytes > 0) progressBar.style.width = `${Math.round(p.loaded / p.totalBytes * 100)}%`;
+            }
+          });
+
+        if (error) throw new Error(error.message || 'Failed to upload image to storage.');
+
+        const { data: pubData } = supabase.storage.from('gift-photos').getPublicUrl(fileName);
+        const uploadedUrl = pubData?.publicUrl;
+        if (!uploadedUrl) throw new Error('Could not retrieve public URL for uploaded photo.');
+
+        if (!editorState.scenes.scene11_finalToast) editorState.scenes.scene11_finalToast = {};
+        editorState.scenes.scene11_finalToast.closingPhotoUrl = uploadedUrl;
+        renderScene11PhotoSlot();
+        pushUpdateToPreview(11);
+        triggerAutosave();
+      } catch (err) {
+        console.error('Scene 11 photo upload error:', err);
+        if (errorEl) { errorEl.textContent = `Upload failed: ${err.message || 'Please try again.'}`; errorEl.classList.remove('hidden'); }
+      } finally {
+        if (loadingOverlay) loadingOverlay.classList.add('hidden');
+      }
+    }
+
+    function removeS11Photo() {
+      if (editorState.scenes?.scene11_finalToast) {
+        editorState.scenes.scene11_finalToast.closingPhotoUrl = null;
+      }
+      renderScene11PhotoSlot();
+      pushUpdateToPreview(11);
+      triggerAutosave();
+    }
+
     // 15. Live Preview PostMessage Synchronization
     const previewIframe = document.getElementById('filmPreviewFrame');
     let debounceTimer = null;
@@ -2835,6 +2989,40 @@ Happy Birthday. I mean it.</textarea>
         queuePreviewUpdate(11);
       });
       bind('s11Subtext', (e) => { editorState.scenes.scene11_finalToast.subtext = e.target.value; queuePreviewUpdate(11); });
+
+      // Scene 11 Photo Upload input & button listeners
+      const s11FileInput = document.getElementById('s11PhotoFileInput');
+      s11FileInput?.addEventListener('change', handleS11PhotoSelected);
+
+      const btnRemoveS11 = document.getElementById('btnRemoveS11Photo');
+      btnRemoveS11?.addEventListener('click', (e) => {
+        e.preventDefault();
+        removeS11Photo();
+      });
+
+      // Drag & drop on Scene 11 dropzone
+      const s11DropZone = document.getElementById('s11PhotoSlotWrap');
+      if (s11DropZone) {
+        ['dragenter', 'dragover'].forEach(name => {
+          s11DropZone.addEventListener(name, (e) => {
+            e.preventDefault(); e.stopPropagation();
+            s11DropZone.classList.add('border-rose-500', 'bg-rose-50/50');
+          });
+        });
+        ['dragleave', 'drop'].forEach(name => {
+          s11DropZone.addEventListener(name, (e) => {
+            e.preventDefault(); e.stopPropagation();
+            s11DropZone.classList.remove('border-rose-500', 'bg-rose-50/50');
+          });
+        });
+        s11DropZone.addEventListener('drop', (e) => {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+          if (files && files.length > 0) {
+            uploadS11Photo(files[0]);
+          }
+        });
+      }
 
       // AUTO-SYNC SCENE ON ACCORDION EXPAND & FIELD FOCUS
       document.querySelectorAll('.accordion-item').forEach(item => {

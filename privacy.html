@@ -1,58 +1,244 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Privacy Policy — Velvet & Keepsake</title>
+  <meta name="description" content="Privacy Policy for Velvet & Keepsake personalized digital birthday gifts." />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            velvet: {
+              950: '#14030b',
+              900: '#2d0a1a',
+              800: '#480f2a',
+              700: '#67163c',
+            },
+            rose: {
+              500: '#e13b71',
+              600: '#d4235c',
+              700: '#b01847',
+            },
+            gold: {
+              300: '#f9d37a',
+              400: '#f5b838',
+              500: '#e09f19',
+            },
+            parchment: {
+              50: '#fffdfa',
+              100: '#fcf7f0',
+              200: '#f7ede0',
+              300: '#ebd9c5',
+              400: '#dec2a7',
+            },
+            ink: {
+              900: '#211317',
+              800: '#38222a',
+              700: '#4d3840',
+              600: '#634b54',
+              500: '#7d636c',
+              400: '#9e858e',
+              300: '#c2adb5',
+            }
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'serif'],
+            elegant: ['Cormorant Garamond', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-[#fcf7f0] text-[#211317] font-['Plus_Jakarta_Sans',sans-serif] min-h-screen flex flex-col justify-between">
-  <header class="w-full border-b border-[#ebd9c5]/60 bg-[#fffdfa]/80 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-      <a href="./index.html" class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#2d0a1a] to-[#d4235c] flex items-center justify-center text-[#f5b838]">
-          <span class="font-['Fraunces',serif] text-lg font-bold">V</span>
+<body class="bg-parchment-100 text-ink-900 font-sans min-h-screen flex flex-col justify-between selection:bg-rose-100 selection:text-rose-900">
+  
+  <!-- Navigation Header -->
+  <header class="w-full border-b border-parchment-300/70 bg-parchment-50/90 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="./index.html" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-velvet-900 to-rose-600 flex items-center justify-center text-gold-300 shadow-sm group-hover:scale-105 transition-transform">
+          <span class="font-serif text-lg font-bold">✦</span>
         </div>
-        <span class="font-['Fraunces',serif] text-2xl font-bold tracking-tight text-[#211317]">Velvet & Keepsake</span>
+        <div class="flex flex-col">
+          <span class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-ink-900">Velvet &amp; Keepsake</span>
+        </div>
       </a>
-      <a href="./index.html" class="text-sm font-medium px-4 py-2 rounded-full border border-[#ebd9c5] bg-white text-[#211317] hover:bg-[#f7ede0] transition-colors">Back to Home</a>
-    </div>
-  </header>
-
-  <main class="flex-1 max-w-3xl mx-auto px-6 py-20 w-full">
-    <div class="bg-white rounded-3xl p-8 md:p-12 border border-[#ebd9c5] shadow-sm space-y-6">
-      <div class="inline-block px-3 py-1 rounded-full bg-[#ffe4ec] text-[#d4235c] text-xs font-semibold uppercase tracking-wider">
-        Privacy & Data Protection
-      </div>
-      <h1 class="font-['Fraunces',serif] text-4xl font-bold text-[#211317]">Privacy Policy</h1>
-      <p class="text-sm text-[#7d636c]">Last updated: September 2026</p>
-      
-      <div class="p-6 rounded-2xl bg-[#fffdfa] border border-[#f7ede0] space-y-3">
-        <h2 class="font-['Fraunces',serif] text-lg font-bold text-[#211317]">Privacy-First by Design</h2>
-        <p class="text-sm text-[#4d3840] leading-relaxed">
-          Your keepsake films, photos, notes, and recipient details are strictly private, unlisted, and 100% ad-free. We never sell your personal data or index your personalized films on public search engines.
-        </p>
-      </div>
-
-      <div class="space-y-4 text-sm text-[#4d3840] leading-relaxed">
-        <p>Our complete legal Privacy Policy document is being published alongside platform launch. For privacy inquiries, please reach out to <span class="font-medium text-[#d4235c]">privacy@velvetkeepsake.com</span>.</p>
-      </div>
-
-      <div class="pt-6 border-t border-[#f7ede0]">
-        <a href="./index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-[#d4235c] hover:underline">
-          <span>← Return to Velvet & Keepsake</span>
+      <div class="flex items-center gap-3">
+        <a href="./terms.html" class="text-xs sm:text-sm font-medium text-ink-600 hover:text-rose-600 transition-colors hidden sm:inline-block">Terms of Service</a>
+        <a href="./index.html" class="text-xs sm:text-sm font-semibold px-4 py-2 rounded-full border border-parchment-300 bg-white text-ink-900 hover:bg-parchment-200 transition-colors shadow-2xs">
+          ← Back to Home
         </a>
       </div>
     </div>
+  </header>
+
+  <!-- Main Legal Document Content -->
+  <main class="flex-1 max-w-4xl mx-auto px-6 py-12 sm:py-16 w-full">
+    <article class="bg-white rounded-3xl p-8 sm:p-12 md:p-14 border border-parchment-300 shadow-sm space-y-10">
+      
+      <!-- Document Header -->
+      <div class="border-b border-parchment-200 pb-8 space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold uppercase tracking-wider">
+          <span>🔒</span>
+          <span>Privacy &amp; Data Protection</span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-ink-900 tracking-tight">Privacy Policy</h1>
+        <p class="text-xs sm:text-sm text-ink-500 font-medium">Last updated: September 23, 2026</p>
+      </div>
+
+      <!-- Content Sections -->
+      <div class="space-y-8 text-sm sm:text-base text-ink-700 leading-relaxed font-normal">
+        
+        <!-- Section 1 -->
+        <section class="space-y-3">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">1.</span> What We Collect
+          </h2>
+          <ul class="space-y-2 list-disc list-outside pl-5 text-ink-700">
+            <li><strong class="text-ink-900 font-semibold">Account information:</strong> your email address (via Google Sign-In or email/password).</li>
+            <li><strong class="text-ink-900 font-semibold">Content you provide:</strong> recipient names, personal messages, photos, videos, and music you upload to customize your Gift.</li>
+            <li><strong class="text-ink-900 font-semibold">Payment information:</strong> processed directly by Razorpay — we do not store your card details ourselves.</li>
+            <li><strong class="text-ink-900 font-semibold">Basic usage data:</strong> (e.g. pages visited) for improving the platform.</li>
+          </ul>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="space-y-3">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">2.</span> How We Use Your Information
+          </h2>
+          <ul class="space-y-2 list-disc list-outside pl-5 text-ink-700">
+            <li>To create, store, and deliver your personalized Gift.</li>
+            <li>To process payments securely via Razorpay.</li>
+            <li>To send you account-related emails (sign-in, password reset).</li>
+            <li>To provide customer support if you contact us.</li>
+          </ul>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="space-y-3">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">3.</span> Sharing Your Information
+          </h2>
+          <p>
+            We do not sell your personal information. We share data only with:
+          </p>
+          <ul class="space-y-2 list-disc list-outside pl-5 text-ink-700">
+            <li><strong class="text-ink-900 font-semibold">Razorpay:</strong> to process payments securely.</li>
+            <li><strong class="text-ink-900 font-semibold">Supabase:</strong> our database and storage provider, which hosts your account and Gift data securely.</li>
+          </ul>
+          <p class="pt-1">
+            We do not share your uploaded photos, videos, or messages with any third party for marketing purposes.
+          </p>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="space-y-2.5">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">4.</span> Your Gift's Recipient
+          </h2>
+          <p>
+            Content you include in a Gift (photos, messages, etc.) becomes visible to anyone who has the shareable link to that Gift. Please only share that link with your intended recipient.
+          </p>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="space-y-2.5">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">5.</span> Data Retention
+          </h2>
+          <p>
+            We retain your account and Gift data for as long as your account is active, or as needed to provide our services. You may request deletion of your account and associated data by contacting <a href="mailto:valvetkeepsake@gmail.com" class="text-rose-600 font-medium hover:underline">valvetkeepsake@gmail.com</a>.
+          </p>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="space-y-2.5">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">6.</span> Security
+          </h2>
+          <p>
+            We use industry-standard measures (encrypted connections, secure database policies) to protect your data, but no system is completely secure, and we cannot guarantee absolute security.
+          </p>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="space-y-2.5">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">7.</span> Children's Privacy
+          </h2>
+          <p>
+            Our platform is not directed at children under 13, and we do not knowingly collect personal information from children under 13.
+          </p>
+        </section>
+
+        <!-- Section 8 -->
+        <section class="space-y-2.5">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">8.</span> Your Rights
+          </h2>
+          <p>
+            You may request access to, correction of, or deletion of your personal data at any time by contacting <a href="mailto:valvetkeepsake@gmail.com" class="text-rose-600 font-medium hover:underline">valvetkeepsake@gmail.com</a>.
+          </p>
+        </section>
+
+        <!-- Section 9 -->
+        <section class="space-y-2.5">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">9.</span> Changes to This Policy
+          </h2>
+          <p>
+            We may update this Privacy Policy from time to time. Material changes will be reflected with an updated "Last updated" date above.
+          </p>
+        </section>
+
+        <!-- Section 10 -->
+        <section class="space-y-2.5">
+          <h2 class="font-serif text-lg sm:text-xl font-bold text-ink-900 flex items-center gap-2">
+            <span class="text-rose-600 text-base font-sans font-semibold">10.</span> Contact
+          </h2>
+          <p>
+            Questions about this Privacy Policy? Contact us at <a href="mailto:valvetkeepsake@gmail.com" class="text-rose-600 font-medium hover:underline">valvetkeepsake@gmail.com</a>.
+          </p>
+        </section>
+
+      </div>
+
+      <!-- Document Footer Actions -->
+      <div class="pt-8 border-t border-parchment-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <a href="./index.html" class="inline-flex items-center gap-2 text-sm font-semibold text-rose-600 hover:text-rose-700 transition-colors">
+          <span>← Return to Velvet &amp; Keepsake</span>
+        </a>
+        <a href="./terms.html" class="text-sm font-medium text-ink-500 hover:text-ink-800 transition-colors underline">
+          Read Terms of Service →
+        </a>
+      </div>
+
+    </article>
   </main>
 
-  <footer class="border-t border-[#ebd9c5]/60 bg-[#fcf7f0] py-8 text-center text-xs text-[#7d636c]">
-    © 2026 Velvet & Keepsake. All rights reserved.
+  <!-- Page Footer -->
+  <footer class="border-t border-parchment-300/70 bg-parchment-50 py-8">
+    <div class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-500">
+      <div>
+        © 2026 Velvet &amp; Keepsake. All rights reserved.
+      </div>
+      <div class="flex items-center gap-6 font-medium">
+        <a href="./terms.html" class="hover:text-rose-600 transition-colors">Terms of Service</a>
+        <a href="./privacy.html" class="text-rose-600 font-semibold">Privacy Policy</a>
+        <a href="./index.html" class="hover:text-rose-600 transition-colors">Home</a>
+      </div>
+    </div>
   </footer>
+
 </body>
 </html>

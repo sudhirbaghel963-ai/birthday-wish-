@@ -1,790 +1,665 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Velvet & Keepsake — Turn a Birthday Wish Into an Unforgettable Cinematic Experience</title>
-  <meta name="description" content="A personalized, scene-by-scene interactive birthday film created in minutes, delivered as a private cinematic link." />
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport" />
+  <title>Valvet &amp; Keepsake — Digital Birthday Experiences</title>
+  <meta name="description" content="Create interactive digital birthday experiences that they can open, explore and remember forever." />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 
-  <!-- Google Fonts: Cormorant Garamond, Fraunces, Great Vibes, Plus Jakarta Sans -->
+  <!-- Google Fonts: Cormorant Garamond & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind CSS CDN with custom design tokens matching Stitch -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind CSS v3 with Plugins -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            velvet: {
-              950: '#17040d',
-              900: '#2d0a1a',
-              850: '#3d0e23',
-              800: '#4a122c',
-              700: '#6e1b42',
-              600: '#8c2254',
-            },
-            rose: {
-              600: '#c42858',
-              500: '#d4235c',
-              400: '#e84d7a',
-              300: '#f78cae',
-              200: '#fcc5d6',
-              100: '#ffe4ec',
-              50: '#fff5f8',
-            },
-            gold: {
-              600: '#b87c14',
-              500: '#d99b26',
-              400: '#e8a23d',
-              300: '#f5b838',
-              200: '#ffdf85',
-              100: '#fff2d6',
-              50: '#fffbf0',
-            },
-            parchment: {
-              50: '#fffdfa',
-              100: '#fcf7f0',
-              200: '#f7ede0',
-              300: '#ebd9c5',
-              400: '#dec2a7',
-            },
-            ink: {
-              900: '#211317',
-              800: '#38222a',
-              700: '#4d3840',
-              600: '#634b54',
-              500: '#7d636c',
-              400: '#9e858e',
-              300: '#c2adb5',
+            brand: {
+              dark: '#080506',
+              surface: '#110c0e',
+              card: '#161013',
+              cardBorder: 'rgba(217, 168, 155, 0.16)',
+              rose: '#f4c7bf',
+              roseHover: '#ffd5cd',
+              accent: '#d9a89b',
+              gold: '#e0b88f',
+              muted: '#9e8d91'
             }
           },
           fontFamily: {
-            serif: ['Fraunces', 'serif'],
-            elegant: ['Cormorant Garamond', 'serif'],
-            script: ['Great Vibes', 'cursive'],
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-          },
-          boxShadow: {
-            'glow-rose': '0 0 35px -5px rgba(212, 35, 92, 0.35)',
-            'glow-gold': '0 0 35px -5px rgba(245, 184, 56, 0.35)',
-            'velvet-card': '0 20px 40px -15px rgba(45, 10, 26, 0.15), 0 0 0 1px rgba(235, 217, 197, 0.8)',
-            'cinema': '0 25px 60px -15px rgba(23, 4, 13, 0.4), 0 0 0 1px rgba(245, 184, 56, 0.25)',
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
           }
         }
       }
     }
   </script>
 
-  <style>
-    /* Custom luxury background textures & typography refinements */
-    ::selection {
-      background: #ffe4ec;
-      color: #d4235c;
+  <!-- Custom Typography & Glow Effects -->
+  <style data-purpose="custom-typography-and-effects">
+    body {
+      background-color: #080506;
+      color: #ede4e5;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
     }
-    .bg-grid-warm {
-      background-size: 32px 32px;
-      background-image: 
-        linear-gradient(to right, rgba(235, 217, 197, 0.25) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(235, 217, 197, 0.25) 1px, transparent 1px);
+    .font-serif-luxury {
+      font-family: 'Cormorant Garamond', Georgia, serif;
     }
-    .cinema-gradient {
-      background: radial-gradient(ellipse 110% 90% at 50% 35%, #3d0e23 0%, #260715 55%, #130209 100%);
+    .glow-radial-hero {
+      background: radial-gradient(circle at 75% 35%, rgba(198, 120, 102, 0.22) 0%, rgba(138, 64, 76, 0.12) 35%, transparent 70%);
     }
-    .sparkle-float {
-      animation: sparkleFloat 4s ease-in-out infinite alternate;
+    .glow-radial-center {
+      background: radial-gradient(circle at 50% 20%, rgba(184, 114, 98, 0.15) 0%, transparent 65%);
     }
-    @keyframes sparkleFloat {
-      0% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
-      100% { transform: translateY(-8px) rotate(8deg); opacity: 1; }
+    .glow-radial-phone {
+      background: radial-gradient(circle at 70% 50%, rgba(217, 168, 155, 0.25) 0%, rgba(115, 52, 65, 0.15) 45%, transparent 75%);
+    }
+    .card-glass {
+      background: linear-gradient(180deg, rgba(28, 19, 23, 0.85) 0%, rgba(16, 11, 13, 0.95) 100%);
+      border: 1px solid rgba(220, 175, 163, 0.15);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-glass:hover {
+      border-color: rgba(244, 199, 191, 0.45);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px -10px rgba(217, 168, 155, 0.2);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(22, 16, 19, 0.6);
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(220, 175, 163, 0.3);
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(244, 199, 191, 0.5);
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(-12deg); }
+      50% { transform: translateY(-8px) rotate(-10deg); }
+    }
+    @keyframes floatSlowReverse {
+      0%, 100% { transform: translateY(0px) rotate(6deg); }
+      50% { transform: translateY(-10px) rotate(8deg); }
+    }
+    .floating-card-1 {
+      animation: floatSlow 6s ease-in-out infinite;
+    }
+    .floating-card-2 {
+      animation: floatSlowReverse 7s ease-in-out infinite;
     }
   </style>
 </head>
-<body class="bg-parchment-100 text-ink-900 font-sans antialiased selection:bg-rose-100 selection:text-rose-500 overflow-x-hidden">
+<body class="selection:bg-brand-rose/20 selection:text-brand-rose relative bg-brand-dark min-h-screen flex flex-col">
 
-  <!-- ============================================================
-       TOP NAVIGATION BAR
-       ============================================================ -->
-  <header class="sticky top-0 z-50 w-full bg-parchment-50/90 backdrop-blur-md border-b border-parchment-300/70 transition-all duration-200">
-    <div class="max-w-7xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between">
-      
-      <!-- Brand Logo Wordmark (CSS-only Luxury Placeholder) -->
-      <a href="./index.html" class="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 rounded-full" aria-label="Velvet & Keepsake Home">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-velvet-900 via-velvet-800 to-rose-600 flex items-center justify-center text-gold-300 shadow-md shadow-velvet-900/15 group-hover:scale-105 transition-transform duration-300 border border-gold-400/30">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-300">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
-          </svg>
-        </div>
-        <div class="flex flex-col">
-          <span class="font-serif text-2xl font-bold tracking-tight text-ink-900 group-hover:text-rose-500 transition-colors leading-none">
-            Velvet &amp; Keepsake
-          </span>
-          <span class="text-[10px] font-medium tracking-widest text-ink-500 uppercase mt-1">Cinematic Birthday Gifts</span>
-        </div>
+  <!-- BEGIN: NavigationBar -->
+  <header class="w-full relative z-40 border-b border-brand-cardBorder/30 backdrop-blur-md bg-brand-dark/80 sticky top-0" data-purpose="site-navigation">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 py-5 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a class="font-serif-luxury text-xl sm:text-2xl tracking-[0.22em] font-normal uppercase text-brand-rose drop-shadow-[0_2px_8px_rgba(244,199,191,0.2)]" href="#home">
+        Valvet &amp; Keepsake
       </a>
 
-      <!-- Desktop Nav Links -->
-      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-ink-700" aria-label="Main Navigation">
-        <a href="#how-it-works" class="hover:text-rose-600 transition-colors py-1">How It Works</a>
-        <a href="./preview.html" class="hover:text-rose-600 transition-colors py-1 flex items-center gap-1.5">
-          <span>Preview</span>
-          <span class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-rose-100 text-rose-600">11 Scenes</span>
-        </a>
-        <a href="#why-velvet" class="hover:text-rose-600 transition-colors py-1">Why Velvet</a>
-        <a href="#faq" class="hover:text-rose-600 transition-colors py-1">FAQ</a>
+      <!-- Desktop Navigation Links -->
+      <nav aria-label="Main Navigation" class="hidden md:flex items-center space-x-9 text-xs sm:text-sm tracking-widest uppercase font-light text-[#c3b1b4]">
+        <a class="hover:text-brand-rose transition-colors" href="#home">Home</a>
+        <a class="hover:text-brand-rose transition-colors" href="#experiences">Experiences</a>
+        <a class="hover:text-brand-rose transition-colors" href="./preview.html">Watch Demo</a>
+        <a class="hover:text-brand-rose transition-colors" id="navAuthLink" href="./login.html">Login</a>
       </nav>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-3">
-        <a href="./login.html" id="landingAuthLink" class="hidden sm:inline-flex items-center text-xs font-semibold text-ink-700 hover:text-rose-600 px-3.5 py-2 rounded-full border border-parchment-300 bg-white hover:bg-parchment-100 transition-colors shadow-2xs">
-          Sign In
-        </a>
-
-        <a href="./login.html?redirect=./create.html" class="cta-create-link inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-velvet-900 to-velvet-800 hover:from-velvet-800 hover:to-rose-600 text-white font-medium text-sm transition-all duration-300 shadow-md shadow-velvet-900/20 hover:shadow-lg hover:shadow-rose-600/25 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-rose-500">
-          <span>Create a Gift</span>
-          <span class="text-gold-300">✦</span>
+      <!-- Nav Actions -->
+      <div class="flex items-center space-x-4 sm:space-x-6">
+        <a class="cta-create-link bg-brand-rose text-brand-dark hover:bg-brand-roseHover px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium tracking-wide transition-all shadow-[0_0_20px_rgba(244,199,191,0.25)] hidden sm:inline-flex items-center gap-1.5" href="./login.html">
+          <span>Create Your Experience</span>
+          <span aria-hidden="true">&rarr;</span>
         </a>
 
         <!-- Mobile Menu Toggle Button -->
-        <button id="mobileMenuBtn" type="button" class="md:hidden p-2.5 rounded-full hover:bg-parchment-200 text-ink-700 focus:outline-none" aria-label="Toggle Navigation Menu">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
+        <button id="mobileMenuBtn" aria-label="Toggle navigation menu" class="md:hidden text-[#c3b1b4] hover:text-brand-rose p-1.5 focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
         </button>
       </div>
-
     </div>
 
-    <!-- Mobile Dropdown Navigation -->
-    <div id="mobileMenu" class="hidden md:hidden border-t border-parchment-200 bg-parchment-50 px-6 py-5 space-y-3 shadow-lg">
-      <a href="#how-it-works" class="block text-base font-medium text-ink-700 hover:text-rose-600 py-1.5 mobile-link">How It Works</a>
-      <a href="./preview.html" class="block text-base font-medium text-ink-700 hover:text-rose-600 py-1.5 flex items-center justify-between mobile-link">
-        <span>Preview Film</span>
-        <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-rose-100 text-rose-600">11 Scenes</span>
-      </a>
-      <a href="./login.html" id="mobileAuthLink" class="block text-base font-medium text-ink-700 hover:text-rose-600 py-1.5 mobile-link">
-        Sign In / My Gifts
-      </a>
-      <a href="#why-velvet" class="block text-base font-medium text-ink-700 hover:text-rose-600 py-1.5 mobile-link">Why Velvet</a>
-      <a href="#faq" class="block text-base font-medium text-ink-700 hover:text-rose-600 py-1.5 mobile-link">FAQ</a>
-      <div class="pt-3 border-t border-parchment-200 flex flex-col gap-2">
-        <a href="./login.html?redirect=./create.html" class="cta-create-link w-full text-center py-3 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 text-white font-semibold text-sm shadow-md">
-          Create a Birthday Gift →
+    <!-- Mobile Drawer Navigation -->
+    <div id="mobileMenu" class="hidden md:hidden border-t border-brand-cardBorder/20 bg-brand-surface/95 backdrop-blur-xl px-6 py-6 space-y-4">
+      <a class="mobile-nav-link block text-sm tracking-widest uppercase font-light text-[#c3b1b4] hover:text-brand-rose py-1.5" href="#home">Home</a>
+      <a class="mobile-nav-link block text-sm tracking-widest uppercase font-light text-[#c3b1b4] hover:text-brand-rose py-1.5" href="#experiences">Experiences</a>
+      <a class="mobile-nav-link block text-sm tracking-widest uppercase font-light text-[#c3b1b4] hover:text-brand-rose py-1.5" href="./preview.html">Watch Demo</a>
+      <a class="mobile-nav-link block text-sm tracking-widest uppercase font-light text-[#c3b1b4] hover:text-brand-rose py-1.5" id="mobileNavAuthLink" href="./login.html">Login</a>
+      <div class="pt-2">
+        <a class="cta-create-link w-full bg-brand-rose text-brand-dark hover:bg-brand-roseHover py-3 rounded-full text-xs font-semibold tracking-wide transition-all shadow-[0_0_20px_rgba(244,199,191,0.25)] flex items-center justify-center gap-1.5" href="./login.html">
+          <span>Create Your Experience</span>
+          <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
     </div>
   </header>
+  <!-- END: NavigationBar -->
 
-
-  <!-- ============================================================
-       HERO SECTION
-       ============================================================ -->
-  <section class="relative pt-12 pb-20 md:pt-20 md:pb-32 px-5 sm:px-8 overflow-hidden bg-grid-warm">
-    
-    <!-- Ambient Warm Radial Glow Blobs -->
-    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-rose-200/40 via-gold-100/30 to-transparent rounded-full blur-3xl pointer-events-none -z-10"></div>
-    <div class="absolute top-10 right-10 w-96 h-96 bg-gold-200/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
-
-    <div class="max-w-5xl mx-auto text-center space-y-8">
-      
-      <!-- Announcement Eyebrow Badge -->
-      <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/90 border border-parchment-300 text-ink-700 text-xs sm:text-sm font-medium shadow-sm hover:border-gold-400/60 transition-all duration-300">
-        <span class="text-gold-500 font-bold">✦</span>
-        <span>All-New: 11-Scene Interactive Birthday Film</span>
-      </div>
-
-      <!-- Main H1 Headline -->
-      <h1 class="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-ink-900 leading-[1.08] max-w-4xl mx-auto">
-        Turn a birthday wish into an <span class="font-script font-normal text-rose-500 tracking-normal inline-block px-1 -rotate-1 transform">unforgettable</span> experience.
-      </h1>
-
-      <!-- Subtitle -->
-      <p class="font-elegant italic text-xl sm:text-2xl md:text-3xl text-ink-700 max-w-3xl mx-auto leading-relaxed font-normal">
-        A personalized, scene-by-scene interactive film created by you in minutes, delivered as a private, cinematic link.
-      </p>
-
-      <!-- Primary Action CTAs -->
-      <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
-        <a href="./login.html?redirect=./create.html" class="cta-create-link w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-gradient-to-r from-velvet-900 via-velvet-800 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-base transition-all duration-300 shadow-xl shadow-velvet-900/20 hover:shadow-2xl hover:shadow-rose-600/30 transform hover:-translate-y-0.5">
-          <span>Create a Birthday Gift</span>
-          <span class="text-gold-300">→</span>
-        </a>
-        <a href="./preview.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full bg-white/90 border border-parchment-300 hover:bg-parchment-50 text-ink-800 font-semibold text-base transition-all duration-200 shadow-sm hover:border-parchment-400">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-rose-500">
-            <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"></polygon>
-          </svg>
-          <span>Watch Demo Scene</span>
-        </a>
-      </div>
-
-      <!-- Micro Reassurance Row -->
-      <div class="flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-xs sm:text-sm font-medium text-ink-500 pt-2">
-        <div class="flex items-center gap-2">
-          <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-gold-500">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-          </svg>
-          <span>No app download required</span>
-        </div>
-        <span class="hidden sm:inline text-parchment-400">•</span>
-        <div class="flex items-center gap-2">
-          <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-gold-500">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-          </svg>
-          <span>Recipient opens instantly on any phone</span>
-        </div>
-        <span class="hidden sm:inline text-parchment-400">•</span>
-        <div class="flex items-center gap-2">
-          <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-gold-500">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-          </svg>
-          <span>Free to preview anytime</span>
-        </div>
-      </div>
-
-      <!-- Honest Social Proof Badge (Content Fix #3) -->
-      <div class="pt-4 flex items-center justify-center">
-        <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/70 border border-parchment-200 shadow-sm backdrop-blur-sm">
-          <div class="flex text-gold-400 text-sm tracking-tighter">
-            ★★★★★
-          </div>
-          <span class="text-xs font-semibold text-ink-700 tracking-tight">
-            Crafted for heartfelt moments &amp; lasting memories
-          </span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- ============================================================
-       SECTION: HOW YOUR KEEPSAKE COMES TO LIFE (3 STEPS)
-       ============================================================ -->
-  <section id="how-it-works" class="py-24 px-5 sm:px-8 max-w-7xl mx-auto scroll-mt-20">
-    <div class="text-center space-y-3 mb-16">
-      <div class="text-xs font-bold tracking-widest text-gold-600 uppercase font-sans">
-        Simple &amp; Heartfelt
-      </div>
-      <h2 class="font-serif text-4xl sm:text-5xl font-bold text-ink-900 tracking-tight">
-        How Your Keepsake Comes to Life
-      </h2>
-      <p class="font-elegant italic text-xl text-ink-700 max-w-xl mx-auto">
-        From your heart to their screen in three effortless steps.
-      </p>
-    </div>
-
-    <!-- 3 Cards Grid -->
-    <div class="grid md:grid-cols-3 gap-8">
-
-      <!-- Step 1 Card -->
-      <div class="group bg-white rounded-3xl p-8 border border-parchment-300/80 shadow-velvet-card hover:shadow-2xl hover:border-rose-200 transition-all duration-300 flex flex-col justify-between">
-        <div class="space-y-6">
-          <div class="flex items-center justify-between">
-            <span class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 font-serif font-bold text-lg flex items-center justify-center border border-rose-200">
-              1
-            </span>
-            <div class="w-9 h-9 rounded-full bg-parchment-100 flex items-center justify-center text-ink-500 group-hover:text-rose-500 transition-colors">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-              </svg>
-            </div>
-          </div>
-          <div class="space-y-2">
-            <h3 class="font-serif text-2xl font-bold text-ink-900">Personalize the Story</h3>
-            <p class="text-sm text-ink-600 leading-relaxed">
-              Select a visual theme, add heartfelt notes, favorite photos, shared laughter, and intimate inside memories with gentle guided prompts.
-            </p>
-          </div>
-        </div>
-
-        <!-- Visual Mockup Widget 1: Letter Preview -->
-        <div class="mt-8 p-5 rounded-2xl bg-gradient-to-br from-parchment-50 via-white to-rose-50 border border-parchment-200 shadow-inner space-y-3 relative overflow-hidden">
-          <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-rose-200/40 rounded-full blur-xl pointer-events-none"></div>
-          <p class="font-script text-2xl text-rose-500 leading-none">Dear Elena,</p>
-          <div class="space-y-1.5">
-            <div class="h-2 bg-parchment-200 rounded-full w-4/5"></div>
-            <div class="h-2 bg-parchment-200 rounded-full w-full"></div>
-            <div class="h-2 bg-parchment-200 rounded-full w-2/3"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 2 Card (Content Fix #1 & #2: 11-scene film, no music track claims) -->
-      <div class="group bg-white rounded-3xl p-8 border border-parchment-300/80 shadow-velvet-card hover:shadow-2xl hover:border-gold-200 transition-all duration-300 flex flex-col justify-between">
-        <div class="space-y-6">
-          <div class="flex items-center justify-between">
-            <span class="w-10 h-10 rounded-full bg-gold-100 text-gold-600 font-serif font-bold text-lg flex items-center justify-center border border-gold-200">
-              2
-            </span>
-            <div class="w-9 h-9 rounded-full bg-parchment-100 flex items-center justify-center text-ink-500 group-hover:text-gold-500 transition-colors">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
-                <line x1="7" y1="2" x2="7" y2="22"></line>
-                <line x1="17" y1="2" x2="17" y2="22"></line>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <line x1="2" y1="7" x2="7" y2="7"></line>
-                <line x1="2" y1="17" x2="7" y2="17"></line>
-                <line x1="17" y1="17" x2="22" y2="17"></line>
-                <line x1="17" y1="7" x2="22" y2="7"></line>
-              </svg>
-            </div>
-          </div>
-          <div class="space-y-2">
-            <h3 class="font-serif text-2xl font-bold text-ink-900">We Compose the Film</h3>
-            <p class="text-sm text-ink-600 leading-relaxed">
-              Our interactive engine weaves your elements into an 11-scene cinematic journey, complete with tactile tap interactions and kinetic transitions.
-            </p>
-          </div>
-        </div>
-
-        <!-- Visual Mockup Widget 2: Film Engine Progress (11 Scenes) -->
-        <div class="mt-8 p-5 rounded-2xl bg-parchment-50 border border-parchment-200 shadow-inner space-y-3">
-          <div class="flex items-center justify-between text-xs font-semibold text-ink-700">
-            <span class="flex items-center gap-1.5 text-gold-600">
-              <span>✦</span> Interactive Journey
-            </span>
-            <span class="font-mono text-ink-500">Scene 1 of 11</span>
-          </div>
-          <!-- Progress Bar fill: 1 of 11 (~9%) -->
-          <div class="w-full bg-parchment-200 h-2 rounded-full overflow-hidden">
-            <div class="bg-gradient-to-r from-gold-500 to-rose-500 h-full w-[9%] rounded-full"></div>
-          </div>
-          <!-- Waveform / Timeline curve line -->
-          <svg viewBox="0 0 200 24" class="w-full h-6 text-rose-400 stroke-current fill-none stroke-[2]">
-            <path d="M0 18 Q 40 4, 80 14 T 160 8 T 200 16" stroke-linecap="round" />
-          </svg>
-        </div>
-      </div>
-
-      <!-- Step 3 Card -->
-      <div class="group bg-white rounded-3xl p-8 border border-parchment-300/80 shadow-velvet-card hover:shadow-2xl hover:border-velvet-300 transition-all duration-300 flex flex-col justify-between">
-        <div class="space-y-6">
-          <div class="flex items-center justify-between">
-            <span class="w-10 h-10 rounded-full bg-velvet-900 text-gold-300 font-serif font-bold text-lg flex items-center justify-center border border-gold-400/40">
-              3
-            </span>
-            <div class="w-9 h-9 rounded-full bg-parchment-100 flex items-center justify-center text-ink-500 group-hover:text-velvet-900 transition-colors">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-              </svg>
-            </div>
-          </div>
-          <div class="space-y-2">
-            <h3 class="font-serif text-2xl font-bold text-ink-900">Send the Private Link</h3>
-            <p class="text-sm text-ink-600 leading-relaxed">
-              Deliver via text message, scheduled email, or inside a handwritten card via QR code. Opens instantly, enveloped in your heartfelt gift.
-            </p>
-          </div>
-        </div>
-
-        <!-- Visual Mockup Widget 3: QR Code & Private URL Pill -->
-        <div class="mt-8 p-4 rounded-2xl bg-parchment-50 border border-parchment-200 shadow-inner flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-white border border-parchment-300 p-1 flex items-center justify-center flex-shrink-0 shadow-sm">
-            <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor" class="text-ink-800">
-              <path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v2h-3v-2zm-5 5h2v3h-2v-3zm2-3h3v2h-3v-2zm3 3h3v3h-3v-3zm-5-2h2v2h-2v-2zm7-3h-2v2h2v-2z"/>
-            </svg>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="font-mono text-xs font-semibold text-ink-900 truncate">velvetkeepsake.com/p/elena</div>
-            <div class="text-[11px] text-ink-500 flex items-center gap-1 mt-0.5">
-              <span>🔒</span> <span>Private &amp; Unlisted</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- ============================================================
-       SECTION: PREVIEW SHOWCASE (A GLIMPSE INSIDE THE MAGIC)
-       ============================================================ -->
-  <section id="preview-section" class="py-20 px-5 sm:px-8 max-w-6xl mx-auto">
-    <div class="text-center space-y-3 mb-12">
-      <div class="text-xs font-bold tracking-widest text-gold-600 uppercase font-sans">
-        Cinematic Preview (Scene 1 of 11)
-      </div>
-      <h2 class="font-serif text-4xl sm:text-5xl font-bold text-ink-900 tracking-tight">
-        A Glimpse Inside the Magic
-      </h2>
-      <p class="font-elegant italic text-xl text-ink-700 max-w-xl mx-auto">
-        Watch how an ordinary birthday wish transforms into a breathtaking interactive journey.
-      </p>
-    </div>
-
-    <!-- Cinema Viewport Mockup Card (Pixel-matched from Stitch Screenshot) -->
-    <div class="rounded-3xl p-3 sm:p-5 bg-white border border-parchment-300 shadow-cinema max-w-4xl mx-auto">
-      
-      <!-- Inside Screen (Dark Velvet Stage with Warm Radial Candlelight Gradients) -->
-      <div class="relative rounded-2xl cinema-gradient text-white p-6 sm:p-10 md:p-14 overflow-hidden border border-gold-400/20 shadow-2xl flex flex-col justify-between min-h-[420px] md:min-h-[480px]">
+  <main class="flex-grow">
+    <!-- BEGIN: HeroSection -->
+    <section class="relative overflow-hidden min-h-[700px] lg:min-h-[820px] flex items-center pt-8 pb-20 glow-radial-hero" data-purpose="hero-section" id="home">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         
-        <!-- Ambient lighting layers (CSS-only, no stock photos) -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-rose-500/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute top-12 left-1/3 w-64 h-64 bg-gold-400/10 rounded-full blur-2xl pointer-events-none"></div>
-
-        <!-- Top Status Bar Inside Cinema Mockup (Content Fix #2: Removed music label & track name) -->
-        <div class="relative z-10 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white/90">
-            <span class="text-gold-300">✦</span>
-            <span>Chapter 1: The Recurve &amp; Target</span>
+        <!-- Hero Left Column: Headline and Call-To-Action -->
+        <div class="lg:col-span-6 space-y-7 text-left">
+          <!-- Tagline with line accents -->
+          <div class="flex items-center space-x-3 text-brand-accent tracking-[0.25em] text-[11px] sm:text-xs uppercase font-light">
+            <span class="w-8 h-[1px] bg-brand-accent/50"></span>
+            <span>More Than A Wish</span>
+            <span class="w-8 h-[1px] bg-brand-accent/50"></span>
           </div>
-          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-gold-300 font-medium">
-            <span>✦</span>
-            <span>Interactive Keepsake</span>
-          </div>
-        </div>
 
-        <!-- Center Stage Content -->
-        <div class="relative z-10 my-auto text-center space-y-4 py-8 max-w-2xl mx-auto">
-          <p class="font-script text-3xl sm:text-4xl md:text-5xl text-gold-200 leading-none">
-            To dearest Elena,
+          <!-- Main Title -->
+          <h1 class="font-serif-luxury text-4xl sm:text-6xl xl:text-7xl font-light text-[#f9edf0] leading-[1.12] tracking-tight">
+            Don’t just send<br />
+            a wish.<br />
+            <span class="italic text-brand-rose font-normal block mt-1">Make it an experience.</span>
+          </h1>
+
+          <!-- Body Description -->
+          <p class="text-[#baabb0] text-sm sm:text-base max-w-md font-light leading-relaxed">
+            Create interactive digital birthday experiences that they can open, explore and remember — forever.
           </p>
-          <h3 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white">
-            Happy 30th Birthday!
-          </h3>
-          <p class="font-elegant italic text-base sm:text-lg md:text-xl text-white/85 max-w-lg mx-auto leading-relaxed">
-            &ldquo;Every year just illuminates the love around you with more quiet grace and boundless courage.&rdquo;
-          </p>
-          <div class="pt-2">
-            <a href="./preview.html" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 backdrop-blur-md text-white text-xs sm:text-sm font-semibold transition-all transform hover:scale-105 shadow-lg">
-              <span>✨</span>
-              <span>Tap to Open the Wish</span>
+
+          <!-- Buttons Row -->
+          <div class="pt-2 flex flex-wrap items-center gap-4 sm:gap-6">
+            <a class="cta-create-link inline-flex items-center space-x-2 bg-brand-rose text-brand-dark px-7 py-3 rounded-full text-xs sm:text-sm font-medium tracking-wide shadow-[0_4px_25px_rgba(244,199,191,0.3)] hover:bg-brand-roseHover transition-all" href="./login.html">
+              <span>Create Your Experience</span>
+              <span class="text-sm" aria-hidden="true">&rarr;</span>
+            </a>
+            <a href="./preview.html" class="inline-flex items-center space-x-3 text-[#dcd0d3] hover:text-white transition-colors text-xs sm:text-sm tracking-wide group">
+              <span class="w-8 h-8 rounded-full border border-brand-accent/40 flex items-center justify-center group-hover:border-brand-rose transition-colors">
+                <svg class="w-3 h-3 text-brand-rose fill-current ml-0.5" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"></path>
+                </svg>
+              </span>
+              <span>Watch How It Works</span>
             </a>
           </div>
         </div>
 
-        <!-- Bottom Controls Inside Cinema Mockup (Content Fix #1: Scene 1 of 11, Progress ~9%) -->
-        <div class="relative z-10 space-y-3 pt-4 border-t border-white/10">
-          <div class="flex items-center justify-between text-[11px] sm:text-xs text-white/70 font-mono">
-            <span>0:14</span>
-            <div class="flex items-center gap-3">
-              <a href="./preview.html" class="w-8 h-8 rounded-full bg-white text-velvet-950 flex items-center justify-center hover:scale-110 transition-transform shadow-md" aria-label="Play sample film">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                </svg>
-              </a>
+        <!-- Hero Right Column: Glowing Opened Gift Box with Floating Keepsake Cards -->
+        <div class="lg:col-span-6 relative flex justify-center items-center">
+          <!-- Ambient lighting spheres -->
+          <div class="absolute w-72 h-72 sm:w-96 sm:h-96 bg-brand-accent/20 rounded-full blur-[90px] -z-10 pointer-events-none"></div>
+
+          <!-- Luminous Visual Stage -->
+          <div class="relative w-full max-w-[500px] aspect-[4/4] flex items-center justify-center">
+            
+            <!-- Floating Glowing Cards -->
+            <!-- Card 1: Glowing Birthday Cake -->
+            <div class="floating-card-1 absolute -top-4 sm:top-2 left-6 sm:left-10 w-28 sm:w-36 aspect-[4/5] rounded-xl bg-brand-surface/90 border border-brand-accent/40 shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_25px_rgba(244,199,191,0.25)] overflow-hidden z-20">
+              <div class="w-full h-full bg-gradient-to-b from-[#2d151c] to-[#0f090b] p-3 flex flex-col justify-between items-center text-center">
+                <div class="w-12 h-12 rounded-full bg-brand-accent/20 flex items-center justify-center my-auto shadow-[0_0_20px_rgba(224,184,143,0.4)]">
+                  <span class="text-2xl">🎂</span>
+                </div>
+                <div class="w-8 h-1 bg-brand-rose/40 rounded-full mb-1"></div>
+              </div>
             </div>
-            <span class="text-gold-300 font-semibold">Scene 1 of 11</span>
-          </div>
-          <!-- Progress bar filled ~9% for Scene 1 of 11 -->
-          <div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
-            <div class="bg-gradient-to-r from-gold-300 to-rose-400 h-full w-[9%] rounded-full"></div>
+
+            <!-- Card 2: Glowing "Happy Birthday" Keepsake Card -->
+            <div class="floating-card-2 absolute top-2 sm:top-8 right-8 sm:right-14 w-32 sm:w-40 aspect-[3.8/5] rounded-xl bg-brand-surface/95 border border-brand-rose/50 shadow-[0_15px_40px_rgba(0,0,0,0.85),0_0_35px_rgba(244,199,191,0.35)] overflow-hidden z-30">
+              <div class="w-full h-full bg-gradient-to-br from-[#3b1e25] via-[#241318] to-[#0f080a] p-4 flex flex-col justify-center items-center text-center relative">
+                <div class="absolute inset-0 bg-gradient-to-t from-transparent via-brand-rose/10 to-transparent pointer-events-none"></div>
+                <p class="font-serif-luxury italic text-xl sm:text-2xl text-[#ffe3dc] leading-tight">Happy<br />Birthday</p>
+                <div class="w-6 h-[1px] bg-brand-accent/60 my-2"></div>
+                <span class="text-[10px] uppercase tracking-widest text-brand-rose/80 font-light">With Love</span>
+              </div>
+            </div>
+
+            <!-- Card 3: Mini Heart Keepsake Card -->
+            <div class="absolute top-20 right-0 w-20 sm:w-24 aspect-[4/5] rounded-lg bg-brand-surface border border-brand-accent/30 shadow-xl overflow-hidden transform rotate-12 z-20">
+              <div class="w-full h-full bg-[#1e1115] flex items-center justify-center text-center p-2">
+                <span class="text-brand-rose text-xl drop-shadow-[0_0_10px_rgba(244,199,191,0.6)]">♥</span>
+              </div>
+            </div>
+
+            <!-- The Velvet Keepsake Gift Box Base -->
+            <div class="relative w-72 sm:w-88 aspect-[1.15/1] rounded-2xl bg-gradient-to-b from-[#1c1216] via-[#100a0d] to-[#070405] border border-brand-accent/30 shadow-[0_20px_50px_rgba(0,0,0,0.9),0_0_50px_rgba(180,90,105,0.25)] flex flex-col items-center justify-end p-6 z-10">
+              <!-- Golden Ribbon Accent on Box -->
+              <div class="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-brand-accent/20 to-transparent pointer-events-none"></div>
+              <!-- Monogram Logo on Box Front -->
+              <div class="mb-3 flex flex-col items-center">
+                <div class="font-serif-luxury text-3xl sm:text-4xl text-brand-accent/80 tracking-widest">
+                  V<span class="text-xl italic font-serif text-brand-rose">&amp;</span>K
+                </div>
+                <div class="w-10 h-[1px] bg-brand-accent/30 mt-1"></div>
+              </div>
+              <!-- Floating Petals Decorative Accents -->
+              <span class="absolute -bottom-2 -left-4 text-brand-rose/60 text-lg blur-[0.5px]">🌸</span>
+              <span class="absolute top-1/2 -right-6 text-brand-accent/50 text-base blur-[0.5px]">🌸</span>
+            </div>
+
           </div>
         </div>
 
       </div>
+    </section>
+    <!-- END: HeroSection -->
 
-      <!-- Under Cinema Player Bottom Bar -->
-      <div class="px-3 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-600">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-          <span class="font-semibold text-ink-900">Unforgettable Experience</span>
-          <span class="text-ink-400 hidden sm:inline">— A cinematic gift created in 5 minutes, treasured for a lifetime.</span>
+    <!-- BEGIN: ExperiencesShowcase (11 Scenes in Exact Sequence) -->
+    <section class="py-24 relative z-10 border-t border-brand-cardBorder/20 glow-radial-center" data-purpose="experiences-carousel" id="experiences">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8">
+        
+        <!-- Section Header -->
+        <div class="text-center max-w-2xl mx-auto mb-14 space-y-4">
+          <p class="text-brand-accent uppercase tracking-[0.25em] text-[11px] sm:text-xs font-light">
+            Choose Your Experience
+          </p>
+          <h2 class="font-serif-luxury text-3xl sm:text-5xl font-light text-[#f9edf0] leading-snug">
+            A world of moments,<br />
+            <span class="italic text-brand-rose">just for them.</span>
+          </h2>
+          <p class="text-[#a49699] text-xs sm:text-sm font-light leading-relaxed">
+            From playful surprises to heartfelt memories — explore the 11 cinematic scenes that make their day truly unforgettable.
+          </p>
         </div>
-        <a href="./preview.html" class="font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 transition-colors">
-          <span>Explore full film preview</span>
-          <span>→</span>
-        </a>
+
+        <!-- Experiences Cards Container: Horizontal Scroll on Mobile, Refined Responsive Grid -->
+        <div class="flex xl:grid xl:grid-cols-11 gap-3 sm:gap-4 overflow-x-auto pb-6 custom-scrollbar snap-x touch-pan-x">
+          
+          <!-- Scene 1: Bow & Arrow (Act 1) -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🏹</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Bow &amp; Arrow</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">Draw the bow, find their heart.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview Bow & Arrow Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 2: Gift Box -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎁</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Gift Box</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">A beautiful surprise, waiting to be opened.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview Gift Box Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 3: Secret PIN Lock -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🔒</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Secret PIN Lock</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">Unlock a world of surprises.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview Secret PIN Lock Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 4: Curtain Reveal -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎭</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Curtain Reveal</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">Let the magic unfold.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview Curtain Reveal Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 5: Cake & Countdown -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎂</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Cake &amp; Candles</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">Because every birthday deserves a celebration.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview Cake & Countdown Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 6: Wall of Us -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🖼️</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Wall of Us</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">Every moment, pinned to memory.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview Wall of Us Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 7: Memory Reel -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎞️</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Memory Reel</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">Relive the moments that matter.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview Memory Reel Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 8: Balloon Pop -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎈</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Balloon Pop</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">Pop the wishes, one by one.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview Balloon Pop Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 9: The Letter -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">💌</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">The Letter</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">A message from the heart.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview The Letter Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 10: Fireworks -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🎆</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">Fireworks</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">Because some moments deserve to light up.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview Fireworks Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+          <!-- Scene 11: The Final Toast -->
+          <article class="card-glass rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between items-center text-center group min-w-[145px] sm:min-w-[155px] xl:min-w-0 snap-start flex-shrink-0">
+            <div class="w-full aspect-[4/5] rounded-xl bg-[#22151a] border border-brand-cardBorder/40 overflow-hidden mb-3.5 flex items-center justify-center relative">
+              <span class="text-3xl filter drop-shadow-[0_0_12px_rgba(244,199,191,0.4)] group-hover:scale-110 transition-transform">🥂</span>
+            </div>
+            <div class="space-y-1 mb-4 flex-grow flex flex-col justify-center">
+              <h3 class="font-serif-luxury text-sm sm:text-base text-[#f7ebee] font-medium leading-tight">The Final Toast</h3>
+              <p class="text-[10px] text-[#938487] font-light leading-snug">Here’s to more beautiful tomorrows.</p>
+            </div>
+            <a href="./preview.html" aria-label="Preview The Final Toast Scene" class="w-7 h-7 rounded-full border border-brand-cardBorder/60 flex items-center justify-center text-brand-rose hover:bg-brand-rose hover:text-brand-dark transition-all">
+              <span class="text-xs" aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+    <!-- END: ExperiencesShowcase -->
+
+    <!-- BEGIN: ValuePropositionSection -->
+    <section class="py-24 relative overflow-hidden bg-[#0d090b] border-t border-brand-cardBorder/20 glow-radial-phone" data-purpose="features-and-preview">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          <!-- Features List (Left) -->
+          <div class="lg:col-span-6 space-y-12">
+            <!-- Section Header Tag -->
+            <div class="space-y-3">
+              <div class="flex items-center space-x-3 text-brand-accent tracking-[0.25em] text-[11px] sm:text-xs uppercase font-light">
+                <span class="w-8 h-[1px] bg-brand-accent/50"></span>
+                <span>Why Valvet &amp; Keepsake?</span>
+                <span class="w-8 h-[1px] bg-brand-accent/50"></span>
+              </div>
+              <h2 class="font-serif-luxury text-4xl sm:text-5xl lg:text-6xl font-light text-[#f9edf0] leading-tight">
+                More than a gift.<br />
+                <span class="italic text-brand-rose">It’s a feeling.</span>
+              </h2>
+            </div>
+
+            <!-- Feature Points Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10 pt-2">
+              
+              <!-- Feature 1 -->
+              <div class="space-y-2.5">
+                <div class="w-8 h-8 flex items-center text-brand-rose text-xl mb-1">
+                  ✦
+                </div>
+                <h3 class="font-serif-luxury text-lg sm:text-xl text-[#f5eaec] font-normal tracking-wide">
+                  Unique Experiences
+                </h3>
+                <p class="text-xs sm:text-sm text-[#9f9094] font-light leading-relaxed">
+                  Thoughtfully crafted for every kind of celebration.
+                </p>
+              </div>
+
+              <!-- Feature 2 -->
+              <div class="space-y-2.5">
+                <div class="w-8 h-8 flex items-center text-brand-rose text-xl mb-1">
+                  <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </div>
+                <h3 class="font-serif-luxury text-lg sm:text-xl text-[#f5eaec] font-normal tracking-wide">
+                  Personalized Just for Them
+                </h3>
+                <p class="text-xs sm:text-sm text-[#9f9094] font-light leading-relaxed">
+                  Names, photos, messages — make it truly theirs.
+                </p>
+              </div>
+
+              <!-- Feature 3 -->
+              <div class="space-y-2.5">
+                <div class="w-8 h-8 flex items-center text-brand-rose text-xl mb-1">
+                  <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </div>
+                <h3 class="font-serif-luxury text-lg sm:text-xl text-[#f5eaec] font-normal tracking-wide">
+                  Access Anywhere
+                </h3>
+                <p class="text-xs sm:text-sm text-[#9f9094] font-light leading-relaxed">
+                  Instantly shareable link or QR code.
+                </p>
+              </div>
+
+              <!-- Feature 4 -->
+              <div class="space-y-2.5">
+                <div class="w-8 h-8 flex items-center text-brand-rose text-xl mb-1">
+                  <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </div>
+                <h3 class="font-serif-luxury text-lg sm:text-xl text-[#f5eaec] font-normal tracking-wide">
+                  Lasting Memories
+                </h3>
+                <p class="text-xs sm:text-sm text-[#9f9094] font-light leading-relaxed">
+                  Because the best gifts aren’t forgotten.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Smartphone Interactive Preview Mockup (Right) -->
+          <div class="lg:col-span-6 flex justify-center items-center relative py-6">
+            <!-- Background Floral Ribbon Aesthetics -->
+            <div class="absolute -inset-4 bg-gradient-to-r from-brand-accent/10 via-brand-rose/10 to-transparent blur-3xl -z-10 pointer-events-none"></div>
+
+            <!-- Realistic Smartphone Frame -->
+            <div class="relative w-[280px] sm:w-[320px] aspect-[9/18.5] rounded-[48px] p-3.5 bg-gradient-to-b from-[#2e2327] via-[#1a1215] to-[#0c080a] border border-brand-accent/40 shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_45px_rgba(244,199,191,0.2)]">
+              
+              <!-- Inner Phone Screen -->
+              <div class="w-full h-full rounded-[38px] bg-gradient-to-b from-[#180e12] via-[#241319] to-[#0d070a] p-5 flex flex-col justify-between items-center text-center overflow-hidden relative border border-white/5">
+                <!-- Phone Speaker / Dynamic Island bar -->
+                <div class="w-20 h-4 bg-black/60 rounded-full mb-3 flex items-center justify-center">
+                  <div class="w-2.5 h-2.5 rounded-full bg-[#1e1e1e]"></div>
+                </div>
+
+                <!-- Glowing Experience Display Inside Phone -->
+                <div class="my-auto space-y-4 w-full">
+                  <p class="font-serif-luxury italic text-3xl sm:text-4xl text-[#fff0ed] drop-shadow-[0_2px_10px_rgba(244,199,191,0.5)]">
+                    Happy
+                  </p>
+
+                  <!-- Animated Birthday Cake Visual with Glowing Candles -->
+                  <div class="relative py-2 flex justify-center">
+                    <div class="w-20 h-20 rounded-full bg-brand-rose/20 blur-xl absolute inset-0 m-auto"></div>
+                    <div class="relative z-10 text-5xl filter drop-shadow-[0_0_15px_rgba(255,200,180,0.8)]">
+                      🎂
+                    </div>
+                  </div>
+
+                  <p class="font-serif-luxury italic text-3xl sm:text-4xl text-[#fff0ed] drop-shadow-[0_2px_10px_rgba(244,199,191,0.5)]">
+                    Birthday
+                  </p>
+
+                  <div class="pt-2 px-2">
+                    <p class="text-xs text-[#d8c3c7] font-light leading-relaxed">
+                      May your days be as beautiful<br />as your heart. ✨
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Phone Bottom Action -->
+                <div class="w-full flex justify-center pb-2">
+                  <div class="w-8 h-8 rounded-full border border-brand-accent/40 flex items-center justify-center text-brand-rose text-sm">
+                    ♥
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+    <!-- END: ValuePropositionSection -->
+
+    <!-- BEGIN: BottomCTASection -->
+    <section class="relative py-28 sm:py-32 overflow-hidden border-t border-brand-cardBorder/20 bg-gradient-to-b from-[#0a0608] via-[#1a0e14] to-[#080506]" data-purpose="call-to-action-banner">
+      <!-- Atmospheric Backdrop Visual (Fairytale glowing twilight mood) -->
+      <div class="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-700/30 via-rose-950/20 to-transparent pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <!-- Text & Action -->
+        <div class="lg:col-span-7 space-y-6 text-left">
+          <div class="flex items-center space-x-3 text-brand-accent tracking-[0.25em] text-[11px] sm:text-xs uppercase font-light">
+            <span class="w-8 h-[1px] bg-brand-accent/50"></span>
+            <span>Valvet &amp; Keepsake</span>
+            <span class="w-8 h-[1px] bg-brand-accent/50"></span>
+          </div>
+
+          <h2 class="font-serif-luxury text-3xl sm:text-5xl lg:text-6xl font-light text-[#f9edf0] leading-tight">
+            Ready to create<br />
+            <span class="italic text-brand-rose">something unforgettable?</span>
+          </h2>
+
+          <p class="text-[#b3a4a8] text-sm sm:text-base font-light max-w-md">
+            Turn their next birthday into a story they’ll always want to relive.
+          </p>
+
+          <div class="pt-2">
+            <a class="cta-create-link inline-flex items-center space-x-2 bg-brand-rose text-brand-dark px-8 py-3.5 rounded-full text-xs sm:text-sm font-medium tracking-wide shadow-[0_4px_30px_rgba(244,199,191,0.35)] hover:bg-brand-roseHover transition-all" href="./login.html">
+              <span>Create Your Experience</span>
+              <span class="text-sm" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Silhouette illustration for fairytale moment & twilight glow -->
+        <div class="lg:col-span-5 flex justify-center lg:justify-end">
+          <div class="w-60 h-60 sm:w-72 sm:h-72 rounded-full bg-gradient-to-tr from-amber-500/10 via-rose-400/20 to-purple-900/30 border border-brand-accent/20 flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_80px_rgba(224,184,143,0.15)]">
+            <span class="text-6xl filter drop-shadow-[0_0_20px_rgba(244,199,191,0.4)] mb-2">🏰</span>
+            <div class="text-center text-[11px] tracking-widest uppercase font-light text-brand-rose/80 px-4">
+              A fairy-tale moment
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: BottomCTASection -->
+  </main>
+
+  <!-- BEGIN: SiteFooter -->
+  <footer class="py-14 border-t border-brand-cardBorder/30 bg-[#060405] text-center relative" data-purpose="site-footer">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center space-y-4">
+      <!-- Ribbon Bow Icon -->
+      <div class="text-brand-rose text-2xl filter drop-shadow-[0_0_8px_rgba(244,199,191,0.4)]">
+        🎀
       </div>
 
-    </div>
-  </section>
-
-
-  <!-- ============================================================
-       SECTION: WHY VELVET & KEEPSAKE? (VALUE PILLARS & TRUST STRIP)
-       ============================================================ -->
-  <section id="why-velvet" class="py-24 px-5 sm:px-8 max-w-7xl mx-auto scroll-mt-20">
-    <div class="text-center space-y-3 mb-16">
-      <div class="text-xs font-bold tracking-widest text-gold-600 uppercase font-sans">
-        Intentional Craft
+      <!-- Footer Brand Title -->
+      <div class="font-serif-luxury text-lg sm:text-xl tracking-[0.25em] uppercase text-[#f7ebee]">
+        Valvet &amp; Keepsake
       </div>
-      <h2 class="font-serif text-4xl sm:text-5xl font-bold text-ink-900 tracking-tight">
-        Why Velvet &amp; Keepsake?
-      </h2>
-      <p class="font-elegant italic text-xl text-ink-700 max-w-xl mx-auto">
-        Because someone you love deserves more than a standard text message or generic paper card.
+
+      <!-- Footer Subtitle -->
+      <p class="text-xs tracking-widest uppercase font-light text-[#8e7e82]">
+        Digital Birthday Experiences
+      </p>
+
+      <!-- Legal Links -->
+      <div class="flex items-center justify-center space-x-6 pt-2 text-xs text-[#9e8d91]">
+        <a href="./terms.html" class="hover:text-brand-rose transition-colors">Terms of Service</a>
+        <span class="text-brand-cardBorder">&bull;</span>
+        <a href="./privacy.html" class="hover:text-brand-rose transition-colors">Privacy Policy</a>
+      </div>
+
+      <!-- Delicate Flourish Border Divider -->
+      <div class="w-full max-w-xs flex items-center justify-center space-x-3 pt-3 text-brand-accent/40">
+        <span class="h-[1px] flex-1 bg-brand-accent/20"></span>
+        <span class="text-xs">✦</span>
+        <span class="h-[1px] flex-1 bg-brand-accent/20"></span>
+      </div>
+
+      <!-- Copyright Notice -->
+      <p class="text-[11px] text-[#716366] font-light pt-1">
+        &copy; 2026 Valvet &amp; Keepsake. All rights reserved.
       </p>
     </div>
-
-    <!-- 3 Pillars Grid -->
-    <div class="grid md:grid-cols-3 gap-8 mb-16">
-
-      <!-- Feature 1 -->
-      <div class="bg-white rounded-3xl p-8 border border-parchment-300/80 shadow-sm hover:shadow-xl transition-all duration-300 space-y-5">
-        <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="4" y1="21" x2="4" y2="14"></line>
-            <line x1="4" y1="10" x2="4" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12" y2="3"></line>
-            <line x1="20" y1="21" x2="20" y2="16"></line>
-            <line x1="20" y1="12" x2="20" y2="3"></line>
-            <line x1="1" y1="14" x2="7" y2="14"></line>
-            <line x1="9" y1="8" x2="15" y2="8"></line>
-            <line x1="17" y1="16" x2="23" y2="16"></line>
-          </svg>
-        </div>
-        <h3 class="font-serif text-2xl font-bold text-ink-900">Every Detail Is Yours to Direct</h3>
-        <p class="text-sm text-ink-600 leading-relaxed">
-          Tailor the emotional rhythm, soundscapes, personalize key highlights, and add secret letters. No cookie-cutter templates; no two films are ever identical.
-        </p>
-      </div>
-
-      <!-- Feature 2 -->
-      <div class="bg-white rounded-3xl p-8 border border-parchment-300/80 shadow-sm hover:shadow-xl transition-all duration-300 space-y-5">
-        <div class="w-12 h-12 rounded-2xl bg-gold-50 border border-gold-100 flex items-center justify-center text-gold-600">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-            <line x1="12" y1="18" x2="12.01" y2="18"></line>
-          </svg>
-        </div>
-        <h3 class="font-serif text-2xl font-bold text-ink-900">Zero Friction for Your Recipient</h3>
-        <p class="text-sm text-ink-600 leading-relaxed">
-          No logins, app downloads, passwords, or paywalls for them. Just tap the secure link from a text or envelope, and step straight into the celebration.
-        </p>
-      </div>
-
-      <!-- Feature 3 -->
-      <div class="bg-white rounded-3xl p-8 border border-parchment-300/80 shadow-sm hover:shadow-xl transition-all duration-300 space-y-5">
-        <div class="w-12 h-12 rounded-2xl bg-velvet-900/10 border border-velvet-900/15 flex items-center justify-center text-velvet-900">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-        </div>
-        <h3 class="font-serif text-2xl font-bold text-ink-900">Crafted in 5 Minutes</h3>
-        <p class="text-sm text-ink-600 leading-relaxed">
-          Thought-guided prompts help you articulate what words alone can rarely capture, without needing graphic design skills or video editing experience.
-        </p>
-      </div>
-
-    </div>
-
-    <!-- Trust Metrics Strip (Content Fix #3: Kept 3 product claims, removed fabricated stat) -->
-    <div class="bg-white rounded-3xl p-8 sm:p-12 border border-parchment-300/80 shadow-sm">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center divide-y sm:divide-y-0 sm:divide-x divide-parchment-200">
-        
-        <div class="pt-4 sm:pt-0 sm:px-4">
-          <div class="font-serif text-4xl sm:text-5xl font-bold text-ink-900 tracking-tight">100%</div>
-          <div class="text-xs font-bold uppercase tracking-widest text-ink-500 mt-2">Ad-Free &amp; Private</div>
-        </div>
-
-        <div class="pt-6 sm:pt-0 sm:px-4">
-          <div class="font-serif text-4xl sm:text-5xl font-bold text-ink-900 tracking-tight">5 Mins</div>
-          <div class="text-xs font-bold uppercase tracking-widest text-ink-500 mt-2">Average Creation Time</div>
-        </div>
-
-        <div class="pt-6 sm:pt-0 sm:px-4">
-          <div class="font-serif text-4xl sm:text-5xl font-bold text-ink-900 tracking-tight">Forever</div>
-          <div class="text-xs font-bold uppercase tracking-widest text-ink-500 mt-2">Archived &amp; Replayable</div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============================================================
-       SECTION: FAQ (FREQUENTLY ASKED QUESTIONS)
-       ============================================================ -->
-  <section id="faq" class="py-20 px-5 sm:px-8 max-w-4xl mx-auto scroll-mt-20">
-    <div class="text-center space-y-3 mb-12">
-      <div class="text-xs font-bold tracking-widest text-gold-600 uppercase font-sans">
-        Questions &amp; Answers
-      </div>
-      <h2 class="font-serif text-4xl sm:text-5xl font-bold text-ink-900 tracking-tight">
-        Frequently Asked Questions
-      </h2>
-    </div>
-
-    <div class="space-y-4">
-      
-      <!-- FAQ 1 -->
-      <details class="group bg-white rounded-2xl border border-parchment-300/80 p-6 shadow-sm transition-all" open>
-        <summary class="font-serif text-xl font-bold text-ink-900 cursor-pointer flex items-center justify-between list-none focus:outline-none">
-          <span>How does my recipient open their keepsake?</span>
-          <span class="text-rose-500 transition-transform duration-300 group-open:rotate-180">▼</span>
-        </summary>
-        <p class="mt-4 text-sm text-ink-600 leading-relaxed">
-          You receive a private, unlisted URL link and a printable QR code card. Simply text or email the link, or print the card. Your recipient taps the link on any smartphone or browser — no account creation, no app download, and zero ads.
-        </p>
-      </details>
-
-      <!-- FAQ 2 -->
-      <details class="group bg-white rounded-2xl border border-parchment-300/80 p-6 shadow-sm transition-all">
-        <summary class="font-serif text-xl font-bold text-ink-900 cursor-pointer flex items-center justify-between list-none focus:outline-none">
-          <span>Can I preview the complete film before sharing?</span>
-          <span class="text-rose-500 transition-transform duration-300 group-open:rotate-180">▼</span>
-        </summary>
-        <p class="mt-4 text-sm text-ink-600 leading-relaxed">
-          Yes! You can preview the entire 11-scene film in real-time as you customize text, dates, photos, and secret codes. You only finalize when you’re 100% delighted.
-        </p>
-      </details>
-
-      <!-- FAQ 3 -->
-      <details class="group bg-white rounded-2xl border border-parchment-300/80 p-6 shadow-sm transition-all">
-        <summary class="font-serif text-xl font-bold text-ink-900 cursor-pointer flex items-center justify-between list-none focus:outline-none">
-          <span>How long does the link stay active?</span>
-          <span class="text-rose-500 transition-transform duration-300 group-open:rotate-180">▼</span>
-        </summary>
-        <p class="mt-4 text-sm text-ink-600 leading-relaxed">
-          Your keepsake link is preserved indefinitely. Your recipient can revisit and replay their birthday celebration anytime, year after year.
-        </p>
-      </details>
-
-      <!-- FAQ 4 -->
-      <details class="group bg-white rounded-2xl border border-parchment-300/80 p-6 shadow-sm transition-all">
-        <summary class="font-serif text-xl font-bold text-ink-900 cursor-pointer flex items-center justify-between list-none focus:outline-none">
-          <span>What happens in the 11 scenes?</span>
-          <span class="text-rose-500 transition-transform duration-300 group-open:rotate-180">▼</span>
-        </summary>
-        <p class="mt-4 text-sm text-ink-600 leading-relaxed">
-          The film spans 11 cinematic moments: Cupid’s arrow shot into a blossom tree, unboxing a 3D gift, an interactive PIN keepsake card, velvet curtains opening, a candle countdown with microphone blowing, a Polaroid memory twine wall, vintage scrolling film reel, interactive balloon pop wish surprises, handwritten typewriter letter, grand fireworks finale, and the clinking champagne toast.
-        </p>
-      </details>
-
-    </div>
-  </section>
-
-
-  <!-- ============================================================
-       CTA BANNER (MAKE IT MEMORABLE)
-       ============================================================ -->
-  <section class="py-16 px-5 sm:px-8 max-w-7xl mx-auto">
-    <div class="relative rounded-3xl bg-gradient-to-r from-velvet-950 via-velvet-900 to-rose-700 text-white p-10 sm:p-16 md:p-20 text-center overflow-hidden shadow-2xl border border-gold-400/20">
-      
-      <!-- Background Ambient Glows -->
-      <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-gold-400/15 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-24 right-10 w-96 h-96 bg-rose-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div class="relative z-10 max-w-2xl mx-auto space-y-6">
-        <p class="font-script text-3xl sm:text-4xl text-gold-300 leading-none">
-          Make It Memorable
-        </p>
-        <h2 class="font-serif text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-tight">
-          Ready to make their birthday unforgettable?
-        </h2>
-        <p class="font-elegant italic text-lg sm:text-xl text-white/80 leading-relaxed font-normal">
-          Craft your personalized interactive gift today. It only takes a few minutes to create memories that linger for years.
-        </p>
-        
-        <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a href="./login.html?redirect=./create.html" class="cta-create-link w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white hover:bg-parchment-100 text-velvet-950 font-semibold text-base transition-all duration-300 shadow-xl transform hover:-translate-y-0.5">
-            <span>Create a Birthday Gift</span>
-            <span>→</span>
-          </a>
-          <a href="./preview.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold text-base transition-all duration-200 backdrop-blur-sm">
-            <span>Explore Sample Films</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============================================================
-       FOOTER
-       ============================================================ -->
-  <footer class="border-t border-parchment-300/80 bg-parchment-100/90 pt-16 pb-12 px-5 sm:px-8 text-sm text-ink-700">
-    <div class="max-w-7xl mx-auto space-y-12">
-      
-      <!-- Top Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-10">
-        
-        <!-- Brand Column -->
-        <div class="md:col-span-2 space-y-4">
-          <a href="./index.html" class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-velvet-900 to-rose-600 flex items-center justify-center text-gold-300 shadow-sm border border-gold-400/30">
-              <span class="font-serif text-lg font-bold leading-none">V</span>
-            </div>
-            <span class="font-serif text-2xl font-bold tracking-tight text-ink-900">
-              Velvet &amp; Keepsake
-            </span>
-          </a>
-          <p class="text-xs sm:text-sm text-ink-600 leading-relaxed max-w-sm">
-            We transform celebratory words into cinematic interactive keepsakes, bringing ordinary moments to spotlight glory.
-          </p>
-          <div class="text-xs text-ink-500 pt-2">
-            © 2026 Velvet &amp; Keepsake. All rights reserved.
-          </div>
-        </div>
-
-        <!-- Experiences Column (Content Fix #4: Removed active links for Film Themes & Pricing) -->
-        <div class="space-y-3">
-          <div class="font-serif font-bold text-ink-900 text-base">Experiences</div>
-          <ul class="space-y-2 text-xs sm:text-sm text-ink-600">
-            <li><a href="./login.html?redirect=./create.html" class="cta-create-link hover:text-rose-600 transition-colors">Birthday Films</a></li>
-            <li><a href="./login.html?redirect=./create.html" class="cta-create-link hover:text-rose-600 transition-colors">Milestone Editions</a></li>
-            <li class="text-ink-400 flex items-center gap-1.5 cursor-not-allowed">
-              <span>Film Themes</span>
-              <span class="text-[10px] px-1.5 py-0.5 rounded bg-parchment-200 text-ink-500">Coming Soon</span>
-            </li>
-            <li class="text-ink-400 flex items-center gap-1.5 cursor-not-allowed">
-              <span>Pricing &amp; Keepsakes</span>
-              <span class="text-[10px] px-1.5 py-0.5 rounded bg-parchment-200 text-ink-500">Coming Soon</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Resources Column -->
-        <div class="space-y-3">
-          <div class="font-serif font-bold text-ink-900 text-base">Resources</div>
-          <ul class="space-y-2 text-xs sm:text-sm text-ink-600">
-            <li><a href="#how-it-works" class="hover:text-rose-600 transition-colors">Milestone Birthdays</a></li>
-            <li><a href="#how-it-works" class="hover:text-rose-600 transition-colors">Anniversaries</a></li>
-            <li><a href="#how-it-works" class="hover:text-rose-600 transition-colors">Long Distance Love</a></li>
-            <li><a href="#how-it-works" class="hover:text-rose-600 transition-colors">Handwritten Keepsakes</a></li>
-          </ul>
-        </div>
-
-        <!-- Company & Legal Column (Content Fix #5: Real anchor & placeholder links) -->
-        <div class="space-y-3">
-          <div class="font-serif font-bold text-ink-900 text-base">Company &amp; Legal</div>
-          <ul class="space-y-2 text-xs sm:text-sm text-ink-600">
-            <li><a href="#why-velvet" class="hover:text-rose-600 transition-colors">Why Velvet</a></li>
-            <li><a href="#how-it-works" class="hover:text-rose-600 transition-colors">How It Works</a></li>
-            <li><a href="./terms.html" class="hover:text-rose-600 transition-colors">Terms of Service</a></li>
-            <li><a href="./privacy.html" class="hover:text-rose-600 transition-colors">Privacy Policy</a></li>
-          </ul>
-        </div>
-
-      </div>
-
-      <!-- Bottom Sub-Footer Bar -->
-      <div class="pt-8 border-t border-parchment-300/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-500">
-        <div>
-          <span class="font-serif font-bold text-ink-800">Velvet &amp; Keepsake</span> — An ethereal cinematic birthday celebration service with attention to timeless luxury.
-        </div>
-        <div class="flex flex-wrap items-center gap-4">
-          <a href="#how-it-works" class="hover:text-rose-600 transition-colors">How It Works</a>
-          <a href="./preview.html" class="hover:text-rose-600 transition-colors">Preview</a>
-          <a href="#why-velvet" class="hover:text-rose-600 transition-colors">Why Velvet</a>
-          <a href="#faq" class="hover:text-rose-600 transition-colors">FAQ</a>
-        </div>
-      </div>
-
-    </div>
   </footer>
+  <!-- END: SiteFooter -->
 
-  <!-- Single Findable Brand Configuration Constant -->
+  <!-- Scripts: Mobile Navigation & Supabase Auth Sync -->
   <script>
-    const BRAND_CONFIG = {
-      name: "Velvet & Keepsake",
-      tagline: "Turn a birthday wish into an unforgettable experience",
-      totalScenes: 11,
-      version: "1.0.0"
-    };
-
     // Mobile Navigation Toggle
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
@@ -792,7 +667,7 @@
       mobileMenuBtn.addEventListener('click', () => {
         mobileMenu.classList.toggle('hidden');
       });
-      document.querySelectorAll('.mobile-link').forEach(link => {
+      document.querySelectorAll('.mobile-nav-link').forEach(link => {
         link.addEventListener('click', () => {
           mobileMenu.classList.add('hidden');
         });
@@ -803,63 +678,34 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    function sanitizeSupabaseUrl(raw) {
-      let url = (typeof raw === 'string' ? raw : '').trim();
-      if (!url || url.includes('your-project-id') || url.includes('xyzcompany')) {
-        return 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
-      }
-      const dashboardMatch = url.match(/supabase\.com\/dashboard\/project\/([a-z0-9_-]+)/i);
-      if (dashboardMatch && dashboardMatch[1]) {
-        return `https://${dashboardMatch[1]}.supabase.co`;
-      }
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        if (/^[a-z0-9_-]+$/i.test(url)) {
-          return `https://${url}.supabase.co`;
-        }
-        url = `https://${url}`;
-      }
-      return url.replace(/\/+$/, '');
-    }
-
-    function sanitizeSupabaseKey(raw) {
-      let key = (typeof raw === 'string' ? raw : '').trim();
-      if (!key || key.includes('your-anon-key') || key.includes('your-key')) {
-        return 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';
-      }
-      return key;
-    }
-
-    const RAW_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) 
-      || (typeof window !== 'undefined' && window.__SUPABASE_URL) 
-      || '';
-    const RAW_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) 
-      || (typeof window !== 'undefined' && window.__SUPABASE_KEY) 
-      || '';
-
-    const SUPABASE_URL = sanitizeSupabaseUrl(RAW_URL);
-    const SUPABASE_ANON_KEY = sanitizeSupabaseKey(RAW_KEY);
+    const SUPABASE_URL = 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';
 
     try {
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: true }
+      });
       const { data: { session } } = await supabase.auth.getSession();
-      const authLink = document.getElementById('landingAuthLink');
-      const mobileAuthLink = document.getElementById('mobileAuthLink');
+      const navAuthLink = document.getElementById('navAuthLink');
+      const mobileNavAuthLink = document.getElementById('mobileNavAuthLink');
 
       if (session && session.user) {
-        if (authLink) {
-          authLink.href = './dashboard.html';
-          authLink.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span><span>My Gifts</span>`;
+        if (navAuthLink) {
+          navAuthLink.href = './dashboard.html';
+          navAuthLink.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span><span>My Gifts</span>`;
         }
-        if (mobileAuthLink) {
-          mobileAuthLink.href = './dashboard.html';
-          mobileAuthLink.innerHTML = `<span>My Gifts</span> <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 ml-2 font-bold">Logged In</span>`;
+        if (mobileNavAuthLink) {
+          mobileNavAuthLink.href = './dashboard.html';
+          mobileNavAuthLink.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span><span>My Gifts</span>`;
         }
-        // If already logged in, CTA links go straight to create
+        // If already logged in, CTA links navigate directly to create experience
         document.querySelectorAll('.cta-create-link').forEach(link => {
           link.href = './create.html';
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Auth sync notice:', e);
+    }
   </script>
 </body>
 </html>

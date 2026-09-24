@@ -8,6 +8,13 @@
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 
+  <script>
+    // Immediate session check to eliminate any flash on repeat views
+    if (sessionStorage.getItem('vk_intro_shown') === 'true') {
+      document.documentElement.classList.add('skip-brand-intro');
+    }
+  </script>
+
   <!-- Google Fonts: Cormorant Garamond, Plus Jakarta Sans, Fraunces -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -51,6 +58,111 @@
   </script>
 
   <style>
+    /* Brand Intro Reveal Overlay */
+    .skip-brand-intro #brandIntroOverlay {
+      display: none !important;
+    }
+
+    #brandIntroOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: radial-gradient(circle at 50% 48%, #200814 0%, #12040b 65%, #0a0206 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      overflow: hidden;
+      transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.55s ease;
+    }
+
+    #brandIntroOverlay.intro-fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-logo-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transform: scale(0.9);
+      opacity: 0;
+      animation: introLogoEnter 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+    }
+
+    #brandIntroOverlay.intro-fade-out .intro-logo-box {
+      animation: introLogoExit 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .intro-logo-mark {
+      width: 96px;
+      height: 96px;
+      border-radius: 9999px;
+      object-fit: cover;
+      box-shadow: 0 0 35px rgba(201, 138, 44, 0.32), 0 10px 30px rgba(0, 0, 0, 0.65);
+      border: 1.5px solid rgba(232, 162, 61, 0.45);
+    }
+
+    .intro-logo-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.75rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: #fffaf0;
+      margin-top: 1.25rem;
+      font-weight: 500;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    .intro-logo-tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(232, 162, 61, 0.85);
+      margin-top: 0.4rem;
+      font-weight: 600;
+    }
+
+    @keyframes introLogoEnter {
+      0% {
+        opacity: 0;
+        transform: scale(0.9);
+        filter: blur(4px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0px);
+      }
+    }
+
+    @keyframes introLogoExit {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.04);
+      }
+    }
+
+    /* Reduced Motion Support */
+    @media (prefers-reduced-motion: reduce) {
+      .intro-logo-box {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+      }
+      #brandIntroOverlay {
+        transition: opacity 0.25s ease, visibility 0.25s ease !important;
+      }
+    }
+
     body {
       background-color: #fcf8f5;
       color: #2b131c;
@@ -103,6 +215,52 @@
   </style>
 </head>
 <body class="selection:bg-brand-roseLight selection:text-brand-rose relative bg-brand-bg min-h-screen flex flex-col antialiased">
+
+  <!-- ============================================================
+       INTRO LOGO REVEAL OVERLAY (Plays once per session on /)
+       ============================================================ -->
+  <div id="brandIntroOverlay" aria-hidden="true">
+    <div class="intro-logo-box">
+      <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="intro-logo-mark" />
+      <div class="intro-logo-title">Valvet &amp; Keepsake</div>
+      <div class="intro-logo-tag">Cinematic Keepsakes</div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const overlay = document.getElementById('brandIntroOverlay');
+      if (!overlay) return;
+
+      // Skip if already shown in this browser session
+      if (sessionStorage.getItem('vk_intro_shown') === 'true') {
+        overlay.remove();
+        return;
+      }
+
+      // Mark session as visited
+      sessionStorage.setItem('vk_intro_shown', 'true');
+
+      const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const holdDuration = isReducedMotion ? 600 : 1450;
+      const fadeDuration = isReducedMotion ? 250 : 550;
+
+      // Hold briefly, then transition out smoothly
+      setTimeout(() => {
+        overlay.classList.add('intro-fade-out');
+        setTimeout(() => {
+          overlay.remove();
+        }, fadeDuration);
+      }, holdDuration);
+
+      // Safety timeout: ensure overlay is removed no matter what
+      setTimeout(() => {
+        if (document.body.contains(overlay)) {
+          overlay.remove();
+        }
+      }, 2600);
+    })();
+  </script>
 
   <!-- Floating Ambient Petals -->
   <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">

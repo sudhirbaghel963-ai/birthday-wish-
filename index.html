@@ -98,31 +98,31 @@
     }
 
     .intro-logo-mark {
-      width: 96px;
-      height: 96px;
+      width: clamp(150px, 26vw, 210px);
+      height: clamp(150px, 26vw, 210px);
       border-radius: 9999px;
       object-fit: cover;
-      box-shadow: 0 0 35px rgba(201, 138, 44, 0.32), 0 10px 30px rgba(0, 0, 0, 0.65);
-      border: 1.5px solid rgba(232, 162, 61, 0.45);
+      box-shadow: 0 0 60px rgba(201, 138, 44, 0.45), 0 20px 50px rgba(0, 0, 0, 0.8);
+      border: 2.5px solid rgba(232, 162, 61, 0.65);
     }
 
     .intro-logo-title {
       font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 1.75rem;
-      letter-spacing: 0.24em;
+      font-size: clamp(2.15rem, 5vw, 2.9rem);
+      letter-spacing: 0.26em;
       text-transform: uppercase;
       color: #fffaf0;
-      margin-top: 1.25rem;
+      margin-top: 1.5rem;
       font-weight: 500;
-      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.75);
     }
 
     .intro-logo-tag {
-      font-size: 0.68rem;
-      letter-spacing: 0.35em;
+      font-size: clamp(0.82rem, 2vw, 1rem);
+      letter-spacing: 0.38em;
       text-transform: uppercase;
-      color: rgba(232, 162, 61, 0.85);
-      margin-top: 0.4rem;
+      color: rgba(232, 162, 61, 0.95);
+      margin-top: 0.5rem;
       font-weight: 600;
     }
 
@@ -276,7 +276,7 @@
       
       <!-- Brand Logo -->
       <a class="flex items-center gap-3 group focus:outline-none" href="#home">
-        <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shadow-sm transition-transform group-hover:scale-105" />
+        <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover shadow-sm transition-transform group-hover:scale-105" />
         <span class="font-serif-luxury text-xl sm:text-2xl tracking-[0.18em] font-normal uppercase text-brand-ink drop-shadow-xs">
           Valvet &amp; Keepsake
         </span>
@@ -762,7 +762,7 @@
       
       <!-- Footer Logo & Title -->
       <a href="#home" class="flex items-center gap-2.5 group">
-        <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="w-8 h-8 rounded-full object-cover shadow-xs" />
+        <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="w-10 h-10 rounded-full object-cover shadow-xs" />
         <span class="font-serif-luxury text-lg tracking-[0.2em] uppercase text-brand-ink font-semibold">
           Valvet &amp; Keepsake
         </span>

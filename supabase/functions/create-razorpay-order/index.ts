@@ -53,17 +53,19 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     // 3. Parse Request Payload
-    let payload: { id?: string; gift_id?: string } = {};
+    let payload: { id?: string; gift_id?: string; coupon_code?: string } = {};
     try {
       payload = await req.json();
     } catch {
-      return jsonResponse({ error: 'Invalid JSON payload. Expected { gift_id: "<uuid>" }.' }, 400);
+      return jsonResponse({ error: 'Invalid JSON payload. Expected { gift_id: "<uuid>", coupon_code?: "<string>" }.' }, 400);
     }
 
     const giftId = (payload.gift_id || payload.id || '').trim();
     if (!giftId || !UUID_REGEX.test(giftId)) {
       return jsonResponse({ error: `Invalid or missing gift ID: '${giftId}'. Must be a valid UUID.` }, 400);
     }
+
+    const rawCouponCode = payload.coupon_code ? String(payload.coupon_code).trim().toUpperCase() : null;
 
     // 4. Initialize Service-Role Database Client
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
@@ -96,9 +98,9 @@ serve(async (req: Request): Promise<Response> => {
       }, 200);
     }
 
-    // 6. Look up dynamic Per-Experience Price from experiences table
+    // 6. Look up dynamic Per-Experience Base Price from experiences table
     const targetExpId = gift.experience_id || (gift.theme_id === 'glass' ? 'birthday-film-glass' : 'birthday-film');
-    let priceInInr = DEFAULT_FALLBACK_PRICE_INR;
+    let basePriceInInr = DEFAULT_FALLBACK_PRICE_INR;
 
     const { data: expRow, error: expErr } = await supabase
       .from('experiences')
@@ -109,16 +111,56 @@ serve(async (req: Request): Promise<Response> => {
     if (expRow && expRow.price) {
       const rawNum = parseInt(String(expRow.price).replace(/[^0-9]/g, ''), 10);
       if (!isNaN(rawNum) && rawNum >= 1) {
-        priceInInr = rawNum;
+        basePriceInInr = rawNum;
       }
     } else if (expErr) {
       console.warn(`[create-razorpay-order][${timestamp}] Could not lookup experience ${targetExpId}, falling back to default ₹${DEFAULT_FALLBACK_PRICE_INR}:`, expErr.message);
     }
 
-    const amountInPaise = priceInInr * 100;
+    // 7. Re-validate Coupon Server-Side (if provided)
+    let appliedCouponCode: string | null = null;
+    let appliedDiscountPercent: number | null = null;
+    let finalPriceInInr = basePriceInInr;
+
+    if (rawCouponCode) {
+      const { data: coupon, error: couponErr } = await supabase
+        .from('coupons')
+        .select('id, code, discount_percent, max_uses, times_used, expires_at, is_active')
+        .eq('code', rawCouponCode)
+        .maybeSingle();
+
+      if (couponErr || !coupon) {
+        return jsonResponse({ error: `Coupon code '${rawCouponCode}' is invalid.` }, 400);
+      }
+
+      if (!coupon.is_active) {
+        return jsonResponse({ error: `Coupon code '${rawCouponCode}' is currently inactive.` }, 400);
+      }
+
+      if (coupon.expires_at) {
+        const expiryDate = new Date(coupon.expires_at);
+        if (!isNaN(expiryDate.getTime()) && expiryDate.getTime() < Date.now()) {
+          return jsonResponse({ error: `Coupon code '${rawCouponCode}' has expired.` }, 400);
+        }
+      }
+
+      if (coupon.max_uses !== null && coupon.times_used >= coupon.max_uses) {
+        return jsonResponse({ error: `Coupon code '${rawCouponCode}' has reached its usage limit.` }, 400);
+      }
+
+      appliedCouponCode = coupon.code;
+      appliedDiscountPercent = coupon.discount_percent;
+
+      // Calculate discounted price (minimum ₹1)
+      const discounted = Math.round(basePriceInInr * (1 - appliedDiscountPercent / 100));
+      finalPriceInInr = Math.max(1, discounted);
+      console.log(`[create-razorpay-order][${timestamp}] Coupon '${appliedCouponCode}' (${appliedDiscountPercent}%) applied. Base: ₹${basePriceInInr} -> Discounted: ₹${finalPriceInInr}`);
+    }
+
+    const amountInPaise = finalPriceInInr * 100;
     const basicAuth = btoa(`${razorpayKeyId}:${razorpayKeySecret}`);
 
-    // 7. Create Razorpay Order via REST API
+    // 8. Create Razorpay Order via REST API
     const rzpOrderPayload = {
       amount: amountInPaise,
       currency: 'INR',
@@ -129,6 +171,10 @@ serve(async (req: Request): Promise<Response> => {
         experience_id: targetExpId,
         experience_name: (expRow && expRow.name) || targetExpId,
         recipient: (gift.content && typeof gift.content === 'object' && gift.content.recipientName) || 'Elena',
+        coupon_code: appliedCouponCode || 'NONE',
+        discount_percent: appliedDiscountPercent !== null ? `${appliedDiscountPercent}%` : '0%',
+        original_price_inr: basePriceInInr,
+        final_price_inr: finalPriceInInr,
         platform: 'Velvet & Keepsake'
       }
     };
@@ -153,12 +199,14 @@ serve(async (req: Request): Promise<Response> => {
     const rzpOrder = await rzpResponse.json();
     const orderId = rzpOrder.id;
 
-    // 8. Store razorpay_order_id on Gift Row
+    // 9. Store razorpay_order_id, coupon_code, and discount_percent on Gift Row
     const { error: updateErr } = await supabase
       .from('gifts')
       .update({
         razorpay_order_id: orderId,
         experience_id: targetExpId,
+        coupon_code: appliedCouponCode,
+        discount_percent: appliedDiscountPercent,
         updated_at: new Date().toISOString()
       })
       .eq('id', giftId);
@@ -167,14 +215,17 @@ serve(async (req: Request): Promise<Response> => {
       console.warn(`[create-razorpay-order][${timestamp}] Could not record razorpay_order_id on gift row:`, updateErr);
     }
 
-    console.log(`[create-razorpay-order][${timestamp}] Created Razorpay Order ${orderId} for gift ${giftId} [Experience: ${targetExpId}, Price: ₹${priceInInr} / ${amountInPaise} paise].`);
+    console.log(`[create-razorpay-order][${timestamp}] Created Razorpay Order ${orderId} for gift ${giftId} [Experience: ${targetExpId}, Base: ₹${basePriceInInr}, Final: ₹${finalPriceInInr} / ${amountInPaise} paise, Coupon: ${appliedCouponCode || 'none'}].`);
 
-    // 9. Return Order ID and Config to Client
+    // 10. Return Order ID and Config to Client
     return jsonResponse({
       success: true,
       order_id: orderId,
       amount: amountInPaise,
-      amount_inr: priceInInr,
+      amount_inr: finalPriceInInr,
+      base_price_inr: basePriceInInr,
+      coupon_code: appliedCouponCode,
+      discount_percent: appliedDiscountPercent,
       currency: 'INR',
       key_id: razorpayKeyId
     }, 200);

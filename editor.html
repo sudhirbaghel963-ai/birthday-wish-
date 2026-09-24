@@ -1305,6 +1305,16 @@ Happy Birthday. I mean it.</textarea>
           <span class="text-ink-500">Soundtrack:</span>
           <span class="font-medium text-ink-800" id="summaryMusic">Starts at 0:27</span>
         </div>
+
+        <!-- Applied Coupon row (hidden by default) -->
+        <div id="summaryCouponRow" class="hidden pt-2 border-t border-rose-200 flex justify-between items-center text-xs font-semibold text-rose-600">
+          <span class="flex items-center gap-1.5">
+            <span>🎟️ Coupon (<span id="summaryCouponCodeLabel" class="font-mono font-bold uppercase">SAVE20</span>):</span>
+            <button type="button" id="btnRemoveCoupon" class="text-[10px] text-ink-400 hover:text-rose-700 underline font-normal cursor-pointer">Remove</button>
+          </span>
+          <span id="summaryDiscountAmount">−₹20 (20% OFF)</span>
+        </div>
+
         <div class="pt-2 border-t border-parchment-200 flex justify-between items-center text-sm font-bold text-ink-900">
           <span>Total Price:</span>
           <span class="text-base text-rose-600 font-serif" id="summaryTotalPrice">₹100 <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span></span>
@@ -1319,6 +1329,30 @@ Happy Birthday. I mean it.</textarea>
           <span>Total Due:</span>
           <span class="text-base font-serif">₹0.00 <span class="text-xs font-sans font-normal">(Free)</span></span>
         </div>
+      </div>
+
+      <!-- Customer Coupon Input Section -->
+      <div id="couponSection" class="p-3.5 rounded-2xl bg-parchment-100/70 border border-parchment-200 space-y-2">
+        <label for="orderCouponInput" class="text-xs font-semibold text-ink-700 flex items-center justify-between">
+          <span>🎟️ Have a coupon code?</span>
+        </label>
+        <div class="flex items-center gap-2">
+          <input 
+            type="text" 
+            id="orderCouponInput" 
+            placeholder="e.g. SAVE20" 
+            class="flex-1 px-3 py-2 rounded-xl border border-parchment-300 bg-white text-xs font-mono uppercase font-bold text-ink-900 placeholder:text-ink-300 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all"
+          />
+          <button 
+            type="button" 
+            id="btnApplyCoupon" 
+            class="px-4 py-2 rounded-xl bg-ink-900 hover:bg-ink-800 text-white font-semibold text-xs transition-all shadow-sm cursor-pointer disabled:opacity-50 flex items-center justify-center min-w-[70px]"
+          >
+            <span>Apply</span>
+          </button>
+        </div>
+        <!-- Coupon Alert Message -->
+        <div id="couponMessageAlert" class="hidden text-[11px] font-medium px-2.5 py-1.5 rounded-lg animate-in fade-in"></div>
       </div>
 
       <!-- Future Edit Repayment Notice -->
@@ -3330,24 +3364,162 @@ Happy Birthday. I mean it.</textarea>
       readyModal.classList.add('flex');
     }
 
-    // Dynamic Experience Pricing State (INR)
+    // Dynamic Experience Pricing & Coupon State (INR)
     let currentExperiencePriceInr = 100;
+    let appliedCoupon = null; // { code: string, discount_percent: number, message: string }
+
+    function getEffectivePriceInr() {
+      if (!appliedCoupon || !appliedCoupon.discount_percent) {
+        return currentExperiencePriceInr;
+      }
+      const discounted = Math.round(currentExperiencePriceInr * (1 - appliedCoupon.discount_percent / 100));
+      return Math.max(1, discounted);
+    }
 
     function updateOrderSummaryPriceUI() {
       const summaryTotalEl = document.getElementById('summaryTotalPrice');
-      if (summaryTotalEl) {
-        summaryTotalEl.innerHTML = `₹${currentExperiencePriceInr} <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span>`;
+      const summaryCouponRow = document.getElementById('summaryCouponRow');
+      const summaryCouponCodeLabel = document.getElementById('summaryCouponCodeLabel');
+      const summaryDiscountAmount = document.getElementById('summaryDiscountAmount');
+
+      const finalPriceInr = getEffectivePriceInr();
+
+      if (appliedCoupon) {
+        const discountAmount = currentExperiencePriceInr - finalPriceInr;
+        if (summaryCouponRow) {
+          summaryCouponRow.classList.remove('hidden');
+          summaryCouponRow.classList.add('flex');
+        }
+        if (summaryCouponCodeLabel) {
+          summaryCouponCodeLabel.textContent = appliedCoupon.code;
+        }
+        if (summaryDiscountAmount) {
+          summaryDiscountAmount.textContent = `−₹${discountAmount} (${appliedCoupon.discount_percent}% OFF)`;
+        }
+        if (summaryTotalEl) {
+          summaryTotalEl.innerHTML = `
+            <span class="line-through text-ink-400 font-sans text-xs font-normal mr-1.5">₹${currentExperiencePriceInr}</span>
+            <span>₹${finalPriceInr}</span>
+            <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span>
+          `;
+        }
+      } else {
+        if (summaryCouponRow) {
+          summaryCouponRow.classList.add('hidden');
+          summaryCouponRow.classList.remove('flex');
+        }
+        if (summaryTotalEl) {
+          summaryTotalEl.innerHTML = `₹${currentExperiencePriceInr} <span class="text-xs text-ink-500 font-sans font-normal">(One-time)</span>`;
+        }
       }
+
       if (btnPublish && !btnPublish.disabled) {
         btnPublish.title = revisesGiftId
-          ? `Confirm changes & update your live gift for ₹${currentExperiencePriceInr}`
-          : `Pay ₹${currentExperiencePriceInr} & get your shareable link`;
+          ? `Confirm changes & update your live gift for ₹${finalPriceInr}`
+          : `Pay ₹${finalPriceInr} & get your shareable link`;
       }
       if (btnPublishText && !btnPublish.disabled) {
         btnPublishText.textContent = revisesGiftId
-          ? `Confirm & Publish Changes · ₹${currentExperiencePriceInr}`
-          : `Pay Now · ₹${currentExperiencePriceInr}`;
+          ? `Confirm & Publish Changes · ₹${finalPriceInr}`
+          : `Pay Now · ₹${finalPriceInr}`;
       }
+    }
+
+    async function applyCouponCode(codeStr) {
+      const code = (codeStr || '').trim().toUpperCase();
+      const alertEl = document.getElementById('couponMessageAlert');
+      const btnApply = document.getElementById('btnApplyCoupon');
+
+      if (!code) {
+        if (alertEl) {
+          alertEl.textContent = 'Please enter a coupon code.';
+          alertEl.className = 'text-[11px] font-medium px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200';
+          alertEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (btnApply) {
+        btnApply.disabled = true;
+        btnApply.innerHTML = '<span class="inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>';
+      }
+
+      try {
+        let result = null;
+        // 1. Try invoking Edge function via Supabase functions client
+        if (supabase && supabase.functions) {
+          try {
+            const { data, error } = await supabase.functions.invoke('validate-coupon', {
+              body: { code }
+            });
+            if (!error && data && data.valid) {
+              result = data;
+            } else if (error || (data && !data.valid)) {
+              throw new Error(data?.reason || error?.message || 'Invalid coupon code.');
+            }
+          } catch (sdkErr) {
+            console.warn('[coupon] SDK invoke error, trying direct fetch:', sdkErr);
+          }
+        }
+
+        // 2. Direct HTTP endpoint fallback
+        if (!result) {
+          const endpoint = `${SUPABASE_URL}/functions/v1/validate-coupon`;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${currentUser?.access_token || SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({ code })
+          });
+
+          const json = await response.json();
+          if (response.ok && json && json.valid) {
+            result = json;
+          } else {
+            throw new Error(json?.reason || json?.error || 'Invalid or expired coupon code.');
+          }
+        }
+
+        appliedCoupon = {
+          code: result.code || code,
+          discount_percent: result.discount_percent,
+          message: result.message
+        };
+
+        if (alertEl) {
+          alertEl.textContent = `✓ ${result.discount_percent}% discount applied!`;
+          alertEl.className = 'text-[11px] font-medium px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200';
+          alertEl.classList.remove('hidden');
+        }
+
+        updateOrderSummaryPriceUI();
+
+      } catch (err) {
+        appliedCoupon = null;
+        updateOrderSummaryPriceUI();
+        if (alertEl) {
+          alertEl.textContent = err.message || 'Invalid coupon code.';
+          alertEl.className = 'text-[11px] font-medium px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200';
+          alertEl.classList.remove('hidden');
+        }
+      } finally {
+        if (btnApply) {
+          btnApply.disabled = false;
+          btnApply.textContent = 'Apply';
+        }
+      }
+    }
+
+    function removeCouponCode() {
+      appliedCoupon = null;
+      const alertEl = document.getElementById('couponMessageAlert');
+      const inputEl = document.getElementById('orderCouponInput');
+      if (inputEl) inputEl.value = '';
+      if (alertEl) alertEl.classList.add('hidden');
+      updateOrderSummaryPriceUI();
     }
 
     async function syncCurrentExperiencePrice() {
@@ -3408,12 +3580,17 @@ Happy Birthday. I mean it.</textarea>
     /**
      * Creates a server-side Razorpay Order via create-razorpay-order Edge Function
      */
-    async function createRazorpayOrder(giftId) {
+    async function createRazorpayOrder(giftId, couponCode) {
+      const orderPayload = {
+        gift_id: giftId,
+        coupon_code: couponCode || (appliedCoupon ? appliedCoupon.code : undefined)
+      };
+
       // 1. Invoke via Supabase SDK Functions client
       try {
         if (supabase && supabase.functions) {
           const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
-            body: { gift_id: giftId }
+            body: orderPayload
           });
           if (!error && data && (data.order_id || data.already_paid)) {
             return { data, error: null };
@@ -3436,7 +3613,7 @@ Happy Birthday. I mean it.</textarea>
             'apikey': SUPABASE_ANON_KEY,
             'Authorization': `Bearer ${currentUser?.access_token || SUPABASE_ANON_KEY}`
           },
-          body: JSON.stringify({ gift_id: giftId })
+          body: JSON.stringify(orderPayload)
         });
 
         const json = await response.json();
@@ -3510,6 +3687,7 @@ Happy Birthday. I mean it.</textarea>
     const adminDiscountAmount   = document.getElementById('adminDiscountAmount');
     const adminTotalRow         = document.getElementById('adminTotalRow');
     const securePaymentBadge    = document.getElementById('securePaymentBadge');
+    const couponSection         = document.getElementById('couponSection');
 
     function applyAdminUI() {
       if (!window.isAdminUser) return;
@@ -3519,8 +3697,9 @@ Happy Birthday. I mean it.</textarea>
       // Show discount rows
       if (adminDiscountRow)     { adminDiscountRow.classList.remove('hidden'); adminDiscountRow.classList.add('flex'); }
       if (adminTotalRow)        { adminTotalRow.classList.remove('hidden'); adminTotalRow.classList.add('flex'); }
-      // Hide Razorpay secure badge (irrelevant for free publish)
+      // Hide Razorpay secure badge & coupon section (irrelevant for free publish)
       if (securePaymentBadge)   { securePaymentBadge.classList.add('hidden'); }
+      if (couponSection)        { couponSection.classList.add('hidden'); }
       // Update discount amount label
       if (adminDiscountAmount)  { adminDiscountAmount.textContent = `−₹${currentExperiencePriceInr}`; }
     }
@@ -3639,8 +3818,8 @@ Happy Birthday. I mean it.</textarea>
             throw new Error(draftError.message || 'Failed to save latest draft.');
           }
 
-          // 2. Call the server-side create-razorpay-order Edge Function
-          const { data: orderData, error: orderErr } = await createRazorpayOrder(draftId);
+          // 2. Call the server-side create-razorpay-order Edge Function with coupon code
+          const { data: orderData, error: orderErr } = await createRazorpayOrder(draftId, appliedCoupon?.code);
 
           if (orderErr || !orderData) {
             const errMsg = orderErr?.message || 'Could not create payment order. Please verify connection and retry.';
@@ -3658,7 +3837,6 @@ Happy Birthday. I mean it.</textarea>
           }
 
           if (orderData.amount_inr) {
-            currentExperiencePriceInr = orderData.amount_inr;
             updateOrderSummaryPriceUI();
           }
 
@@ -3674,7 +3852,7 @@ Happy Birthday. I mean it.</textarea>
 
           const rzpOptions = {
             key: rzpKey,
-            amount: orderData.amount || (currentExperiencePriceInr * 100),
+            amount: orderData.amount || (getEffectivePriceInr() * 100),
             currency: 'INR',
             name: 'Velvet & Keepsake',
             description: `${editorState.recipientName || 'Elena'}'s Keepsake Birthday Film`,
@@ -3689,6 +3867,7 @@ Happy Birthday. I mean it.</textarea>
             },
             notes: {
               gift_id: draftId,
+              coupon_code: appliedCoupon ? appliedCoupon.code : 'NONE',
               recipient: editorState.recipientName || 'Elena'
             },
             modal: {
@@ -3767,6 +3946,33 @@ Happy Birthday. I mean it.</textarea>
           updateOrderSummaryPriceUI();
         }
       });
+    }
+
+    // Coupon UI Event Listeners
+    const orderCouponInput = document.getElementById('orderCouponInput');
+    const btnApplyCoupon = document.getElementById('btnApplyCoupon');
+    const btnRemoveCoupon = document.getElementById('btnRemoveCoupon');
+
+    if (orderCouponInput) {
+      orderCouponInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase();
+      });
+      orderCouponInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          applyCouponCode(orderCouponInput.value);
+        }
+      });
+    }
+
+    if (btnApplyCoupon) {
+      btnApplyCoupon.addEventListener('click', () => {
+        applyCouponCode(orderCouponInput ? orderCouponInput.value : '');
+      });
+    }
+
+    if (btnRemoveCoupon) {
+      btnRemoveCoupon.addEventListener('click', removeCouponCode);
     }
 
     // Copy Link Handler with Visual Confirmation

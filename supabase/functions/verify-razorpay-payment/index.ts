@@ -147,7 +147,7 @@ serve(async (req: Request): Promise<Response> => {
     // 6. Fetch Existing Gift Row
     const { data: existingGift, error: fetchErr } = await supabase
       .from('gifts')
-      .select('id, status, slug, razorpay_order_id, experience_id, theme_id, revises_gift_id, content, photo_urls, clip_urls, music')
+      .select('id, status, slug, razorpay_order_id, experience_id, theme_id, revises_gift_id, content, photo_urls, clip_urls, music, coupon_code, discount_percent')
       .eq('id', giftId)
       .maybeSingle();
 
@@ -171,9 +171,9 @@ serve(async (req: Request): Promise<Response> => {
       }, 200);
     }
 
-    // 7. Look up dynamic experience price
+    // 7. Look up dynamic experience base price
     const expId = existingGift.experience_id || (existingGift.theme_id === 'glass' ? 'birthday-film-glass' : 'birthday-film');
-    let pricePaidInr = DEFAULT_FALLBACK_PRICE_INR;
+    let basePriceInr = DEFAULT_FALLBACK_PRICE_INR;
 
     const { data: expData } = await supabase
       .from('experiences')
@@ -184,7 +184,36 @@ serve(async (req: Request): Promise<Response> => {
     if (expData && expData.price) {
       const parsed = parseInt(String(expData.price).replace(/[^0-9]/g, ''), 10);
       if (!isNaN(parsed) && parsed >= 1) {
-        pricePaidInr = parsed;
+        basePriceInr = parsed;
+      }
+    }
+
+    // Calculate effective price paid taking coupon into account
+    let pricePaidInr = basePriceInr;
+    if (existingGift.coupon_code && existingGift.discount_percent) {
+      const discounted = Math.round(basePriceInr * (1 - existingGift.discount_percent / 100));
+      pricePaidInr = Math.max(1, discounted);
+    }
+
+    // 8. Atomically Increment Coupon Usage on Confirmed Payment (if coupon was used)
+    if (existingGift.coupon_code) {
+      try {
+        const { data: incRes, error: incErr } = await supabase.rpc('increment_coupon_usage', {
+          p_code: existingGift.coupon_code
+        });
+
+        if (incErr) {
+          console.error(`[verify-razorpay-payment][${timestamp}] Failed to increment coupon usage for '${existingGift.coupon_code}':`, incErr);
+        } else if (incRes && incRes.success) {
+          console.log(`[verify-razorpay-payment][${timestamp}] Coupon '${incRes.code}' usage incremented: now ${incRes.times_used}/${incRes.max_uses || '∞'}.`);
+
+          // Edge Case Handling: Coupon exceeded limit while customer was on checkout screen
+          if (incRes.max_uses !== null && incRes.times_used > incRes.max_uses) {
+            console.warn(`[verify-razorpay-payment][${timestamp}] [EDGE CASE ALERT] Coupon '${incRes.code}' usage limit (${incRes.max_uses}) was exceeded at final confirmation (now ${incRes.times_used} uses) for gift ${giftId}. Honoring confirmed payment.`);
+          }
+        }
+      } catch (couponIncEx) {
+        console.error(`[verify-razorpay-payment][${timestamp}] Exception during coupon increment:`, couponIncEx);
       }
     }
 
@@ -243,6 +272,8 @@ serve(async (req: Request): Promise<Response> => {
           razorpay_payment_id: paymentId,
           razorpay_signature: signature,
           price_paid: pricePaidInr,
+          coupon_code: existingGift.coupon_code || null,
+          discount_percent: existingGift.discount_percent || null,
           version: nextVersion,
           updated_at: new Date().toISOString()
         })
@@ -272,7 +303,9 @@ serve(async (req: Request): Promise<Response> => {
         slug: updatedOriginal.slug,
         version: updatedOriginal.version,
         status: 'paid',
-        price_paid: updatedOriginal.price_paid
+        price_paid: updatedOriginal.price_paid,
+        coupon_code: existingGift.coupon_code || null,
+        discount_percent: existingGift.discount_percent || null
       }, 200);
     }
 
@@ -311,6 +344,8 @@ serve(async (req: Request): Promise<Response> => {
         razorpay_payment_id: paymentId,
         razorpay_signature: signature,
         price_paid: pricePaidInr,
+        coupon_code: existingGift.coupon_code || null,
+        discount_percent: existingGift.discount_percent || null,
         updated_at: new Date().toISOString()
       })
       .eq('id', giftId)

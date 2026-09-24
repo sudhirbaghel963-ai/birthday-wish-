@@ -122,6 +122,12 @@
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
             <span>Pricing &amp; Catalog</span>
           </button>
+
+          <button type="button" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors" data-view="coupons">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+            <span>Coupons</span>
+            <span id="couponsCountBadge" class="ml-auto px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">0</span>
+          </button>
         </nav>
       </div>
 
@@ -361,6 +367,94 @@
 
       </div>
 
+
+      <!-- ============================================================
+           VIEW 4: COUPONS & PROMO DISCOUNTS MANAGEMENT
+           ============================================================ -->
+      <div id="viewCoupons" class="hidden p-6 space-y-6 max-w-7xl w-full mx-auto">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg">Coupons &amp; Promo Discounts</h3>
+            <p class="text-xs text-slate-500">Create promotional discount codes with usage limits, expiry dates, and instant live status toggles.</p>
+          </div>
+        </div>
+
+        <!-- Create New Coupon Card -->
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-4">
+          <div class="flex items-center gap-2 text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
+            <span>🎟️ Create New Coupon Code</span>
+          </div>
+
+          <form id="createCouponForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+            <!-- Code Input -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Coupon Code <span class="text-rose-500">*</span></label>
+              <input type="text" id="couponCodeInput" required placeholder="e.g. SAVE20" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs font-mono uppercase font-bold focus:border-slate-900 focus:outline-none" />
+            </div>
+
+            <!-- Discount % -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Discount % <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <input type="number" id="couponDiscountInput" required min="1" max="100" placeholder="20" class="w-full px-3 py-2 pr-7 rounded-lg border border-slate-200 text-xs font-bold focus:border-slate-900 focus:outline-none" />
+                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">%</span>
+              </div>
+            </div>
+
+            <!-- Max Uses -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Max Uses <span class="text-[10px] font-normal text-slate-400">(Optional)</span></label>
+              <input type="number" id="couponMaxUsesInput" min="1" placeholder="Unlimited" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:border-slate-900 focus:outline-none placeholder:text-slate-400" />
+            </div>
+
+            <!-- Expiration Date -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Expiry Date <span class="text-[10px] font-normal text-slate-400">(Optional)</span></label>
+              <input type="date" id="couponExpiryInput" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs text-slate-700 focus:border-slate-900 focus:outline-none" />
+            </div>
+
+            <!-- Create Button -->
+            <div>
+              <button type="submit" id="btnSubmitCoupon" class="w-full py-2 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-all shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>+ Create Coupon</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Feedback Alert -->
+          <div id="couponCreateAlert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+        </div>
+
+        <!-- Coupons Table Card -->
+        <div class="rounded-2xl bg-white border border-slate-200 shadow-2xs overflow-hidden">
+          <div class="p-4 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
+            <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider">All Active &amp; Historical Coupons</h4>
+            <span class="text-xs text-slate-500" id="couponsTableCount">0 total coupons</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+                  <th class="py-3 px-4">Coupon Code</th>
+                  <th class="py-3 px-4">Discount</th>
+                  <th class="py-3 px-4">Usage</th>
+                  <th class="py-3 px-4">Expires</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4 text-center">Active Toggle</th>
+                  <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="couponsTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
     </main>
 
   </div>
@@ -581,6 +675,7 @@
     let adminSession = JSON.parse(sessionStorage.getItem('vk_admin_session') || 'null');
     let allGifts = [];
     let allExperiences = [];
+    let allCoupons = [];
     let currentFilteredGifts = [];
     let currentSelectedGift = null;
     let currentPage = 1;
@@ -607,13 +702,15 @@
       const titles = {
         dashboard: 'Dashboard Overview',
         orders: 'Orders & Gifts Directory',
-        experiences: 'Catalog & Experience Pricing'
+        experiences: 'Catalog & Experience Pricing',
+        coupons: 'Coupons & Promo Discounts'
       };
 
       document.getElementById('viewTitle').textContent = titles[viewName] || 'Admin Console';
       document.getElementById('viewDashboard').classList.toggle('hidden', viewName !== 'dashboard');
       document.getElementById('viewOrders').classList.toggle('hidden', viewName !== 'orders');
       document.getElementById('viewExperiences').classList.toggle('hidden', viewName !== 'experiences');
+      document.getElementById('viewCoupons').classList.toggle('hidden', viewName !== 'coupons');
     };
 
     // 4. Admin Auth Handler
@@ -705,9 +802,22 @@
           ];
         }
 
+        // Fetch coupons
+        const { data: couponsData, error: couponsError } = await supabase
+          .from('coupons')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (couponsData && !couponsError) {
+          allCoupons = couponsData;
+        } else if (couponsError) {
+          console.warn('Error fetching coupons:', couponsError);
+        }
+
         renderDashboard();
         applyOrdersFilter();
         renderExperiencesAdmin();
+        renderCouponsAdmin();
       } catch (err) {
         console.error('Data fetch error:', err);
       }
@@ -1460,7 +1570,267 @@
       });
     }
 
-    // 12. Main App Render & Event Listeners
+    // 12. Render Coupons & Promo Discounts Management
+    function renderCouponsAdmin() {
+      const badge = document.getElementById('couponsCountBadge');
+      const countEl = document.getElementById('couponsTableCount');
+      const tbody = document.getElementById('couponsTableBody');
+
+      if (badge) badge.textContent = allCoupons.length;
+      if (countEl) countEl.textContent = `${allCoupons.length} total coupons`;
+      if (!tbody) return;
+
+      if (allCoupons.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-8 text-center text-slate-400 font-normal">
+              No coupon codes found. Use the form above to create your first discount code.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = allCoupons.map(c => {
+        const isInactive = !c.is_active;
+        const isExpired = Boolean(c.expires_at && new Date(c.expires_at) < new Date());
+        const isLimitReached = Boolean(c.max_uses !== null && c.times_used >= c.max_uses);
+
+        let statusBadge = '';
+        if (isInactive) {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Deactivated</span>';
+        } else if (isExpired) {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Expired</span>';
+        } else if (isLimitReached) {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200">Limit Reached</span>';
+        } else {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Active</span>';
+        }
+
+        const usageText = c.max_uses !== null 
+          ? `<span class="font-bold text-slate-900">${c.times_used}</span> / ${c.max_uses} used` 
+          : `<span class="font-bold text-slate-900">${c.times_used}</span> used <span class="text-[10px] text-slate-400 font-normal">(Unlimited)</span>`;
+
+        let expiryDisplay = '<span class="text-slate-400">Never</span>';
+        if (c.expires_at) {
+          const expDate = new Date(c.expires_at);
+          expiryDisplay = `<span class="${isExpired ? 'text-amber-700 font-semibold' : 'text-slate-700'}">${expDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>`;
+        }
+
+        return `
+          <tr class="hover:bg-slate-50/60 transition-colors" data-coupon-id="${c.id}">
+            <!-- Code -->
+            <td class="py-3 px-4 font-mono font-bold text-slate-900 text-xs">
+              <span class="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-300 tracking-wider">
+                ${c.code}
+              </span>
+            </td>
+
+            <!-- Discount -->
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-bold text-xs bg-rose-50 text-rose-700 border border-rose-200">
+                ${c.discount_percent}% OFF
+              </span>
+            </td>
+
+            <!-- Usage -->
+            <td class="py-3 px-4 text-xs text-slate-600">
+              ${usageText}
+            </td>
+
+            <!-- Expiry -->
+            <td class="py-3 px-4 text-xs">
+              ${expiryDisplay}
+            </td>
+
+            <!-- Status -->
+            <td class="py-3 px-4">
+              ${statusBadge}
+            </td>
+
+            <!-- Active Toggle -->
+            <td class="py-3 px-4 text-center">
+              <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only coupon-active-toggle" data-id="${c.id}" ${c.is_active ? 'checked' : ''} />
+                <div class="w-8 h-4 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-600 relative"></div>
+              </label>
+            </td>
+
+            <!-- Actions -->
+            <td class="py-3 px-4 text-right">
+              <button type="button" class="btn-delete-coupon text-slate-400 hover:text-rose-600 p-1 rounded hover:bg-rose-50 transition-colors" data-id="${c.id}" data-code="${c.code}" title="Delete Coupon">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Wire Active Toggle Listeners
+      tbody.querySelectorAll('.coupon-active-toggle').forEach(toggle => {
+        toggle.addEventListener('change', async (e) => {
+          const couponId = e.target.getAttribute('data-id');
+          const isNowActive = e.target.checked;
+
+          if (supabase) {
+            try {
+              const { error } = await supabase
+                .from('coupons')
+                .update({ is_active: isNowActive, updated_at: new Date().toISOString() })
+                .eq('id', couponId);
+
+              if (!error) {
+                const target = allCoupons.find(x => x.id === couponId);
+                if (target) target.is_active = isNowActive;
+                renderCouponsAdmin();
+              } else {
+                console.error('Toggle coupon status error:', error);
+                alert(`Could not update coupon: ${error.message}`);
+                e.target.checked = !isNowActive;
+              }
+            } catch (err) {
+              console.error('Toggle coupon exception:', err);
+              e.target.checked = !isNowActive;
+            }
+          }
+        });
+      });
+
+      // Wire Delete Listeners
+      tbody.querySelectorAll('.btn-delete-coupon').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const btnEl = e.target.closest('.btn-delete-coupon');
+          const couponId = btnEl.getAttribute('data-id');
+          const couponCode = btnEl.getAttribute('data-code');
+
+          if (!confirm(`Are you sure you want to delete coupon code "${couponCode}"?`)) return;
+
+          if (supabase) {
+            try {
+              const { error } = await supabase
+                .from('coupons')
+                .delete()
+                .eq('id', couponId);
+
+              if (!error) {
+                allCoupons = allCoupons.filter(x => x.id !== couponId);
+                renderCouponsAdmin();
+              } else {
+                console.error('Delete coupon error:', error);
+                alert(`Could not delete coupon: ${error.message}`);
+              }
+            } catch (err) {
+              console.error('Delete coupon exception:', err);
+            }
+          }
+        });
+      });
+    }
+
+    // 13. Create Coupon Form Submission Handler
+    async function handleCreateCoupon(e) {
+      if (e) e.preventDefault();
+
+      const codeInput = document.getElementById('couponCodeInput');
+      const discountInput = document.getElementById('couponDiscountInput');
+      const maxUsesInput = document.getElementById('couponMaxUsesInput');
+      const expiryInput = document.getElementById('couponExpiryInput');
+      const alertEl = document.getElementById('couponCreateAlert');
+      const submitBtn = document.getElementById('btnSubmitCoupon');
+
+      const rawCode = (codeInput?.value || '').trim().toUpperCase();
+      const rawDiscount = parseInt(discountInput?.value, 10);
+      const rawMaxUses = maxUsesInput?.value ? parseInt(maxUsesInput.value, 10) : null;
+      const rawExpiry = expiryInput?.value ? new Date(`${expiryInput.value}T23:59:59Z`).toISOString() : null;
+
+      alertEl.className = 'p-3 rounded-xl text-xs font-medium';
+      alertEl.classList.add('hidden');
+
+      if (!rawCode) {
+        alertEl.textContent = 'Please enter a coupon code.';
+        alertEl.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
+        alertEl.classList.remove('hidden');
+        codeInput?.focus();
+        return;
+      }
+
+      if (isNaN(rawDiscount) || rawDiscount < 1 || rawDiscount > 100) {
+        alertEl.textContent = 'Please enter a valid discount percentage between 1 and 100.';
+        alertEl.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
+        alertEl.classList.remove('hidden');
+        discountInput?.focus();
+        return;
+      }
+
+      if (rawMaxUses !== null && (isNaN(rawMaxUses) || rawMaxUses < 1)) {
+        alertEl.textContent = 'Max uses must be a positive integer or left blank for unlimited.';
+        alertEl.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
+        alertEl.classList.remove('hidden');
+        maxUsesInput?.focus();
+        return;
+      }
+
+      // Check client-side duplicate
+      if (allCoupons.some(c => c.code.toUpperCase() === rawCode)) {
+        alertEl.textContent = `A coupon with code "${rawCode}" already exists.`;
+        alertEl.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
+        alertEl.classList.remove('hidden');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating...';
+
+      if (supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('coupons')
+            .insert({
+              code: rawCode,
+              discount_percent: rawDiscount,
+              max_uses: rawMaxUses,
+              expires_at: rawExpiry,
+              is_active: true
+            })
+            .select('*')
+            .single();
+
+          if (!error && data) {
+            allCoupons.unshift(data);
+            renderCouponsAdmin();
+
+            // Reset form
+            codeInput.value = '';
+            discountInput.value = '';
+            if (maxUsesInput) maxUsesInput.value = '';
+            if (expiryInput) expiryInput.value = '';
+
+            alertEl.textContent = `✓ Coupon "${rawCode}" created successfully! (${rawDiscount}% discount)`;
+            alertEl.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200');
+            alertEl.classList.remove('hidden');
+
+            setTimeout(() => { alertEl.classList.add('hidden'); }, 3500);
+          } else {
+            console.error('Create coupon error:', error);
+            alertEl.textContent = error?.message?.includes('duplicate key') || error?.message?.includes('unique')
+              ? `Coupon code "${rawCode}" already exists.`
+              : `Failed to create coupon: ${error?.message || 'Database error'}`;
+            alertEl.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
+            alertEl.classList.remove('hidden');
+          }
+        } catch (err) {
+          console.error('Create coupon exception:', err);
+          alertEl.textContent = `Error creating coupon: ${err.message}`;
+          alertEl.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
+          alertEl.classList.remove('hidden');
+        }
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = '+ Create Coupon';
+    }
+
+    // 14. Main App Render & Event Listeners
     function renderApp() {
       const authScreen = document.getElementById('authScreen');
       const adminApp = document.getElementById('adminApp');
@@ -1481,6 +1851,15 @@
     document.getElementById('adminLoginForm')?.addEventListener('submit', handleLogin);
     document.getElementById('btnAdminLogout')?.addEventListener('click', handleLogout);
     document.getElementById('btnRefreshData')?.addEventListener('click', fetchPlatformData);
+
+    // Coupon Form Listeners
+    const couponCodeInput = document.getElementById('couponCodeInput');
+    if (couponCodeInput) {
+      couponCodeInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase();
+      });
+    }
+    document.getElementById('createCouponForm')?.addEventListener('submit', handleCreateCoupon);
 
     // Nav Switcher
     document.querySelectorAll('.nav-btn').forEach(btn => {

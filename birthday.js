@@ -613,7 +613,7 @@ function populateStaticContent(data) {
     }
   }
 
-  // --- Dynamic Music Sync ---
+  // --- Dynamic Music Sync & Trim Point ---
   if (gd.music) {
     const m = gd.music;
     const startSec = typeof m.startSeconds === 'number' ? m.startSeconds : 27;
@@ -628,12 +628,37 @@ function populateStaticContent(data) {
       if (targetSrc && currentSrc !== targetSrc && !currentSrc.endsWith(targetSrc)) {
         const wasPlaying = !bg.paused;
         bg.src = targetSrc;
-        bg.currentTime = startSec;
+        applyAudioTrimStart(bg, startSec);
         if (wasPlaying) {
           bg.play().catch(() => {});
         }
+      } else {
+        applyAudioTrimStart(bg, startSec);
       }
     }
+  }
+}
+
+// --- Reliable Audio Trim Start Point Helper ---
+function applyAudioTrimStart(audioEl, targetSeconds) {
+  if (!audioEl) return;
+  const seekTime = Math.max(0, parseFloat(targetSeconds) || 0);
+
+  const performSeek = () => {
+    try {
+      if (Math.abs(audioEl.currentTime - seekTime) > 0.35) {
+        audioEl.currentTime = seekTime;
+      }
+    } catch (err) {
+      console.warn('[Audio] Failed to seek to trim point:', err);
+    }
+  };
+
+  if (audioEl.readyState >= 1) { // HAVE_METADATA or higher
+    performSeek();
+  } else {
+    audioEl.addEventListener('loadedmetadata', performSeek, { once: true });
+    audioEl.addEventListener('canplay', performSeek, { once: true });
   }
 }
 
@@ -671,6 +696,7 @@ const replay  = $('replay');
 const nextScene1 = $('nextScene1');
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+console.log(`[Film Diagnostics] prefers-reduced-motion: ${reduceMotion} | dpr: ${window.devicePixelRatio || 1} | standalone: ${window.navigator.standalone || false}`);
 const isRecord     = new URLSearchParams(location.search).has('record');
 
 /* --- cue log for the recorder: the page stays muted, but it timestamps every
@@ -4988,103 +5014,129 @@ const AUDIO_CONFIG = {
 const bgMusic        = $('bgMusic');
 const musicToggleBtn = $('musicToggleBtn');
 
-let musicStarted = false;
-let isMuted      = false;
-let duckTimeout  = 0;
+let musicStarted        = false;
+let isMuted             = false;
+let duckTimeout         = 0;
+let gestureEventsBound  = false;
+const GESTURE_EVENTS    = ['touchstart', 'touchend', 'click', 'pointerdown', 'keydown'];
 
-function initAndPlayMusic(){
-  if (!bgMusic || musicStarted) return;
-  musicStarted = true;
+function removeMusicGestureListeners() {
+  if (!gestureEventsBound) return;
+  GESTURE_EVENTS.forEach(ev => {
+    window.removeEventListener(ev, handleMusicUserGesture, { capture: true });
+  });
+  gestureEventsBound = false;
+}
+
+function attachMusicGestureListeners() {
+  if (gestureEventsBound || musicStarted) return;
+  gestureEventsBound = true;
+  GESTURE_EVENTS.forEach(ev => {
+    window.addEventListener(ev, handleMusicUserGesture, { capture: true, passive: true });
+  });
+}
+
+function handleMusicUserGesture() {
+  initAndPlayMusic();
+}
+
+function initAndPlayMusic(fromUserClick = false) {
+  if (!bgMusic) return;
+  if (musicStarted && !bgMusic.paused) return;
 
   bgMusic.volume = AUDIO_CONFIG.defaultVolume;
   bgMusic.muted = isMuted;
 
-  // Set start time to 27s
-  try {
-    if (bgMusic.readyState >= 1) { // HAVE_METADATA or higher
-      bgMusic.currentTime = AUDIO_CONFIG.startTime;
-    } else {
-      bgMusic.addEventListener('loadedmetadata', () => {
-        bgMusic.currentTime = AUDIO_CONFIG.startTime;
-      }, { once: true });
-    }
-  } catch(e){}
+  // Apply trim seeking reliably
+  applyAudioTrimStart(bgMusic, AUDIO_CONFIG.startTime);
 
-  const playPromise = bgMusic.play();
-  if (playPromise !== undefined){
-    playPromise.then(() => {
-      if (musicToggleBtn && !isMuted){
-        musicToggleBtn.classList.add('is-playing');
-      }
-    }).catch(() => {
-      // Fail silently if browser blocks or file not ready yet
-      musicStarted = false;
-    });
+  try {
+    const playPromise = bgMusic.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        musicStarted = true;
+        removeMusicGestureListeners();
+        if (musicToggleBtn) {
+          musicToggleBtn.classList.remove('needs-sound-tap');
+          if (!isMuted) {
+            musicToggleBtn.classList.add('is-playing');
+          }
+        }
+      }).catch((err) => {
+        console.warn('[Audio] Autoplay blocked by browser policy:', err);
+        musicStarted = false;
+        // If autoplay was blocked, keep gesture listeners active & invite manual tap
+        if (musicToggleBtn && !musicStarted) {
+          musicToggleBtn.classList.add('needs-sound-tap');
+          musicToggleBtn.setAttribute('title', 'Tap to enable music');
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('[Audio] Play initiation error:', err);
   }
 }
 
-// Continuous loop back to 27 seconds (not 0:00)
-if (bgMusic){
+// Continuous loop back to configured trim start (default 27s, not 0:00)
+if (bgMusic) {
   bgMusic.addEventListener('timeupdate', () => {
-    // If playback approaches within 0.25s of the end, seamlessly loop back to loopStartTime (27s)
-    if (bgMusic.duration && bgMusic.currentTime >= bgMusic.duration - 0.25){
-      bgMusic.currentTime = AUDIO_CONFIG.loopStartTime;
-      if (!bgMusic.paused){
+    if (bgMusic.duration && bgMusic.currentTime >= bgMusic.duration - 0.25) {
+      applyAudioTrimStart(bgMusic, AUDIO_CONFIG.loopStartTime);
+      if (!bgMusic.paused) {
         bgMusic.play().catch(() => {});
       }
     }
   });
 
   bgMusic.addEventListener('ended', () => {
-    bgMusic.currentTime = AUDIO_CONFIG.loopStartTime;
+    applyAudioTrimStart(bgMusic, AUDIO_CONFIG.loopStartTime);
     bgMusic.play().catch(() => {});
   });
 
   bgMusic.addEventListener('play', () => {
-    if (musicToggleBtn && !isMuted){
-      musicToggleBtn.classList.add('is-playing');
+    musicStarted = true;
+    removeMusicGestureListeners();
+    if (musicToggleBtn) {
+      musicToggleBtn.classList.remove('needs-sound-tap');
+      if (!isMuted) {
+        musicToggleBtn.classList.add('is-playing');
+      }
     }
   });
 
   bgMusic.addEventListener('pause', () => {
-    if (musicToggleBtn){
+    if (musicToggleBtn) {
       musicToggleBtn.classList.remove('is-playing');
     }
   });
 }
 
-// First interaction trigger across the entire film (one-time)
-function handleFirstMusicInteraction(){
-  window.removeEventListener('pointerdown', handleFirstMusicInteraction);
-  window.removeEventListener('keydown', handleFirstMusicInteraction);
-  initAndPlayMusic();
-}
-
-window.addEventListener('pointerdown', handleFirstMusicInteraction, { passive: true });
-window.addEventListener('keydown', handleFirstMusicInteraction, { passive: true });
+// Attach user gesture listeners immediately
+attachMusicGestureListeners();
 
 // Toggle Mute / Unmute
-function toggleMusicMute(e){
-  if (e){
+function toggleMusicMute(e) {
+  if (e) {
     e.stopPropagation();
   }
 
-  // If music hasn't started yet, clicking the toggle should initiate playback
-  if (!musicStarted){
-    initAndPlayMusic();
+  // If music hasn't started yet or was paused due to autoplay policy, direct tap starts it
+  if (!musicStarted || (bgMusic && bgMusic.paused)) {
+    isMuted = false;
+    if (bgMusic) bgMusic.muted = false;
+    initAndPlayMusic(true);
     return;
   }
 
   isMuted = !isMuted;
-  if (bgMusic){
+  if (bgMusic) {
     bgMusic.muted = isMuted;
-    // Also if unmuting while paused, resume playback
-    if (!isMuted && bgMusic.paused){
+    if (!isMuted && bgMusic.paused) {
       bgMusic.play().catch(() => {});
     }
   }
 
-  if (musicToggleBtn){
+  if (musicToggleBtn) {
     musicToggleBtn.classList.toggle('is-muted', isMuted);
     musicToggleBtn.classList.toggle('is-playing', !isMuted && bgMusic && !bgMusic.paused);
     musicToggleBtn.setAttribute('aria-pressed', isMuted ? 'true' : 'false');
@@ -5092,12 +5144,12 @@ function toggleMusicMute(e){
   }
 }
 
-if (musicToggleBtn){
+if (musicToggleBtn) {
   musicToggleBtn.addEventListener('click', toggleMusicMute);
 }
 
 // Gentle ducking during sound effects
-function duckMusic(durationMs = 900, duckLevel = AUDIO_CONFIG.duckVolume){
+function duckMusic(durationMs = 900, duckLevel = AUDIO_CONFIG.duckVolume) {
   if (!bgMusic || isMuted || bgMusic.paused) return;
   clearTimeout(duckTimeout);
   gsap.to(bgMusic, {
@@ -5106,7 +5158,7 @@ function duckMusic(durationMs = 900, duckLevel = AUDIO_CONFIG.duckVolume){
     ease: 'power1.out',
     onComplete: () => {
       duckTimeout = setTimeout(() => {
-        if (!isMuted && bgMusic && !bgMusic.paused){
+        if (!isMuted && bgMusic && !bgMusic.paused) {
           gsap.to(bgMusic, {
             volume: AUDIO_CONFIG.defaultVolume,
             duration: 0.45,

@@ -105,12 +105,23 @@
               <polyline points="22,6 12,13 2,6"/>
             </svg>
           </div>
-          <h1 class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-ink-900">
+          <h1 id="loginFormHeading" class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-ink-900">
             Sign in to Your Gifts
           </h1>
-          <p class="text-xs sm:text-sm text-ink-500">
+          <p id="loginFormSubheading" class="text-xs sm:text-sm text-ink-500">
             Access your personalized films, saved drafts, and orders.
           </p>
+        </div>
+
+        <!-- Referral Invite Banner (Shown when ?ref= is present) -->
+        <div id="referralInviteBanner" class="hidden p-3.5 rounded-2xl bg-gradient-to-r from-rose-50 via-gold-50 to-rose-50 border border-rose-200/80 flex items-center gap-3 shadow-sm">
+          <div class="w-9 h-9 rounded-xl bg-rose-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+            🎁
+          </div>
+          <div class="text-xs text-ink-800 leading-tight">
+            <p class="font-semibold text-rose-700">Special Invitation</p>
+            <p class="text-ink-600 mt-0.5">Creating account with code <span id="referralCodeBadge" class="font-mono font-bold text-rose-800 uppercase px-1.5 py-0.5 bg-white rounded border border-rose-200"></span></p>
+          </div>
         </div>
 
         <!-- 1. Continue with Google (Top Priority) -->
@@ -407,6 +418,10 @@
   <!-- Script: Multi-Auth Controller (Google OAuth, Email + Password) -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    import { captureReferralParam } from './referralTracker.js';
+
+    // Track influencer link clicks if arriving via ?ref= or ?r=
+    captureReferralParam();
 
     function sanitizeSupabaseUrl(raw) {
       let url = (typeof raw === 'string' ? raw : '').trim();
@@ -454,6 +469,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const redirectTarget = urlParams.get('redirect') || './create.html';
+    const referralCodeParam = (urlParams.get('ref') || urlParams.get('r') || '').trim().toUpperCase();
 
     // State views
     const loginFormState = document.getElementById('loginFormState');
@@ -461,6 +477,12 @@
     const forgotPasswordState = document.getElementById('forgotPasswordState');
     const setNewPasswordState = document.getElementById('setNewPasswordState');
     const verifyingState = document.getElementById('verifyingState');
+
+    // Referral invite UI
+    const referralInviteBanner = document.getElementById('referralInviteBanner');
+    const referralCodeBadge = document.getElementById('referralCodeBadge');
+    const loginFormHeading = document.getElementById('loginFormHeading');
+    const loginFormSubheading = document.getElementById('loginFormSubheading');
 
     // Form controls
     const customerEmailInput = document.getElementById('customerEmail');
@@ -575,18 +597,51 @@
         passwordModePrompt.textContent = 'Already have an account?';
         btnTogglePasswordMode.textContent = 'Sign in here';
         btnForgotPasswordLink.classList.add('hidden');
+        if (referralCodeParam && loginFormHeading) {
+          loginFormHeading.textContent = 'Create Your Account';
+          loginFormSubheading.textContent = 'Join with your invitation to personalize and send heartfelt gift films.';
+        }
       } else {
         confirmPasswordGroup.classList.add('hidden');
         btnPasswordSubmitText.textContent = 'Sign In';
         passwordModePrompt.textContent = "Don't have an account yet?";
         btnTogglePasswordMode.textContent = 'Create an account';
         btnForgotPasswordLink.classList.remove('hidden');
+        if (loginFormHeading) {
+          loginFormHeading.textContent = 'Sign in to Your Gifts';
+          loginFormSubheading.textContent = 'Access your personalized films, saved drafts, and orders.';
+        }
       }
     }
 
     btnTogglePasswordMode?.addEventListener('click', () => {
       setPasswordMode(passwordMode === 'signin' ? 'signup' : 'signin');
     });
+
+    // Automatically initialize referral invite banner and signup mode if ?ref= is present
+    if (referralCodeParam) {
+      if (referralInviteBanner) {
+        referralInviteBanner.classList.remove('hidden');
+      }
+      if (referralCodeBadge) {
+        referralCodeBadge.textContent = referralCodeParam;
+      }
+      setPasswordMode('signup');
+    }
+
+    // Helper: Ensure customer profile exists and attach referral on signup atomically
+    async function ensureCustomerProfile(userId, userEmail, refCode) {
+      if (!userId || !supabase) return;
+      try {
+        await supabase.rpc('attach_referral_on_signup', {
+          p_user_id: userId,
+          p_email: userEmail || '',
+          p_ref_code: refCode || null
+        });
+      } catch (err) {
+        console.warn('[Login] Customer profile referral attribution warning:', err);
+      }
+    }
 
     // Retroactively claim any unclaimed local drafts created on this browser
     async function claimLocalDrafts(userId) {
@@ -612,7 +667,11 @@
       btnGoogleSignIn.classList.add('opacity-75', 'cursor-wait');
 
       try {
-        const callbackUrl = window.location.origin + window.location.pathname + (redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : '');
+        const callbackUrlParams = new URLSearchParams();
+        if (redirectTarget) callbackUrlParams.set('redirect', redirectTarget);
+        if (referralCodeParam) callbackUrlParams.set('ref', referralCodeParam);
+        const qs = callbackUrlParams.toString();
+        const callbackUrl = window.location.origin + window.location.pathname + (qs ? `?${qs}` : '');
         
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
@@ -673,7 +732,12 @@
       try {
         if (passwordMode === 'signup') {
           // Sign Up
-          const callbackUrl = window.location.origin + window.location.pathname + (redirectTarget ? `?redirect=${encodeURIComponent(redirectTarget)}` : '');
+          const callbackUrlParams = new URLSearchParams();
+          if (redirectTarget) callbackUrlParams.set('redirect', redirectTarget);
+          if (referralCodeParam) callbackUrlParams.set('ref', referralCodeParam);
+          const qs = callbackUrlParams.toString();
+          const callbackUrl = window.location.origin + window.location.pathname + (qs ? `?${qs}` : '');
+
           const { data, error } = await supabase.auth.signUp({
             email: email,
             password: password,
@@ -687,6 +751,11 @@
             btnPasswordSubmit.disabled = false;
             btnPasswordSubmit.innerHTML = `<span>${originalText}</span><span class="text-gold-300">✦</span>`;
             return;
+          }
+
+          // Attach referral attribution on signup immediately
+          if (data.user) {
+            await ensureCustomerProfile(data.user.id, data.user.email || email, referralCodeParam);
           }
 
           // If email confirmation is required and session is null
@@ -719,6 +788,8 @@
           }
 
           if (data.session && data.session.user) {
+            // Guarantee existing profile is initialized without altering attribution
+            await ensureCustomerProfile(data.session.user.id, data.session.user.email || email, null);
             await claimLocalDrafts(data.session.user.id);
             showState(verifyingState);
             window.location.replace(redirectTarget);
@@ -899,6 +970,8 @@
       const { data: { session }, error } = await supabase.auth.getSession();
 
       if (session && session.user && !isPasswordRecovery) {
+        const currentRef = (urlParams.get('ref') || urlParams.get('r') || '').trim().toUpperCase() || null;
+        await ensureCustomerProfile(session.user.id, session.user.email || '', currentRef);
         await claimLocalDrafts(session.user.id);
         window.location.replace(redirectTarget);
       }
@@ -913,6 +986,8 @@
       }
 
       if (session && session.user && !isPasswordRecovery && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+        const currentRef = (urlParams.get('ref') || urlParams.get('r') || '').trim().toUpperCase() || null;
+        await ensureCustomerProfile(session.user.id, session.user.email || '', currentRef);
         await claimLocalDrafts(session.user.id);
         window.location.replace(redirectTarget);
       }

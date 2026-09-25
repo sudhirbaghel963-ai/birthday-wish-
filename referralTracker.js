@@ -1,114 +1,65 @@
 /**
- * Referral Tracking Utility for Velvet & Keepsake Influencer Affiliate Program
- * Handles 30-day cookie/localStorage attribution and atomic click recording via Supabase RPC.
+ * Referral Tracking & Redirect Engine for Velvet & Keepsake Influencer Program
+ * Redirects visitors arriving via ?ref= directly to signup/login while recording influencer clicks.
+ * Attribution is handled strictly at account signup time, never via localStorage.
  */
 
 import { supabase } from './supabaseClient.js';
 
-const REFERRAL_KEY_CODE = 'vk_referral_code';
-const REFERRAL_KEY_ID = 'vk_referral_influencer_id';
-const REFERRAL_KEY_TIMESTAMP = 'vk_referral_timestamp';
-const ATTRIBUTION_WINDOW_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days
-
 /**
- * Normalizes and checks for ?ref= or ?r= in current URL, tracks click, and persists attribution.
+ * Checks for ?ref= or ?r= in URL.
+ * - Increments influencer click counter atomically via Supabase RPC.
+ * - If on any page other than /login, redirects directly to /login.html?ref=CODE.
  */
-export async function captureReferralParam() {
-  if (typeof window === 'undefined') return null;
+export async function handleReferralRedirect() {
+  if (typeof window === 'undefined') return;
 
   try {
     const urlParams = new URLSearchParams(window.location.search);
     const rawRef = urlParams.get('ref') || urlParams.get('r');
 
-    if (!rawRef) return getAttributedInfluencer();
+    if (!rawRef) return;
 
     const normalizedCode = rawRef.trim().toUpperCase();
-    if (!normalizedCode || normalizedCode.length < 2) return getAttributedInfluencer();
+    if (!normalizedCode || normalizedCode.length < 2) return;
 
-    // Prevent double counting click in the same browser tab session for the same code
-    const sessionKey = `vk_ref_session_${normalizedCode}`;
-    const alreadyCountedInSession = sessionStorage.getItem(sessionKey);
+    // Track click once per tab session
+    const sessionKey = `vk_click_tracked_${normalizedCode}`;
+    const alreadyTracked = sessionStorage.getItem(sessionKey);
 
-    if (supabase) {
-      if (!alreadyCountedInSession) {
-        try {
-          const { data, error } = await supabase.rpc('increment_influencer_clicks', {
-            p_code: normalizedCode
-          });
-
-          if (!error && data && data.success) {
-            sessionStorage.setItem(sessionKey, '1');
-            localStorage.setItem(REFERRAL_KEY_CODE, normalizedCode);
-            localStorage.setItem(REFERRAL_KEY_ID, data.id);
-            localStorage.setItem(REFERRAL_KEY_TIMESTAMP, Date.now().toString());
-
-            return {
-              id: data.id,
-              code: normalizedCode
-            };
-          } else {
-            console.warn('[ReferralTracker] Click increment returned:', data?.error || error?.message);
-          }
-        } catch (rpcErr) {
-          console.warn('[ReferralTracker] RPC call failed:', rpcErr);
-        }
-      } else {
-        // Already recorded click this session, ensure localStorage is fresh
-        const storedId = localStorage.getItem(REFERRAL_KEY_ID);
-        if (storedId) {
-          return { id: storedId, code: normalizedCode };
-        }
+    if (supabase && !alreadyTracked) {
+      try {
+        await supabase.rpc('increment_influencer_clicks', {
+          p_code: normalizedCode
+        });
+        sessionStorage.setItem(sessionKey, '1');
+      } catch (err) {
+        console.warn('[ReferralTracker] Click tracking warning:', err);
       }
     }
-  } catch (err) {
-    console.warn('[ReferralTracker] Error capturing referral param:', err);
-  }
 
-  return getAttributedInfluencer();
-}
+    // Check current pathname
+    const pathname = window.location.pathname.toLowerCase();
+    const isLoginPage = pathname.endsWith('login.html') || pathname.endsWith('/login') || pathname === '/login';
 
-/**
- * Returns the currently active attributed influencer ID if within 30-day window.
- */
-export function getAttributedInfluencer() {
-  if (typeof window === 'undefined') return null;
+    if (!isLoginPage) {
+      // Preserve existing query params other than ref/r if any
+      const searchParams = new URLSearchParams();
+      searchParams.set('ref', normalizedCode);
 
-  try {
-    const code = localStorage.getItem(REFERRAL_KEY_CODE);
-    const id = localStorage.getItem(REFERRAL_KEY_ID);
-    const timestampStr = localStorage.getItem(REFERRAL_KEY_TIMESTAMP);
+      // Carry redirect parameter if user was headed somewhere specific
+      const redirect = urlParams.get('redirect');
+      if (redirect) searchParams.set('redirect', redirect);
 
-    if (!id || !timestampStr) return null;
-
-    const timestamp = parseInt(timestampStr, 10);
-    if (isNaN(timestamp) || (Date.now() - timestamp > ATTRIBUTION_WINDOW_MS)) {
-      // Attribution expired
-      clearReferralAttribution();
-      return null;
+      const target = `./login.html?${searchParams.toString()}`;
+      window.location.replace(target);
     }
-
-    return { id, code };
-  } catch (e) {
-    console.warn('[ReferralTracker] Error reading attribution:', e);
-    return null;
+  } catch (err) {
+    console.warn('[ReferralTracker] Error handling referral redirect:', err);
   }
 }
 
 /**
- * Returns only the attributed influencer ID if valid.
+ * Backward compatibility alias for handleReferralRedirect
  */
-export function getAttributedInfluencerId() {
-  const ref = getAttributedInfluencer();
-  return ref ? ref.id : null;
-}
-
-/**
- * Clears stored referral attribution.
- */
-export function clearReferralAttribution() {
-  try {
-    localStorage.removeItem(REFERRAL_KEY_CODE);
-    localStorage.removeItem(REFERRAL_KEY_ID);
-    localStorage.removeItem(REFERRAL_KEY_TIMESTAMP);
-  } catch (_) {}
-}
+export const captureReferralParam = handleReferralRedirect;

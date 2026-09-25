@@ -147,7 +147,7 @@ serve(async (req: Request): Promise<Response> => {
     // 6. Fetch Existing Gift Row
     const { data: existingGift, error: fetchErr } = await supabase
       .from('gifts')
-      .select('id, user_id, status, slug, razorpay_order_id, experience_id, theme_id, revises_gift_id, content, photo_urls, clip_urls, music, coupon_code, discount_percent, referred_by_influencer_id')
+      .select('id, owner_id, user_id, status, slug, razorpay_order_id, experience_id, theme_id, revises_gift_id, content, photo_urls, clip_urls, music, coupon_code, discount_percent')
       .eq('id', giftId)
       .maybeSingle();
 
@@ -217,13 +217,44 @@ serve(async (req: Request): Promise<Response> => {
       }
     }
 
-    // Helper function to process influencer commission
-    async function processInfluencerCommission(targetGiftId: string, influencerId: string | null, customerUserId: string | null, pricePaid: number) {
-      if (!influencerId || pricePaid <= 0) return;
+    // Helper function to process influencer commission on CUSTOMER'S FIRST PAID GIFT ONLY
+    async function processInfluencerCommission(targetGiftId: string, customerUserId: string | null, pricePaid: number) {
+      if (!customerUserId || pricePaid <= 0) return;
       try {
+        // 1. Fetch customer profile to check account-level referral attribution and first-purchase status
+        const { data: profile, error: profErr } = await supabase
+          .from('customer_profiles')
+          .select('id, email, referred_by_influencer_id, referral_commission_granted')
+          .eq('id', customerUserId)
+          .maybeSingle();
+
+        if (profErr) {
+          console.warn(`[verify-razorpay-payment][${timestamp}] Error fetching customer profile for user ${customerUserId}:`, profErr);
+          return;
+        }
+
+        if (!profile) {
+          console.log(`[verify-razorpay-payment][${timestamp}] No customer profile found for user ${customerUserId}. Skipping commission.`);
+          return;
+        }
+
+        // 2. Only the customer's FIRST paid gift counts. If already granted, skip!
+        if (profile.referral_commission_granted) {
+          console.log(`[verify-razorpay-payment][${timestamp}] User ${customerUserId} has already generated their first-purchase commission. Skipping.`);
+          return;
+        }
+
+        if (!profile.referred_by_influencer_id) {
+          console.log(`[verify-razorpay-payment][${timestamp}] User ${customerUserId} was not referred by any influencer.`);
+          return;
+        }
+
+        const influencerId = profile.referred_by_influencer_id;
+
+        // 3. Verify influencer is active
         const { data: influencer, error: infErr } = await supabase
           .from('influencers')
-          .select('id, user_id, status')
+          .select('id, user_id, email, status')
           .eq('id', influencerId)
           .maybeSingle();
 
@@ -237,16 +268,19 @@ serve(async (req: Request): Promise<Response> => {
           return;
         }
 
-        // Self-referral protection: if customer user_id matches influencer user_id
-        if (customerUserId && influencer.user_id && customerUserId === influencer.user_id) {
+        // 4. Self-referral check: skip if customer user_id or email matches influencer
+        if (
+          (influencer.user_id && customerUserId === influencer.user_id) ||
+          (profile.email && influencer.email && profile.email.toLowerCase().trim() === influencer.email.toLowerCase().trim())
+        ) {
           console.log(`[verify-razorpay-payment][${timestamp}] Self-referral detected for user ${customerUserId}. Skipping commission.`);
           return;
         }
 
-        // Commission is strictly 20% of price_paid
+        // 5. Commission is strictly 20% of price_paid
         const commissionAmount = Math.round(pricePaid * 0.20 * 100) / 100;
 
-        // Velocity check: flag suspicious if >= 3 orders for this influencer in the past 1 hour
+        // 6. Velocity check: flag suspicious if >= 3 orders for this influencer in the past 1 hour
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
         const { count, error: countErr } = await supabase
           .from('commissions')
@@ -284,6 +318,21 @@ serve(async (req: Request): Promise<Response> => {
           console.error(`[verify-razorpay-payment][${timestamp}] Error recording commission:`, commInsertErr);
         } else {
           console.log(`[verify-razorpay-payment][${timestamp}] Commission of ₹${commissionAmount} recorded for influencer ${influencer.id} (gift: ${targetGiftId}, suspicious: ${isSuspicious}).`);
+
+          // 7. Mark referral_commission_granted = true on the customer's profile so NO future purchases generate commissions
+          const { error: profUpdateErr } = await supabase
+            .from('customer_profiles')
+            .update({
+              referral_commission_granted: true,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', customerUserId);
+
+          if (profUpdateErr) {
+            console.error(`[verify-razorpay-payment][${timestamp}] Failed to set referral_commission_granted on customer profile:`, profUpdateErr);
+          } else {
+            console.log(`[verify-razorpay-payment][${timestamp}] Marked referral_commission_granted = true for user ${customerUserId}.`);
+          }
         }
       } catch (ex) {
         console.error(`[verify-razorpay-payment][${timestamp}] Exception processing influencer commission:`, ex);
@@ -347,12 +396,11 @@ serve(async (req: Request): Promise<Response> => {
           price_paid: pricePaidInr,
           coupon_code: existingGift.coupon_code || null,
           discount_percent: existingGift.discount_percent || null,
-          referred_by_influencer_id: existingGift.referred_by_influencer_id || originalGift.referred_by_influencer_id || null,
           version: nextVersion,
           updated_at: new Date().toISOString()
         })
         .eq('id', originalGift.id)
-        .select('id, status, slug, price_paid, version')
+        .select('id, owner_id, user_id, status, slug, price_paid, version')
         .single();
 
       if (updateOrigErr || !updatedOriginal) {
@@ -367,8 +415,9 @@ serve(async (req: Request): Promise<Response> => {
         .eq('id', giftId)
         .eq('status', 'draft');
 
-      // d. Record Commission if referred
-      await processInfluencerCommission(originalGift.id, existingGift.referred_by_influencer_id || originalGift.referred_by_influencer_id, existingGift.user_id || originalGift.user_id, pricePaidInr);
+      // d. Record Commission on first paid gift if customer was referred
+      const revisionCustomerUid = existingGift.owner_id || existingGift.user_id || originalGift.owner_id || originalGift.user_id;
+      await processInfluencerCommission(originalGift.id, revisionCustomerUid, pricePaidInr);
 
       console.log(`[verify-razorpay-payment][${timestamp}] Successfully verified and applied revision for gift ${originalGift.id} (version ${nextVersion})! Live slug: '${updatedOriginal.slug}'.`);
 
@@ -427,7 +476,7 @@ serve(async (req: Request): Promise<Response> => {
       })
       .eq('id', giftId)
       .eq('status', 'draft') // Concurrency lock
-      .select('id, status, slug, price_paid, version')
+      .select('id, owner_id, user_id, status, slug, price_paid, version')
       .single();
 
     if (updateErr) {
@@ -435,8 +484,9 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse({ error: `Failed to update gift status: ${updateErr.message}` }, 500);
     }
 
-    // 11. Record Commission if referred
-    await processInfluencerCommission(updatedGift.id, existingGift.referred_by_influencer_id, existingGift.user_id, pricePaidInr);
+    // 11. Record Commission on first paid gift if customer was referred
+    const customerUid = existingGift.owner_id || existingGift.user_id || updatedGift.owner_id || updatedGift.user_id;
+    await processInfluencerCommission(updatedGift.id, customerUid, pricePaidInr);
 
     console.log(`[verify-razorpay-payment][${timestamp}] Gift ${giftId} successfully verified and paid! Slug: '${updatedGift.slug}', Price: ₹${updatedGift.price_paid}`);
 

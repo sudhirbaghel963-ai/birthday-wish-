@@ -248,7 +248,15 @@
           </div>
         </form>
 
-        <div class="pt-2 border-t border-parchment-200 text-center">
+        <!-- Creator / Influencer Program Link (Separate, subtle section) -->
+        <div class="pt-3 border-t border-parchment-200/80 text-center space-y-2">
+          <p class="text-xs text-ink-500">
+            Are you a creator? 
+            <a href="./influencer.html" class="text-rose-600 hover:text-rose-700 font-semibold inline-flex items-center gap-1 hover:underline ml-0.5">
+              <span>Join our Influencer Program</span>
+              <span class="text-xs">→</span>
+            </a>
+          </p>
           <p class="text-[11px] text-ink-400">
             Protected by Supabase authentication &amp; Row-Level Security.
           </p>
@@ -643,6 +651,32 @@
       }
     }
 
+    // Helper: Determine appropriate destination after login (Influencers land on Influencer Portal)
+    async function determinePostLoginRedirect(userId, explicitRedirect) {
+      const explicitParam = urlParams.get('redirect');
+      if (explicitParam && explicitParam !== './create.html' && explicitParam !== './dashboard.html') {
+        return explicitRedirect;
+      }
+      
+      if (userId && supabase) {
+        try {
+          const { data: inf } = await supabase
+            .from('influencers')
+            .select('id')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+          if (inf && inf.id) {
+            return './influencer-dashboard.html';
+          }
+        } catch (e) {
+          console.warn('Influencer redirect check notice:', e);
+        }
+      }
+
+      return explicitRedirect || './create.html';
+    }
+
     // Retroactively claim any unclaimed local drafts created on this browser
     async function claimLocalDrafts(userId) {
       if (!userId || !supabase) return;
@@ -769,7 +803,8 @@
           if (data.session && data.session.user) {
             await claimLocalDrafts(data.session.user.id);
             showState(verifyingState);
-            window.location.replace(redirectTarget);
+            const target = await determinePostLoginRedirect(data.session.user.id, redirectTarget);
+            window.location.replace(target);
             return;
           }
 
@@ -792,7 +827,8 @@
             await ensureCustomerProfile(data.session.user.id, data.session.user.email || email, null);
             await claimLocalDrafts(data.session.user.id);
             showState(verifyingState);
-            window.location.replace(redirectTarget);
+            const target = await determinePostLoginRedirect(data.session.user.id, redirectTarget);
+            window.location.replace(target);
             return;
           }
         }
@@ -973,7 +1009,8 @@
         const currentRef = (urlParams.get('ref') || urlParams.get('r') || '').trim().toUpperCase() || null;
         await ensureCustomerProfile(session.user.id, session.user.email || '', currentRef);
         await claimLocalDrafts(session.user.id);
-        window.location.replace(redirectTarget);
+        const target = await determinePostLoginRedirect(session.user.id, redirectTarget);
+        window.location.replace(target);
       }
     }
 
@@ -989,7 +1026,8 @@
         const currentRef = (urlParams.get('ref') || urlParams.get('r') || '').trim().toUpperCase() || null;
         await ensureCustomerProfile(session.user.id, session.user.email || '', currentRef);
         await claimLocalDrafts(session.user.id);
-        window.location.replace(redirectTarget);
+        const target = await determinePostLoginRedirect(session.user.id, redirectTarget);
+        window.location.replace(target);
       }
     });
 

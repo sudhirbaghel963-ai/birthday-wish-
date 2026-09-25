@@ -101,6 +101,11 @@
           <span id="userEmailDisplay">Loading...</span>
         </div>
 
+        <a id="influencerPortalLink" href="./influencer-dashboard.html" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold shadow-2xs transition-colors" title="Go to Creator Portal">
+          <span>✨ Creator Portal</span>
+          <span>↗</span>
+        </a>
+
         <a href="./create.html" class="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-gradient-to-r from-velvet-900 to-rose-600 hover:from-velvet-800 hover:to-rose-500 text-white font-semibold text-xs sm:text-sm transition-all shadow-md shadow-rose-600/20 transform hover:-translate-y-0.5">
           <span>Create New Gift</span>
           <span class="text-gold-300">✦</span>
@@ -332,6 +337,21 @@
       currentSession = session;
       document.getElementById('userProfilePill')?.classList.remove('hidden');
       document.getElementById('userEmailDisplay').textContent = session.user.email;
+
+      // Check if user is an influencer
+      try {
+        const { data: inf } = await supabase
+          .from('influencers')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        if (inf && inf.id) {
+          document.getElementById('influencerPortalLink')?.classList.remove('hidden');
+        }
+      } catch (infErr) {
+        console.warn('Influencer status check warning:', infErr);
+      }
 
       // Claim local drafts if available
       await claimLocalDrafts(session.user.id);

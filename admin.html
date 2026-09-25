@@ -1591,15 +1591,34 @@
 
     async function deleteGift() {
       if (!currentSelectedGift || !supabase) return;
+      const gid = currentSelectedGift.id;
       
-      const confirmDelete = confirm(`Are you sure you want to permanently delete this gift (${currentSelectedGift.id})? This will also remove any associated photos and video clips from storage.`);
+      // Check if gift has associated commissions
+      let commWarning = '';
+      try {
+        const { data: comms } = await supabase
+          .from('commissions')
+          .select('id, amount, status')
+          .eq('gift_id', gid);
+        
+        if (comms && comms.length > 0) {
+          const totalComm = comms.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
+          commWarning = `\n\n⚠️ NOTICE: This gift has ${comms.length} associated affiliate commission record(s) totaling ₹${totalComm}. Deleting this gift will permanently cascade-delete the commission records.`;
+        }
+      } catch (e) {}
+
+      const confirmDelete = confirm(`Are you sure you want to permanently delete this gift (${currentSelectedGift.id})? This will remove the database record and any associated photos/video clips from storage.${commWarning}`);
       if (!confirmDelete) return;
+
+      const deleteBtn = document.getElementById('btnDeleteGift');
+      if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = 'Deleting...';
+      }
 
       try {
         // 1. Delete associated files from storage
-        const gid = currentSelectedGift.id;
         const buckets = ['gift-photos', 'gift-clips', 'gift-music'];
-        
         for (const b of buckets) {
           try {
             const { data: files } = await supabase.storage.from(b).list(gid);
@@ -1619,10 +1638,17 @@
           applyOrdersFilter();
           alert('Gift and associated storage assets deleted successfully.');
         } else {
+          console.error('Error deleting gift row:', error);
           alert('Error deleting gift row: ' + error.message);
         }
       } catch (err) {
+        console.error('Delete failed:', err);
         alert('Delete failed: ' + err.message);
+      } finally {
+        if (deleteBtn) {
+          deleteBtn.disabled = false;
+          deleteBtn.textContent = 'Delete Gift';
+        }
       }
     }
 

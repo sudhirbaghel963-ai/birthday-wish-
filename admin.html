@@ -128,6 +128,12 @@
             <span>Coupons</span>
             <span id="couponsCountBadge" class="ml-auto px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">0</span>
           </button>
+
+          <button type="button" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors" data-view="influencers">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span>Influencers</span>
+            <span id="influencersCountBadge" class="ml-auto px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">0</span>
+          </button>
         </nav>
       </div>
 
@@ -455,6 +461,81 @@
 
       </div>
 
+      <!-- ============================================================
+           VIEW 5: INFLUENCERS & AFFILIATE PROGRAM MANAGEMENT
+           ============================================================ -->
+      <div id="viewInfluencers" class="hidden p-6 space-y-6 max-w-7xl w-full mx-auto">
+        
+        <!-- Header & Stats -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg">Influencers &amp; Affiliate Partners</h3>
+            <p class="text-xs text-slate-500">Track creator referral links, verify 20% commissions, flag velocity anomalies, and manage payouts.</p>
+          </div>
+          <button type="button" id="btnRefreshInfluencers" class="px-3.5 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Refresh Data</span>
+          </button>
+        </div>
+
+        <!-- 4 KPI Summary Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Partners</div>
+            <div class="font-bold text-xl sm:text-2xl text-slate-900 mt-1" id="infTotalCount">0</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Active creator profiles</div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Link Clicks</div>
+            <div class="font-bold text-xl sm:text-2xl text-slate-900 mt-1" id="infTotalClicks">0</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Tracked affiliate visits</div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Referred Orders</div>
+            <div class="font-bold text-xl sm:text-2xl text-rose-600 mt-1" id="infTotalOrders">0</div>
+            <div class="text-[10px] text-slate-500 mt-0.5" id="infAvgConversion">0.0% conversion</div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Commissions (20%)</div>
+            <div class="font-bold text-xl sm:text-2xl text-emerald-600 mt-1" id="infTotalCommissions">₹0</div>
+            <div class="text-[10px] text-slate-500 mt-0.5" id="infCommissionBreakdown">₹0 Pending · ₹0 Approved · ₹0 Paid</div>
+          </div>
+        </div>
+
+        <!-- Influencers Directory Table -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider">All Influencer Partners</h4>
+            <span class="text-xs text-slate-500" id="influencersTableCount">0 partners</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider font-semibold">
+                  <th class="py-3 px-4">Influencer</th>
+                  <th class="py-3 px-4">Ref Code</th>
+                  <th class="py-3 px-4">Clicks</th>
+                  <th class="py-3 px-4">Orders</th>
+                  <th class="py-3 px-4">Revenue</th>
+                  <th class="py-3 px-4">Commissions (20%)</th>
+                  <th class="py-3 px-4">Payout Info</th>
+                  <th class="py-3 px-4 text-center">Status</th>
+                  <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="influencersTableBody" class="divide-y divide-slate-100 font-medium">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
     </main>
 
   </div>
@@ -618,6 +699,95 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       INFLUENCER COMMISSIONS DETAIL & PAYOUT MODAL
+       ============================================================ -->
+  <div id="influencerCommissionsModal" class="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-xs hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl my-auto flex flex-col max-h-[92vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Header -->
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/70 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-emerald-500" id="infModalStatusDot"></span>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-slate-900 text-base" id="infModalName">Influencer Name</h3>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-200 text-slate-800" id="infModalRefCode">CODE</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-0.5" id="infModalContact">Email &bull; Mobile</p>
+          </div>
+        </div>
+        <button type="button" id="btnCloseInfModal" class="p-2 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-800 text-lg font-bold">×</button>
+      </div>
+
+      <!-- Body -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Payout Info & Threshold Reminder Banner -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="text-slate-400 text-[10px] uppercase font-bold">Payout Method</span>
+            <div class="font-mono text-xs font-semibold text-slate-800" id="infModalPayoutDetails">UPI ID: ---</div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="text-slate-400 text-[10px] uppercase font-bold">Commission Totals</span>
+            <div class="text-xs font-semibold text-slate-800" id="infModalCommTotals">₹0 Pending &bull; ₹0 Approved &bull; ₹0 Paid</div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-0.5">
+            <span class="text-amber-800 text-[10px] uppercase font-bold">💡 Payout Policy</span>
+            <div class="text-[11px] text-amber-900 leading-snug">Minimum ₹500 payout threshold recommended before disbursement.</div>
+          </div>
+        </div>
+
+        <!-- Bulk Action Buttons -->
+        <div class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+          <div class="text-xs font-bold text-slate-700">Bulk Commission Management:</div>
+          <div class="flex items-center gap-2">
+            <button type="button" id="btnApproveAllPending" class="px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition-colors cursor-pointer">
+              Approve All Pending
+            </button>
+            <button type="button" id="btnMarkAllApprovedPaid" class="px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition-colors cursor-pointer">
+              Mark All Approved as Paid
+            </button>
+          </div>
+        </div>
+
+        <!-- Commissions Table -->
+        <div class="rounded-2xl border border-slate-200 overflow-hidden">
+          <div class="p-3 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-800 uppercase tracking-wider">
+            Referred Orders &amp; Commissions Log
+          </div>
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-50/50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+                <th class="py-2.5 px-4">Date</th>
+                <th class="py-2.5 px-4">Gift ID / Slug</th>
+                <th class="py-2.5 px-4">Price Paid</th>
+                <th class="py-2.5 px-4">Commission (20%)</th>
+                <th class="py-2.5 px-4">Status &amp; Flags</th>
+                <th class="py-2.5 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="infModalCommissionsBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-end">
+        <button type="button" id="btnCloseInfModal2" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold cursor-pointer">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
 
   <!-- ============================================================
        4. CLIENT SCRIPT CONTROLLER (Vanilla JS + Supabase Integration)
@@ -676,6 +846,9 @@
     let allGifts = [];
     let allExperiences = [];
     let allCoupons = [];
+    let allInfluencers = [];
+    let allCommissions = [];
+    let currentModalInfluencerId = null;
     let currentFilteredGifts = [];
     let currentSelectedGift = null;
     let currentPage = 1;
@@ -703,7 +876,8 @@
         dashboard: 'Dashboard Overview',
         orders: 'Orders & Gifts Directory',
         experiences: 'Catalog & Experience Pricing',
-        coupons: 'Coupons & Promo Discounts'
+        coupons: 'Coupons & Promo Discounts',
+        influencers: 'Influencers & Affiliate Partners'
       };
 
       document.getElementById('viewTitle').textContent = titles[viewName] || 'Admin Console';
@@ -711,6 +885,7 @@
       document.getElementById('viewOrders').classList.toggle('hidden', viewName !== 'orders');
       document.getElementById('viewExperiences').classList.toggle('hidden', viewName !== 'experiences');
       document.getElementById('viewCoupons').classList.toggle('hidden', viewName !== 'coupons');
+      document.getElementById('viewInfluencers').classList.toggle('hidden', viewName !== 'influencers');
     };
 
     // 4. Admin Auth Handler
@@ -814,10 +989,35 @@
           console.warn('Error fetching coupons:', couponsError);
         }
 
+        // Fetch influencers
+        const { data: infData, error: infError } = await supabase
+          .from('influencers')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (infData && !infError) {
+          allInfluencers = infData;
+        } else if (infError) {
+          console.warn('Error fetching influencers:', infError);
+        }
+
+        // Fetch commissions with associated gifts
+        const { data: commData, error: commError } = await supabase
+          .from('commissions')
+          .select('*, gifts(id, slug, price_paid, created_at, status, refunded)')
+          .order('created_at', { ascending: false });
+
+        if (commData && !commError) {
+          allCommissions = commData;
+        } else if (commError) {
+          console.warn('Error fetching commissions:', commError);
+        }
+
         renderDashboard();
         applyOrdersFilter();
         renderExperiencesAdmin();
         renderCouponsAdmin();
+        renderInfluencersAdmin();
       } catch (err) {
         console.error('Data fetch error:', err);
       }
@@ -1361,6 +1561,26 @@
           currentSelectedGift.refunded = nextVal;
           const target = allGifts.find(g => g.id === currentSelectedGift.id);
           if (target) target.refunded = nextVal;
+
+          // Reversal / Restoration of associated influencer commissions
+          try {
+            const nextCommStatus = nextVal ? 'reversed' : 'pending';
+            await supabase
+              .from('commissions')
+              .update({ status: nextCommStatus })
+              .eq('gift_id', currentSelectedGift.id);
+
+            // Update local state
+            allCommissions.forEach(c => {
+              if (c.gift_id === currentSelectedGift.id) {
+                c.status = nextCommStatus;
+              }
+            });
+            renderInfluencersAdmin();
+          } catch (commErr) {
+            console.warn('Could not update commission on refund:', commErr);
+          }
+
           openOrderDetail(currentSelectedGift);
           applyOrdersFilter();
         }
@@ -1827,7 +2047,336 @@
       }
 
       submitBtn.disabled = false;
+      submitBtn.disabled = false;
       submitBtn.textContent = '+ Create Coupon';
+    }
+
+    // 14. Render Influencers & Affiliate Program Management
+    function renderInfluencersAdmin() {
+      const badge = document.getElementById('influencersCountBadge');
+      const countEl = document.getElementById('influencersTableCount');
+      const tbody = document.getElementById('influencersTableBody');
+
+      if (badge) badge.textContent = allInfluencers.length;
+      if (countEl) countEl.textContent = `${allInfluencers.length} partners`;
+
+      // Summary KPIs
+      const totalClicks = allInfluencers.reduce((s, i) => s + (i.clicks || 0), 0);
+      const activeCommissions = allCommissions.filter(c => c.status !== 'reversed');
+      const totalOrders = activeCommissions.length;
+      const totalCommissions = activeCommissions.reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
+
+      const pending = activeCommissions.filter(c => c.status === 'pending').reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
+      const approved = activeCommissions.filter(c => c.status === 'approved').reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
+      const paid = activeCommissions.filter(c => c.status === 'paid').reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
+
+      const elTotalCount = document.getElementById('infTotalCount');
+      const elTotalClicks = document.getElementById('infTotalClicks');
+      const elTotalOrders = document.getElementById('infTotalOrders');
+      const elAvgConversion = document.getElementById('infAvgConversion');
+      const elTotalCommissions = document.getElementById('infTotalCommissions');
+      const elCommissionBreakdown = document.getElementById('infCommissionBreakdown');
+
+      if (elTotalCount) elTotalCount.textContent = allInfluencers.length;
+      if (elTotalClicks) elTotalClicks.textContent = totalClicks.toLocaleString();
+      if (elTotalOrders) elTotalOrders.textContent = totalOrders.toLocaleString();
+      if (elAvgConversion) elAvgConversion.textContent = totalClicks > 0 ? `${((totalOrders / totalClicks) * 100).toFixed(1)}% conversion` : '0.0% conversion';
+      if (elTotalCommissions) elTotalCommissions.textContent = `₹${Math.round(totalCommissions).toLocaleString()}`;
+      if (elCommissionBreakdown) elCommissionBreakdown.textContent = `₹${Math.round(pending).toLocaleString()} Pending · ₹${Math.round(approved).toLocaleString()} Approved · ₹${Math.round(paid).toLocaleString()} Paid`;
+
+      if (!tbody) return;
+
+      if (allInfluencers.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-12 text-center text-slate-400">
+              <div class="text-3xl mb-1">🤝</div>
+              <div class="font-bold text-slate-700 text-sm">No affiliate partners registered yet</div>
+              <div class="text-xs text-slate-500">Influencers can sign up at /influencer.html to generate unique referral links.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = allInfluencers.map(inf => {
+        const infComms = allCommissions.filter(c => c.influencer_id === inf.id && c.status !== 'reversed');
+        const orderCount = infComms.length;
+        const totalSales = infComms.reduce((s, c) => s + (parseFloat(c.gifts?.price_paid) || (parseFloat(c.amount) * 5) || 0), 0);
+        const totalComm = infComms.reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
+        const susComms = allCommissions.filter(c => c.influencer_id === inf.id && c.is_suspicious && c.status === 'pending');
+
+        const payout = inf.payout_details || {};
+        let payoutDisplay = 'Not configured';
+        if (payout.type === 'upi' && payout.upi_id) {
+          payoutDisplay = `UPI: <span class="font-mono">${payout.upi_id}</span>`;
+        } else if (payout.type === 'bank' && payout.account_number) {
+          const last4 = String(payout.account_number).slice(-4);
+          payoutDisplay = `Bank: <span class="font-mono">...${last4}</span> (${payout.ifsc || 'IFSC'})`;
+        }
+
+        const isActive = inf.status === 'active';
+        const statusBadge = isActive
+          ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">Active</span>`
+          : `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-100 text-rose-800">Suspended</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50/70 transition-colors">
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-slate-900">${inf.name}</div>
+              <div class="text-[11px] text-slate-500 font-mono">${inf.email}</div>
+            </td>
+            <td class="py-3.5 px-4 font-mono font-bold text-rose-600">
+              <span class="px-2 py-1 rounded bg-rose-50 border border-rose-200">${inf.referral_code}</span>
+            </td>
+            <td class="py-3.5 px-4 font-bold text-slate-700">${(inf.clicks || 0).toLocaleString()}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-900">${orderCount}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-700">₹${Math.round(totalSales).toLocaleString()}</td>
+            <td class="py-3.5 px-4 font-bold text-emerald-600">₹${Math.round(totalComm).toLocaleString()}</td>
+            <td class="py-3.5 px-4 text-[11px] text-slate-600 max-w-[150px] truncate" title="${JSON.stringify(payout)}">${payoutDisplay}</td>
+            <td class="py-3.5 px-4 text-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer toggle-influencer-status" data-id="${inf.id}" ${isActive ? 'checked' : ''} />
+                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            </td>
+            <td class="py-3.5 px-4 text-right">
+              <button type="button" class="btn-manage-commissions inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors cursor-pointer" data-id="${inf.id}">
+                ${susComms.length > 0 ? `<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>` : ''}
+                <span>Commissions &rarr;</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Wire Status Toggle Listeners
+      tbody.querySelectorAll('.toggle-influencer-status').forEach(input => {
+        input.addEventListener('change', async (e) => {
+          const infId = e.target.getAttribute('data-id');
+          const isNowActive = e.target.checked;
+          const nextStatus = isNowActive ? 'active' : 'suspended';
+
+          if (supabase) {
+            try {
+              const { error } = await supabase
+                .from('influencers')
+                .update({ status: nextStatus, updated_at: new Date().toISOString() })
+                .eq('id', infId);
+
+              if (!error) {
+                const target = allInfluencers.find(x => x.id === infId);
+                if (target) target.status = nextStatus;
+                renderInfluencersAdmin();
+              } else {
+                alert(`Could not update influencer status: ${error.message}`);
+                e.target.checked = !isNowActive;
+              }
+            } catch (err) {
+              alert(`Error: ${err.message}`);
+              e.target.checked = !isNowActive;
+            }
+          }
+        });
+      });
+
+      // Wire Manage Commissions Button Listeners
+      tbody.querySelectorAll('.btn-manage-commissions').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const btnEl = e.target.closest('.btn-manage-commissions');
+          const infId = btnEl.getAttribute('data-id');
+          openInfluencerCommissionsModal(infId);
+        });
+      });
+    }
+
+    // 15. Influencer Commissions Modal Handlers
+    function openInfluencerCommissionsModal(infId) {
+      currentModalInfluencerId = infId;
+      const inf = allInfluencers.find(x => x.id === infId);
+      if (!inf) return;
+
+      const modal = document.getElementById('influencerCommissionsModal');
+      if (!modal) return;
+
+      document.getElementById('infModalName').textContent = inf.name;
+      document.getElementById('infModalRefCode').textContent = inf.referral_code;
+      document.getElementById('infModalContact').textContent = `${inf.email} • ${inf.mobile || 'No phone'} • ${inf.social_handle || 'No handle'}`;
+
+      const statusDot = document.getElementById('infModalStatusDot');
+      if (statusDot) {
+        statusDot.className = inf.status === 'active' ? 'w-3 h-3 rounded-full bg-emerald-500' : 'w-3 h-3 rounded-full bg-rose-500';
+      }
+
+      // Payout summary
+      const p = inf.payout_details || {};
+      let pText = 'Not configured';
+      if (p.type === 'upi') {
+        pText = `UPI ID: ${p.upi_id || 'None'}`;
+      } else if (p.type === 'bank') {
+        pText = `Bank: ${p.bank_name || ''} | Acc: ${p.account_number || ''} | IFSC: ${p.ifsc || ''} | Holder: ${p.holder || ''}`;
+      }
+      document.getElementById('infModalPayoutDetails').textContent = pText;
+
+      renderInfModalCommissionsTable();
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function renderInfModalCommissionsTable() {
+      if (!currentModalInfluencerId) return;
+
+      const myComms = allCommissions.filter(c => c.influencer_id === currentModalInfluencerId);
+      const active = myComms.filter(c => c.status !== 'reversed');
+
+      const pending = active.filter(c => c.status === 'pending').reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
+      const approved = active.filter(c => c.status === 'approved').reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
+      const paid = active.filter(c => c.status === 'paid').reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
+
+      document.getElementById('infModalCommTotals').textContent = `₹${Math.round(pending).toLocaleString()} Pending • ₹${Math.round(approved).toLocaleString()} Approved • ₹${Math.round(paid).toLocaleString()} Paid`;
+
+      const tbody = document.getElementById('infModalCommissionsBody');
+      if (!tbody) return;
+
+      if (myComms.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">No orders attributed to this influencer yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = myComms.map(c => {
+        const dateStr = new Date(c.created_at).toLocaleDateString('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const shortId = c.gift_id ? `#${c.gift_id.slice(0, 8)}` : `#${c.id.slice(0, 8)}`;
+        const pricePaid = c.gifts?.price_paid ? `₹${c.gifts.price_paid}` : `₹${Math.round(c.amount * 5)}`;
+        const commAmt = `₹${c.amount}`;
+
+        let statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-100 text-amber-800">Pending</span>`;
+        if (c.status === 'approved') statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 text-blue-800">Approved</span>`;
+        else if (c.status === 'paid') statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">Paid</span>`;
+        else if (c.status === 'reversed') statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-100 text-rose-800">Reversed</span>`;
+
+        const suspiciousAlert = c.is_suspicious ? `
+          <div class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-bold" title="${c.suspicious_reason || 'High velocity'}">
+            <span>⚠️</span>
+            <span>${c.suspicious_reason || 'Flagged Velocity'}</span>
+          </div>
+        ` : '';
+
+        return `
+          <tr class="hover:bg-slate-50/70 transition-colors">
+            <td class="py-3 px-4 text-slate-700">${dateStr}</td>
+            <td class="py-3 px-4 font-mono text-[11px] text-slate-600">${shortId}</td>
+            <td class="py-3 px-4 font-semibold text-slate-800">${pricePaid}</td>
+            <td class="py-3 px-4 font-bold text-emerald-600">${commAmt}</td>
+            <td class="py-3 px-4">
+              <div>${statusBadge}</div>
+              ${suspiciousAlert}
+            </td>
+            <td class="py-3 px-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                ${c.status === 'pending' ? `
+                  <button type="button" class="btn-comm-action px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold cursor-pointer" data-id="${c.id}" data-action="approved">Approve</button>
+                  <button type="button" class="btn-comm-action px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold cursor-pointer" data-id="${c.id}" data-action="reversed">Reverse</button>
+                ` : ''}
+                ${c.status === 'approved' ? `
+                  <button type="button" class="btn-comm-action px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold cursor-pointer" data-id="${c.id}" data-action="paid">Mark Paid</button>
+                  <button type="button" class="btn-comm-action px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold cursor-pointer" data-id="${c.id}" data-action="reversed">Reverse</button>
+                ` : ''}
+                ${c.status === 'paid' ? `
+                  <button type="button" class="btn-comm-action px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold cursor-pointer" data-id="${c.id}" data-action="reversed">Reverse</button>
+                ` : ''}
+                ${c.status === 'reversed' ? `
+                  <button type="button" class="btn-comm-action px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold cursor-pointer" data-id="${c.id}" data-action="pending">Restore</button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Wire Individual Action Buttons
+      tbody.querySelectorAll('.btn-comm-action').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const commId = e.target.getAttribute('data-id');
+          const newStatus = e.target.getAttribute('data-action');
+          await updateSingleCommissionStatus(commId, newStatus);
+        });
+      });
+    }
+
+    async function updateSingleCommissionStatus(commId, newStatus) {
+      if (!supabase) return;
+
+      const updateData = { status: newStatus };
+      if (newStatus === 'approved') updateData.approved_at = new Date().toISOString();
+      if (newStatus === 'paid') updateData.paid_at = new Date().toISOString();
+
+      try {
+        const { error } = await supabase
+          .from('commissions')
+          .update(updateData)
+          .eq('id', commId);
+
+        if (!error) {
+          const target = allCommissions.find(c => c.id === commId);
+          if (target) {
+            target.status = newStatus;
+            if (newStatus === 'approved') target.approved_at = updateData.approved_at;
+            if (newStatus === 'paid') target.paid_at = updateData.paid_at;
+          }
+          renderInfModalCommissionsTable();
+          renderInfluencersAdmin();
+        } else {
+          alert(`Could not update commission: ${error.message}`);
+        }
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function bulkUpdateCommissionsForCurrentInfluencer(fromStatus, toStatus) {
+      if (!currentModalInfluencerId || !supabase) return;
+
+      const targets = allCommissions.filter(c => c.influencer_id === currentModalInfluencerId && c.status === fromStatus);
+      if (targets.length === 0) {
+        alert(`No commissions with status "${fromStatus}" found for this influencer.`);
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to change ${targets.length} commissions from "${fromStatus}" to "${toStatus}"?`)) return;
+
+      const targetIds = targets.map(t => t.id);
+      const updateData = { status: toStatus };
+      if (toStatus === 'approved') updateData.approved_at = new Date().toISOString();
+      if (toStatus === 'paid') updateData.paid_at = new Date().toISOString();
+
+      try {
+        const { error } = await supabase
+          .from('commissions')
+          .update(updateData)
+          .in('id', targetIds);
+
+        if (!error) {
+          targets.forEach(t => {
+            t.status = toStatus;
+            if (toStatus === 'approved') t.approved_at = updateData.approved_at;
+            if (toStatus === 'paid') t.paid_at = updateData.paid_at;
+          });
+          renderInfModalCommissionsTable();
+          renderInfluencersAdmin();
+          alert(`✓ Successfully updated ${targets.length} commissions to "${toStatus}".`);
+        } else {
+          alert(`Bulk update failed: ${error.message}`);
+        }
+      } catch (err) {
+        alert(`Bulk update error: ${err.message}`);
+      }
     }
 
     // 14. Main App Render & Event Listeners
@@ -1895,8 +2444,28 @@
     document.getElementById('orderDetailModal')?.addEventListener('click', (e) => {
       if (e.target.id === 'orderDetailModal') closeModal();
     });
+
+    // Influencer Modal Handlers
+    const closeInfModal = () => {
+      const modal = document.getElementById('influencerCommissionsModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+      currentModalInfluencerId = null;
+    };
+
+    document.getElementById('btnCloseInfModal')?.addEventListener('click', closeInfModal);
+    document.getElementById('btnCloseInfModal2')?.addEventListener('click', closeInfModal);
+    document.getElementById('influencerCommissionsModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'influencerCommissionsModal') closeInfModal();
+    });
+
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
+      if (e.key === 'Escape') {
+        closeModal();
+        closeInfModal();
+      }
     });
 
     // Action Handlers
@@ -1912,6 +2481,16 @@
         setTimeout(() => { btn.textContent = 'Copy Link'; }, 1500);
       }
     });
+
+    document.getElementById('btnApproveAllPending')?.addEventListener('click', () => {
+      bulkUpdateCommissionsForCurrentInfluencer('pending', 'approved');
+    });
+
+    document.getElementById('btnMarkAllApprovedPaid')?.addEventListener('click', () => {
+      bulkUpdateCommissionsForCurrentInfluencer('approved', 'paid');
+    });
+
+    document.getElementById('btnRefreshInfluencers')?.addEventListener('click', fetchPlatformData);
 
     // Boot
     renderApp();

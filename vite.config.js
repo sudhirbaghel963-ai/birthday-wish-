@@ -29,7 +29,7 @@ export default defineConfig({
             }
 
             // Handle clean URLs: /admin -> /admin.html, /login -> /login.html, etc.
-            const cleanRoutes = ['admin', 'login', 'dashboard', 'editor', 'create', 'gift', 'preview', 'terms', 'privacy'];
+            const cleanRoutes = ['admin', 'login', 'dashboard', 'editor', 'create', 'gift', 'preview', 'terms', 'privacy', 'influencer', 'influencer-dashboard'];
             const match = pathname.replace(/^\//, '').replace(/\/$/, '');
             if (cleanRoutes.includes(match)) {
               req.url = `/${match}.html${query}`;
@@ -54,6 +54,8 @@ export default defineConfig({
         admin: resolve(__dirname, 'admin.html'),
         login: resolve(__dirname, 'login.html'),
         dashboard: resolve(__dirname, 'dashboard.html'),
+        influencer: resolve(__dirname, 'influencer.html'),
+        'influencer-dashboard': resolve(__dirname, 'influencer-dashboard.html'),
       },
     },
   },

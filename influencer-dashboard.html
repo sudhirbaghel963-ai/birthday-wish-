@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en" class="h-full bg-parchment-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Influencer Dashboard — Velvet &amp; Keepsake</title>
+  <meta name="description" content="View your referral performance, clicks, sales, and commission payouts in real time." />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+
+  <!-- Google Fonts: Cormorant Garamond, Fraunces, Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            velvet: {
+              950: '#17040d',
+              900: '#2d0a1a',
+              850: '#3d0e23',
+              800: '#4a122c',
+              700: '#6e1b42',
+              600: '#8c2254',
+            },
+            rose: {
+              600: '#c42858',
+              500: '#d4235c',
+              400: '#e84d7a',
+              300: '#f78cae',
+              200: '#fcc5d6',
+              100: '#ffe4ec',
+              50: '#fff5f8',
+            },
+            gold: {
+              600: '#b87c14',
+              500: '#d99b26',
+              400: '#e8a23d',
+              300: '#f5b838',
+              200: '#ffdf85',
+              100: '#fff2d6',
+              50: '#fffbf0',
+            },
+            parchment: {
+              50: '#fffdfa',
+              100: '#fcf7f0',
+              200: '#f7ede0',
+              300: '#ebd9c5',
+              400: '#dec2a7',
+            },
+            ink: {
+              900: '#211317',
+              800: '#38222a',
+              700: '#4d3840',
+              600: '#634b54',
+              500: '#7d636c',
+              400: '#9e858e',
+              300: '#c2adb5',
+            }
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'serif'],
+            elegant: ['Cormorant Garamond', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-full flex flex-col justify-between text-ink-900 font-sans antialiased selection:bg-rose-100 selection:text-rose-500">
+
+  <!-- ============================================================
+       TOP HEADER / NAVBAR
+       ============================================================ -->
+  <header class="sticky top-0 z-40 w-full bg-parchment-50/95 backdrop-blur-md border-b border-parchment-300/80 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="./index.html" class="flex items-center gap-3 group focus:outline-none">
+        <img src="./logo.png" alt="Valvet &amp; Keepsake Logo" class="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover shadow-md border border-gold-400/30 group-hover:scale-105 transition-transform" />
+        <div class="flex flex-col">
+          <span class="font-serif text-xl font-bold tracking-tight text-ink-900 group-hover:text-rose-600 transition-colors leading-none">
+            Valvet &amp; Keepsake
+          </span>
+          <span class="text-[10px] font-semibold tracking-widest text-ink-500 uppercase mt-1">Creator &amp; Affiliate Portal</span>
+        </div>
+      </a>
+
+      <!-- Right User Controls -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        <div id="influencerProfilePill" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-parchment-300 text-xs font-medium text-ink-700 shadow-2xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="influencerNameLabel">Loading...</span>
+        </div>
+
+        <button type="button" id="btnEditPayout" class="hidden sm:inline-flex items-center text-xs font-semibold text-ink-700 hover:text-rose-600 px-3 py-1.5 rounded-full border border-parchment-300 bg-white hover:bg-parchment-100 transition-colors shadow-2xs">
+          ⚙️ Payout Details
+        </button>
+
+        <button type="button" id="btnInfluencerLogout" class="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-parchment-300 bg-white hover:bg-parchment-100 transition-all text-ink-900 shadow-2xs hover:shadow-xs">
+          Sign Out
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MAIN DASHBOARD CONTENT
+       ============================================================ -->
+  <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 w-full space-y-8">
+    
+    <!-- Status & Welcome Banner -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-parchment-300">
+      <div>
+        <h1 class="font-serif text-2xl sm:text-3xl font-bold text-ink-900">
+          Welcome, <span id="headingInfluencerName">Partner</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-ink-600 mt-1">
+          Track your real-time clicks, converted orders, and 20% commission payouts.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-50 border border-gold-200 text-gold-700 text-xs font-semibold">
+          <span>✨</span>
+          <span>20% Revenue Share Active</span>
+        </span>
+        <span id="influencerStatusBadge" class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold uppercase tracking-wider">
+          Active
+        </span>
+      </div>
+    </div>
+
+    <!-- HERO REFERRAL LINK BOX -->
+    <div class="relative bg-gradient-to-br from-velvet-950 via-velvet-900 to-rose-700 text-white rounded-3xl p-6 sm:p-8 shadow-xl overflow-hidden">
+      <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-gold-400/15 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="relative z-10 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="text-xs uppercase tracking-widest text-gold-300 font-bold">Your Unique Referral Link</div>
+            <p class="text-xs text-white/80 mt-0.5">Share this link anywhere — all purchases made within 30 days earn you 20%.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-white/70">Referral Code:</span>
+            <span id="displayReferralCode" class="px-3 py-1 rounded-lg bg-white/20 border border-white/30 text-white font-mono font-bold text-sm tracking-wider">
+              ...
+            </span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-stretch gap-2.5 pt-2">
+          <div class="flex-1 bg-white/10 border border-white/20 rounded-2xl px-4 py-3 text-sm text-white font-mono truncate flex items-center select-all" id="fullReferralLinkInput">
+            https://velvetandkeepsake.com/?ref=...
+          </div>
+          
+          <button type="button" id="btnCopyReferralLink" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-300 hover:to-gold-400 text-velvet-950 font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span id="copyBtnText">Copy Link</span>
+          </button>
+        </div>
+
+        <!-- Quick Social Share Links -->
+        <div class="flex flex-wrap items-center gap-2 pt-2 text-xs">
+          <span class="text-white/60">Share instantly:</span>
+          <button type="button" id="shareWhatsApp" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors">
+            WhatsApp
+          </button>
+          <button type="button" id="shareTelegram" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors">
+            Telegram
+          </button>
+          <button type="button" id="shareTwitter" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors">
+            X / Twitter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS KPI METRICS GRID -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <!-- Metric 1: Clicks -->
+      <div class="bg-white rounded-3xl p-5 sm:p-6 border border-parchment-300/80 shadow-sm space-y-1">
+        <div class="text-[11px] font-bold text-ink-500 uppercase tracking-wider">Total Link Clicks</div>
+        <div class="font-serif text-2xl sm:text-4xl font-bold text-ink-900" id="metricClicks">0</div>
+        <div class="text-[11px] text-ink-400">Unique visitor sessions</div>
+      </div>
+
+      <!-- Metric 2: Orders -->
+      <div class="bg-white rounded-3xl p-5 sm:p-6 border border-parchment-300/80 shadow-sm space-y-1">
+        <div class="text-[11px] font-bold text-ink-500 uppercase tracking-wider">Orders Generated</div>
+        <div class="font-serif text-2xl sm:text-4xl font-bold text-rose-600" id="metricOrders">0</div>
+        <div class="text-[11px] text-ink-400" id="metricConversion">0.0% conversion rate</div>
+      </div>
+
+      <!-- Metric 3: Total Sales -->
+      <div class="bg-white rounded-3xl p-5 sm:p-6 border border-parchment-300/80 shadow-sm space-y-1">
+        <div class="text-[11px] font-bold text-ink-500 uppercase tracking-wider">Total Revenue Generated</div>
+        <div class="font-serif text-2xl sm:text-4xl font-bold text-ink-900" id="metricSales">₹0</div>
+        <div class="text-[11px] text-ink-400">Net customer payments</div>
+      </div>
+
+      <!-- Metric 4: Total Commission -->
+      <div class="bg-white rounded-3xl p-5 sm:p-6 border border-parchment-300/80 shadow-sm space-y-1">
+        <div class="text-[11px] font-bold text-ink-500 uppercase tracking-wider">Total Commission (20%)</div>
+        <div class="font-serif text-2xl sm:text-4xl font-bold text-emerald-600" id="metricTotalComm">₹0</div>
+        <div class="text-[11px] text-ink-400">Across all orders</div>
+      </div>
+    </div>
+
+    <!-- COMMISSION STATUS BREAKDOWN CARDS -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-parchment-300/80 shadow-sm space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="font-serif font-bold text-lg text-ink-900">Payout Status Breakdown</h2>
+          <p class="text-xs text-ink-500">Commissions progress from pending to approved before payout disbursement.</p>
+        </div>
+        <div class="text-xs font-medium text-ink-500 bg-parchment-100 px-3 py-1.5 rounded-full border border-parchment-200">
+          💡 Minimum payout threshold: <span class="font-bold text-ink-900">₹500</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Pending -->
+        <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-amber-800">Pending Review</div>
+            <div class="font-serif text-xl sm:text-2xl font-bold text-amber-900 mt-0.5" id="commPending">₹0</div>
+            <div class="text-[10px] text-amber-700">Recent orders</div>
+          </div>
+          <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">
+            ⏳
+          </div>
+        </div>
+
+        <!-- Approved -->
+        <div class="p-4 rounded-2xl bg-blue-50/60 border border-blue-200/80 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-blue-800">Approved (Ready)</div>
+            <div class="font-serif text-xl sm:text-2xl font-bold text-blue-900 mt-0.5" id="commApproved">₹0</div>
+            <div class="text-[10px] text-blue-700">Queued for next payout</div>
+          </div>
+          <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
+            ✓
+          </div>
+        </div>
+
+        <!-- Paid Out -->
+        <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Paid Out</div>
+            <div class="font-serif text-xl sm:text-2xl font-bold text-emerald-900 mt-0.5" id="commPaid">₹0</div>
+            <div class="text-[10px] text-emerald-700">Disbursed to your account</div>
+          </div>
+          <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+            💰
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REFERRAL ORDERS TABLE -->
+    <div class="bg-white rounded-3xl border border-parchment-300/80 shadow-sm overflow-hidden">
+      <div class="p-6 border-b border-parchment-200 flex items-center justify-between">
+        <div>
+          <h2 class="font-serif font-bold text-lg text-ink-900">Attributed Orders &amp; Commissions</h2>
+          <p class="text-xs text-ink-500 mt-0.5">List of customer orders placed through your referral link.</p>
+        </div>
+        <button type="button" id="btnRefreshOrders" class="p-2 rounded-xl text-ink-600 hover:text-ink-900 hover:bg-parchment-100 transition-colors" title="Refresh">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-parchment-50 border-b border-parchment-200 text-ink-500 font-bold uppercase tracking-wider">
+              <th class="py-3 px-4 sm:px-6">Date</th>
+              <th class="py-3 px-4">Order ID</th>
+              <th class="py-3 px-4">Customer Paid</th>
+              <th class="py-3 px-4">Commission (20%)</th>
+              <th class="py-3 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody" class="divide-y divide-parchment-200">
+            <tr>
+              <td colspan="5" class="py-8 text-center text-ink-400">
+                <span class="inline-block w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mr-2"></span>
+                Loading referral orders...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- PAYOUT MODAL DRAWER -->
+  <div id="payoutModal" class="hidden fixed inset-0 z-50 bg-ink-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-parchment-300 p-6 sm:p-8 space-y-5">
+      <div class="flex items-center justify-between border-b border-parchment-200 pb-3">
+        <h3 class="font-serif font-bold text-lg text-ink-900">Update Payout Details</h3>
+        <button type="button" id="btnClosePayoutModal" class="text-ink-400 hover:text-ink-900 text-xl font-bold">×</button>
+      </div>
+
+      <form id="payoutUpdateForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-ink-800 uppercase tracking-wider mb-2">Payout Method</label>
+          <div class="flex gap-4">
+            <label class="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer">
+              <input type="radio" name="modalPayoutType" value="upi" checked />
+              <span>UPI ID</span>
+            </label>
+            <label class="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer">
+              <input type="radio" name="modalPayoutType" value="bank" />
+              <span>Bank Account</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="modalUpiGroup">
+          <label for="modalUpi" class="block text-xs font-semibold text-ink-700 mb-1">UPI ID</label>
+          <input type="text" id="modalUpi" placeholder="e.g. name@okhdfcbank" class="w-full px-3.5 py-2.5 rounded-xl border border-parchment-300 text-sm outline-none focus:border-rose-500" />
+        </div>
+
+        <div id="modalBankGroup" class="hidden space-y-3">
+          <div>
+            <label for="modalBankHolder" class="block text-xs font-semibold text-ink-700 mb-1">Account Holder Name</label>
+            <input type="text" id="modalBankHolder" placeholder="Full Name on Account" class="w-full px-3.5 py-2.5 rounded-xl border border-parchment-300 text-sm outline-none focus:border-rose-500" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="modalBankAcc" class="block text-xs font-semibold text-ink-700 mb-1">Account Number</label>
+              <input type="text" id="modalBankAcc" class="w-full px-3.5 py-2.5 rounded-xl border border-parchment-300 text-sm outline-none focus:border-rose-500" />
+            </div>
+            <div>
+              <label for="modalBankIfsc" class="block text-xs font-semibold text-ink-700 mb-1">IFSC Code</label>
+              <input type="text" id="modalBankIfsc" class="w-full px-3.5 py-2.5 rounded-xl border border-parchment-300 text-sm outline-none focus:border-rose-500 uppercase" />
+            </div>
+          </div>
+          <div>
+            <label for="modalBankName" class="block text-xs font-semibold text-ink-700 mb-1">Bank Name</label>
+            <input type="text" id="modalBankName" placeholder="e.g. HDFC Bank" class="w-full px-3.5 py-2.5 rounded-xl border border-parchment-300 text-sm outline-none focus:border-rose-500" />
+          </div>
+        </div>
+
+        <div id="payoutUpdateAlert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" id="btnCancelPayout" class="px-4 py-2 rounded-xl text-xs font-semibold text-ink-600 hover:bg-parchment-100">Cancel</button>
+          <button type="submit" id="btnSavePayout" class="px-5 py-2 rounded-xl bg-gradient-to-r from-velvet-900 to-rose-600 text-white text-xs font-bold shadow-xs">Save Details</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-parchment-300/70 bg-parchment-100 py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-500">
+      <div class="flex items-center gap-2">
+        <span class="font-serif font-bold text-ink-900">Velvet &amp; Keepsake</span>
+        <span>·</span>
+        <span>Affiliate Portal</span>
+      </div>
+      <div class="flex items-center gap-6 text-ink-600">
+        <a href="./terms.html" class="hover:text-rose-600 transition-colors">Terms of Service</a>
+        <a href="./privacy.html" class="hover:text-rose-600 transition-colors">Privacy Policy</a>
+        <a href="./index.html#faq" class="hover:text-rose-600 transition-colors">Help &amp; FAQ</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dashboard Script -->
+  <script type="module">
+    import { supabase } from './supabaseClient.js';
+
+    let currentInfluencer = null;
+    let currentCommissions = [];
+
+    // Authenticate & Load Influencer Profile
+    async function initInfluencerPortal() {
+      if (!supabase) {
+        window.location.replace('./influencer.html');
+        return;
+      }
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session || !session.user) {
+          window.location.replace('./influencer.html');
+          return;
+        }
+
+        // Fetch Influencer record
+        const { data: influencer, error: infErr } = await supabase
+          .from('influencers')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        if (infErr || !influencer) {
+          console.warn('User is not an influencer:', infErr);
+          window.location.replace('./influencer.html');
+          return;
+        }
+
+        currentInfluencer = influencer;
+        renderInfluencerDetails();
+        await loadCommissions();
+
+      } catch (err) {
+        console.error('Portal init failed:', err);
+      }
+    }
+
+    function renderInfluencerDetails() {
+      const name = currentInfluencer.name || 'Partner';
+      document.getElementById('influencerNameLabel').textContent = name;
+      document.getElementById('headingInfluencerName').textContent = name;
+      document.getElementById('displayReferralCode').textContent = currentInfluencer.referral_code;
+
+      const origin = window.location.origin;
+      const refUrl = `${origin}/?ref=${encodeURIComponent(currentInfluencer.referral_code)}`;
+      document.getElementById('fullReferralLinkInput').textContent = refUrl;
+
+      // Status
+      const statusBadge = document.getElementById('influencerStatusBadge');
+      if (currentInfluencer.status === 'suspended') {
+        statusBadge.textContent = 'Suspended';
+        statusBadge.className = 'inline-flex items-center px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold uppercase tracking-wider';
+      } else {
+        statusBadge.textContent = 'Active';
+        statusBadge.className = 'inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold uppercase tracking-wider';
+      }
+
+      // Clicks metric
+      document.getElementById('metricClicks').textContent = (currentInfluencer.clicks || 0).toLocaleString();
+    }
+
+    async function loadCommissions() {
+      if (!currentInfluencer) return;
+
+      const tbody = document.getElementById('ordersTableBody');
+      tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-ink-400"><span class="inline-block w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mr-2"></span>Loading referral orders...</td></tr>`;
+
+      try {
+        const { data: commissions, error } = await supabase
+          .from('commissions')
+          .select('id, gift_id, amount, status, is_suspicious, suspicious_reason, created_at, approved_at, paid_at, gifts(id, slug, price_paid, created_at, status)')
+          .eq('influencer_id', currentInfluencer.id)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Commissions load error:', error);
+          tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-rose-500">Failed to load referral orders.</td></tr>`;
+          return;
+        }
+
+        currentCommissions = commissions || [];
+        calculateAndRenderMetrics();
+        renderOrdersTable();
+
+      } catch (err) {
+        console.error('Error fetching commissions:', err);
+      }
+    }
+
+    function calculateAndRenderMetrics() {
+      const clicks = currentInfluencer.clicks || 0;
+      const activeCommissions = currentCommissions.filter(c => c.status !== 'reversed');
+      const orderCount = activeCommissions.length;
+
+      const convRate = clicks > 0 ? ((orderCount / clicks) * 100).toFixed(1) : '0.0';
+      document.getElementById('metricOrders').textContent = orderCount.toLocaleString();
+      document.getElementById('metricConversion').textContent = `${convRate}% conversion rate`;
+
+      let totalSales = 0;
+      let totalComm = 0;
+      let pendingComm = 0;
+      let approvedComm = 0;
+      let paidComm = 0;
+
+      activeCommissions.forEach(c => {
+        const amt = parseFloat(c.amount) || 0;
+        const giftPaid = c.gifts?.price_paid ? parseFloat(c.gifts.price_paid) : (amt * 5);
+        totalSales += giftPaid;
+        totalComm += amt;
+
+        if (c.status === 'pending') pendingComm += amt;
+        else if (c.status === 'approved') approvedComm += amt;
+        else if (c.status === 'paid') paidComm += amt;
+      });
+
+      document.getElementById('metricSales').textContent = `₹${Math.round(totalSales).toLocaleString()}`;
+      document.getElementById('metricTotalComm').textContent = `₹${Math.round(totalComm).toLocaleString()}`;
+
+      document.getElementById('commPending').textContent = `₹${Math.round(pendingComm).toLocaleString()}`;
+      document.getElementById('commApproved').textContent = `₹${Math.round(approvedComm).toLocaleString()}`;
+      document.getElementById('commPaid').textContent = `₹${Math.round(paidComm).toLocaleString()}`;
+    }
+
+    function renderOrdersTable() {
+      const tbody = document.getElementById('ordersTableBody');
+      if (!currentCommissions || currentCommissions.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-12 text-center text-ink-400 space-y-2">
+              <div class="text-3xl">🏹</div>
+              <div class="font-serif font-bold text-sm text-ink-700">No orders referred yet</div>
+              <div class="text-xs text-ink-500 max-w-sm mx-auto">Share your referral link with your audience across WhatsApp, Instagram, or YouTube to start earning 20% commissions.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = currentCommissions.map(c => {
+        const dateStr = new Date(c.created_at).toLocaleDateString('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const shortId = c.gift_id ? `#${c.gift_id.slice(0, 8)}` : `#${c.id.slice(0, 8)}`;
+        const customerPaid = c.gifts?.price_paid ? `₹${c.gifts.price_paid}` : `₹${Math.round(c.amount * 5)}`;
+        const commAmt = `₹${c.amount}`;
+
+        let badgeClass = 'bg-amber-50 text-amber-700 border-amber-200';
+        let statusLabel = 'Pending Review';
+
+        if (c.status === 'approved') {
+          badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+          statusLabel = 'Approved';
+        } else if (c.status === 'paid') {
+          badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+          statusLabel = 'Paid';
+        } else if (c.status === 'reversed') {
+          badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+          statusLabel = 'Refunded / Reversed';
+        }
+
+        return `
+          <tr class="hover:bg-parchment-50/70 transition-colors">
+            <td class="py-3.5 px-4 sm:px-6 font-medium text-ink-700">${dateStr}</td>
+            <td class="py-3.5 px-4 font-mono text-ink-500 text-[11px]">${shortId}</td>
+            <td class="py-3.5 px-4 font-semibold text-ink-800">${customerPaid}</td>
+            <td class="py-3.5 px-4 font-bold text-emerald-600">${commAmt}</td>
+            <td class="py-3.5 px-4">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider ${badgeClass}">
+                ${statusLabel}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Copy Referral Link Handler
+    const btnCopy = document.getElementById('btnCopyReferralLink');
+    const copyBtnText = document.getElementById('copyBtnText');
+    btnCopy.addEventListener('click', async () => {
+      const fullUrl = document.getElementById('fullReferralLinkInput').textContent.trim();
+      try {
+        await navigator.clipboard.writeText(fullUrl);
+        copyBtnText.textContent = 'Copied!';
+        btnCopy.classList.add('scale-105');
+        setTimeout(() => {
+          copyBtnText.textContent = 'Copy Link';
+          btnCopy.classList.remove('scale-105');
+        }, 2000);
+      } catch (e) {
+        prompt('Copy your referral link:', fullUrl);
+      }
+    });
+
+    // Social Sharing
+    document.getElementById('shareWhatsApp')?.addEventListener('click', () => {
+      const fullUrl = document.getElementById('fullReferralLinkInput').textContent.trim();
+      const text = encodeURIComponent(`Check out Velvet & Keepsake for unforgettable personalized birthday keepsake films! ✨\n${fullUrl}`);
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    });
+
+    document.getElementById('shareTelegram')?.addEventListener('click', () => {
+      const fullUrl = document.getElementById('fullReferralLinkInput').textContent.trim();
+      const text = encodeURIComponent(`Unforgettable birthday gifts with Velvet & Keepsake ✨`);
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(fullUrl)}&text=${text}`, '_blank');
+    });
+
+    document.getElementById('shareTwitter')?.addEventListener('click', () => {
+      const fullUrl = document.getElementById('fullReferralLinkInput').textContent.trim();
+      const text = encodeURIComponent(`Create cinematic birthday experiences for someone special! ✨`);
+      window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(fullUrl)}&text=${text}`, '_blank');
+    });
+
+    // Refresh Orders
+    document.getElementById('btnRefreshOrders').addEventListener('click', loadCommissions);
+
+    // Logout
+    document.getElementById('btnInfluencerLogout').addEventListener('click', async () => {
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      window.location.replace('./influencer.html');
+    });
+
+    // Payout Modal Handling
+    const payoutModal = document.getElementById('payoutModal');
+    const btnEditPayout = document.getElementById('btnEditPayout');
+    const btnClosePayoutModal = document.getElementById('btnClosePayoutModal');
+    const btnCancelPayout = document.getElementById('btnCancelPayout');
+    const payoutUpdateForm = document.getElementById('payoutUpdateForm');
+    const modalUpiGroup = document.getElementById('modalUpiGroup');
+    const modalBankGroup = document.getElementById('modalBankGroup');
+    const payoutUpdateAlert = document.getElementById('payoutUpdateAlert');
+
+    function openPayoutModal() {
+      if (!currentInfluencer) return;
+      const details = currentInfluencer.payout_details || {};
+      const type = details.type || 'upi';
+
+      const typeRadio = document.querySelector(`input[name="modalPayoutType"][value="${type}"]`);
+      if (typeRadio) typeRadio.checked = true;
+
+      if (type === 'upi') {
+        modalUpiGroup.classList.remove('hidden');
+        modalBankGroup.classList.add('hidden');
+        document.getElementById('modalUpi').value = details.upi_id || '';
+      } else {
+        modalUpiGroup.classList.add('hidden');
+        modalBankGroup.classList.remove('hidden');
+        document.getElementById('modalBankHolder').value = details.holder || '';
+        document.getElementById('modalBankAcc').value = details.account_number || '';
+        document.getElementById('modalBankIfsc').value = details.ifsc || '';
+        document.getElementById('modalBankName').value = details.bank_name || '';
+      }
+
+      payoutUpdateAlert.classList.add('hidden');
+      payoutModal.classList.remove('hidden');
+    }
+
+    function closePayoutModal() {
+      payoutModal.classList.add('hidden');
+    }
+
+    btnEditPayout.addEventListener('click', openPayoutModal);
+    btnClosePayoutModal.addEventListener('click', closePayoutModal);
+    btnCancelPayout.addEventListener('click', closePayoutModal);
+
+    document.querySelectorAll('input[name="modalPayoutType"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.value === 'upi') {
+          modalUpiGroup.classList.remove('hidden');
+          modalBankGroup.classList.add('hidden');
+        } else {
+          modalUpiGroup.classList.add('hidden');
+          modalBankGroup.classList.remove('hidden');
+        }
+      });
+    });
+
+    payoutUpdateForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const type = document.querySelector('input[name="modalPayoutType"]:checked').value;
+      const details = { type };
+
+      if (type === 'upi') {
+        const upi = document.getElementById('modalUpi').value.trim();
+        if (!upi) {
+          payoutUpdateAlert.textContent = 'Please enter a valid UPI ID.';
+          payoutUpdateAlert.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700';
+          payoutUpdateAlert.classList.remove('hidden');
+          return;
+        }
+        details.upi_id = upi;
+      } else {
+        details.holder = document.getElementById('modalBankHolder').value.trim();
+        details.account_number = document.getElementById('modalBankAcc').value.trim();
+        details.ifsc = document.getElementById('modalBankIfsc').value.trim().toUpperCase();
+        details.bank_name = document.getElementById('modalBankName').value.trim();
+        if (!details.holder || !details.account_number || !details.ifsc) {
+          payoutUpdateAlert.textContent = 'Please complete all bank fields.';
+          payoutUpdateAlert.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700';
+          payoutUpdateAlert.classList.remove('hidden');
+          return;
+        }
+      }
+
+      const saveBtn = document.getElementById('btnSavePayout');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const { error } = await supabase
+          .from('influencers')
+          .update({ payout_details: details, updated_at: new Date().toISOString() })
+          .eq('id', currentInfluencer.id);
+
+        if (error) throw error;
+
+        currentInfluencer.payout_details = details;
+        payoutUpdateAlert.textContent = 'Payout details updated successfully!';
+        payoutUpdateAlert.className = 'p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-700';
+        payoutUpdateAlert.classList.remove('hidden');
+
+        setTimeout(() => {
+          closePayoutModal();
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Details';
+        }, 1000);
+
+      } catch (err) {
+        console.error('Update payout error:', err);
+        payoutUpdateAlert.textContent = err.message || 'Failed to update payout details.';
+        payoutUpdateAlert.className = 'p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-700';
+        payoutUpdateAlert.classList.remove('hidden');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Details';
+      }
+    });
+
+    // Run on mount
+    initInfluencerPortal();
+  </script>
+
+</body>
+</html>

@@ -11,6 +11,8 @@
     { "source": "/preview/:experienceId", "destination": "/preview.html?experience=:experienceId" },
     { "source": "/terms", "destination": "/terms.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/influencer", "destination": "/influencer.html" },
+    { "source": "/influencer-dashboard", "destination": "/influencer-dashboard.html" },
     { "source": "/gift/:slug", "destination": "/gift.html?slug=:slug" },
     { "source": "/view/:slug", "destination": "/gift.html?slug=:slug" }
   ]

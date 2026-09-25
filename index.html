@@ -773,10 +773,12 @@
       </p>
 
       <!-- Legal Links -->
-      <div class="flex items-center justify-center space-x-6 pt-1 text-xs text-brand-inkSoft">
+      <div class="flex items-center justify-center space-x-6 pt-1 text-xs text-brand-inkSoft flex-wrap gap-y-2">
         <a href="#experiences" class="hover:text-brand-rose transition-colors">Experiences</a>
         <span class="text-brand-cardBorder">&bull;</span>
         <a href="#how-it-works" class="hover:text-brand-rose transition-colors">How It Works</a>
+        <span class="text-brand-cardBorder">&bull;</span>
+        <a href="./influencer.html" class="hover:text-brand-rose transition-colors font-medium text-rose-600">Affiliate Program</a>
         <span class="text-brand-cardBorder">&bull;</span>
         <a href="./terms.html" class="hover:text-brand-rose transition-colors">Terms of Service</a>
         <span class="text-brand-cardBorder">&bull;</span>
@@ -817,6 +819,10 @@
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    import { captureReferralParam } from './referralTracker.js';
+
+    // Capture affiliate referral code if present in URL
+    captureReferralParam();
 
     const SUPABASE_URL = 'https://jwwwhtkfincfhhmvcjkx.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_rwa9I2jjY3PpNxuDIuzGHg_tbidOkej';

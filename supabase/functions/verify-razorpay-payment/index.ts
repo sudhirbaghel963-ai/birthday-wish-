@@ -147,7 +147,7 @@ serve(async (req: Request): Promise<Response> => {
     // 6. Fetch Existing Gift Row
     const { data: existingGift, error: fetchErr } = await supabase
       .from('gifts')
-      .select('id, status, slug, razorpay_order_id, experience_id, theme_id, revises_gift_id, content, photo_urls, clip_urls, music, coupon_code, discount_percent')
+      .select('id, user_id, status, slug, razorpay_order_id, experience_id, theme_id, revises_gift_id, content, photo_urls, clip_urls, music, coupon_code, discount_percent, referred_by_influencer_id')
       .eq('id', giftId)
       .maybeSingle();
 
@@ -217,6 +217,79 @@ serve(async (req: Request): Promise<Response> => {
       }
     }
 
+    // Helper function to process influencer commission
+    async function processInfluencerCommission(targetGiftId: string, influencerId: string | null, customerUserId: string | null, pricePaid: number) {
+      if (!influencerId || pricePaid <= 0) return;
+      try {
+        const { data: influencer, error: infErr } = await supabase
+          .from('influencers')
+          .select('id, user_id, status')
+          .eq('id', influencerId)
+          .maybeSingle();
+
+        if (infErr || !influencer) {
+          console.warn(`[verify-razorpay-payment][${timestamp}] Influencer ${influencerId} not found:`, infErr);
+          return;
+        }
+
+        if (influencer.status !== 'active') {
+          console.warn(`[verify-razorpay-payment][${timestamp}] Influencer ${influencerId} is inactive/suspended (${influencer.status}). Skipping commission.`);
+          return;
+        }
+
+        // Self-referral protection: if customer user_id matches influencer user_id
+        if (customerUserId && influencer.user_id && customerUserId === influencer.user_id) {
+          console.log(`[verify-razorpay-payment][${timestamp}] Self-referral detected for user ${customerUserId}. Skipping commission.`);
+          return;
+        }
+
+        // Commission is strictly 20% of price_paid
+        const commissionAmount = Math.round(pricePaid * 0.20 * 100) / 100;
+
+        // Velocity check: flag suspicious if >= 3 orders for this influencer in the past 1 hour
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const { count, error: countErr } = await supabase
+          .from('commissions')
+          .select('id', { count: 'exact', head: true })
+          .eq('influencer_id', influencer.id)
+          .gte('created_at', oneHourAgo);
+
+        const isSuspicious = !countErr && typeof count === 'number' && count >= 3;
+        const suspiciousReason = isSuspicious ? `High velocity: ${count + 1} orders within 1 hour` : null;
+
+        // Check if commission already exists for this gift to avoid duplicate
+        const { data: existingComm } = await supabase
+          .from('commissions')
+          .select('id')
+          .eq('gift_id', targetGiftId)
+          .maybeSingle();
+
+        if (existingComm) {
+          console.log(`[verify-razorpay-payment][${timestamp}] Commission already exists for gift ${targetGiftId}.`);
+          return;
+        }
+
+        const { error: commInsertErr } = await supabase
+          .from('commissions')
+          .insert({
+            gift_id: targetGiftId,
+            influencer_id: influencer.id,
+            amount: commissionAmount,
+            status: 'pending',
+            is_suspicious: isSuspicious,
+            suspicious_reason: suspiciousReason,
+          });
+
+        if (commInsertErr) {
+          console.error(`[verify-razorpay-payment][${timestamp}] Error recording commission:`, commInsertErr);
+        } else {
+          console.log(`[verify-razorpay-payment][${timestamp}] Commission of ₹${commissionAmount} recorded for influencer ${influencer.id} (gift: ${targetGiftId}, suspicious: ${isSuspicious}).`);
+        }
+      } catch (ex) {
+        console.error(`[verify-razorpay-payment][${timestamp}] Exception processing influencer commission:`, ex);
+      }
+    }
+
     // 8. Handle Revision vs New Gift
     if (existingGift.revises_gift_id) {
       console.log(`[verify-razorpay-payment][${timestamp}] Draft ${giftId} is a revision of original gift ${existingGift.revises_gift_id}.`);
@@ -274,6 +347,7 @@ serve(async (req: Request): Promise<Response> => {
           price_paid: pricePaidInr,
           coupon_code: existingGift.coupon_code || null,
           discount_percent: existingGift.discount_percent || null,
+          referred_by_influencer_id: existingGift.referred_by_influencer_id || originalGift.referred_by_influencer_id || null,
           version: nextVersion,
           updated_at: new Date().toISOString()
         })
@@ -292,6 +366,9 @@ serve(async (req: Request): Promise<Response> => {
         .delete()
         .eq('id', giftId)
         .eq('status', 'draft');
+
+      // d. Record Commission if referred
+      await processInfluencerCommission(originalGift.id, existingGift.referred_by_influencer_id || originalGift.referred_by_influencer_id, existingGift.user_id || originalGift.user_id, pricePaidInr);
 
       console.log(`[verify-razorpay-payment][${timestamp}] Successfully verified and applied revision for gift ${originalGift.id} (version ${nextVersion})! Live slug: '${updatedOriginal.slug}'.`);
 
@@ -358,9 +435,12 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse({ error: `Failed to update gift status: ${updateErr.message}` }, 500);
     }
 
+    // 11. Record Commission if referred
+    await processInfluencerCommission(updatedGift.id, existingGift.referred_by_influencer_id, existingGift.user_id, pricePaidInr);
+
     console.log(`[verify-razorpay-payment][${timestamp}] Gift ${giftId} successfully verified and paid! Slug: '${updatedGift.slug}', Price: ₹${updatedGift.price_paid}`);
 
-    // 11. Return Verified Slug to Client
+    // 12. Return Verified Slug to Client
     return jsonResponse({
       success: true,
       is_revision: false,

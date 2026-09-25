@@ -1570,6 +1570,10 @@ Happy Birthday. I mean it.</textarea>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
     import QRCode from 'qrcode';
+    import { captureReferralParam, getAttributedInfluencerId } from './referralTracker.js';
+
+    // Capture affiliate referral code if present in URL
+    captureReferralParam();
 
     function sanitizeSupabaseUrl(raw) {
       let url = (typeof raw === 'string' ? raw : '').trim();
@@ -2754,6 +2758,7 @@ Happy Birthday. I mean it.</textarea>
 
         if (supabase) {
           try {
+            const attributedInfluencerId = getAttributedInfluencerId();
             const payload = {
               id: draftId,
               experience_id: expParam || 'birthday-film',
@@ -2765,6 +2770,10 @@ Happy Birthday. I mean it.</textarea>
               status: 'draft',
               updated_at: new Date().toISOString()
             };
+
+            if (attributedInfluencerId) {
+              payload.referred_by_influencer_id = attributedInfluencerId;
+            }
 
             if (currentUser && currentUser.id) {
               payload.owner_id = currentUser.id;
@@ -3793,6 +3802,7 @@ Happy Birthday. I mean it.</textarea>
           }
 
           // 1. Ensure latest editor draft state is saved before payment
+          const attributedInfluencerId = getAttributedInfluencerId();
           const draftPayload = {
             id: draftId,
             status: 'draft',
@@ -3804,6 +3814,10 @@ Happy Birthday. I mean it.</textarea>
             clip_urls: editorState.scenes?.scene7_memoryReel?.clips || [],
             updated_at: new Date().toISOString()
           };
+
+          if (attributedInfluencerId) {
+            draftPayload.referred_by_influencer_id = attributedInfluencerId;
+          }
 
           if (currentUser && currentUser.id) {
             draftPayload.owner_id = currentUser.id;

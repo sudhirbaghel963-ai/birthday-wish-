@@ -179,6 +179,11 @@
        EXPERIENCE CATALOG CONFIG & RENDER SCRIPT
        ============================================================ -->
   <script type="module">
+    import { captureReferralParam, getAttributedInfluencerId } from './referralTracker.js';
+
+    // Capture affiliate referral code if present in URL
+    captureReferralParam();
+
     /**
      * EXPERIENCES CONFIGURATION
      * Extensible data array powering the Choose Experience screen.
@@ -541,12 +546,14 @@
         localStorage.setItem('gift_draft_id', draftId);
 
         if (supabase && currentUser) {
+          const attributedInfluencerId = getAttributedInfluencerId();
           const initialDraft = {
             id: draftId,
             owner_id: currentUser.id,
             experience_id: slug,
             theme_id: themeId,
             status: 'draft',
+            referred_by_influencer_id: attributedInfluencerId || null,
             content: {
               recipientName: 'Elena',
               themeId: themeId,

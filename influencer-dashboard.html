@@ -402,7 +402,7 @@
         const { data: influencer, error: infErr } = await supabase
           .from('influencers')
           .select('*')
-          .eq('user_id', session.user.id)
+          .or(`user_id.eq.${session.user.id},email.eq.${session.user.email}`)
           .maybeSingle();
 
         if (infErr || !influencer) {

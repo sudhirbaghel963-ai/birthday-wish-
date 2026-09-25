@@ -422,6 +422,8 @@
 
         // 1. Sign up / authenticate Supabase user
         let userId = null;
+        let activeSession = null;
+
         const { data: authData, error: authErr } = await supabase.auth.signUp({
           email,
           password,
@@ -433,37 +435,42 @@
           }
         });
 
-        if (authErr) {
-          // If already registered, try sign in with password
-          if (authErr.message.includes('already registered') || authErr.status === 422) {
-            const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
-              email,
-              password
-            });
-            if (signInErr) {
-              throw new Error(`Account already exists with this email. Please sign in with your existing password.`);
-            }
-            userId = signInData?.user?.id;
-          } else {
-            throw authErr;
+        // Supabase Auth email enumeration protection returns authErr=null with identities=[] for existing users
+        const isExistingUser = (authErr && (authErr.message?.includes('already registered') || authErr.status === 422)) ||
+                               (authData?.user && Array.isArray(authData.user.identities) && authData.user.identities.length === 0);
+
+        if (isExistingUser) {
+          // Attempt sign in with the provided password
+          const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (signInErr) {
+            throw new Error('An account with this email already exists. Please enter your existing password to link your creator account, or switch to the Sign In tab.');
           }
+          userId = signInData?.user?.id;
+          activeSession = signInData?.session;
+        } else if (authErr) {
+          throw authErr;
         } else {
           userId = authData?.user?.id;
+          activeSession = authData?.session;
         }
 
         if (!userId) {
-          throw new Error('Could not initialize account. Please verify credentials.');
+          throw new Error('Could not initialize user account. Please check your credentials.');
         }
 
-        // 2. Check if influencer record already exists for this user
+        // 2. Check if influencer record already exists for this user (by user_id or email)
         const { data: existingInf } = await supabase
           .from('influencers')
           .select('id, referral_code')
-          .eq('user_id', userId)
+          .or(`user_id.eq.${userId},email.eq.${email}`)
           .maybeSingle();
 
         if (existingInf) {
-          showAlert('Account exists! Redirecting to your dashboard...', 'success');
+          showAlert('Creator account found! Redirecting to your dashboard...', 'success');
           setTimeout(() => {
             window.location.replace('./influencer-dashboard.html');
           }, 800);
@@ -501,6 +508,17 @@
         if (insertErr) {
           console.error('Influencer row creation failed:', insertErr);
           throw new Error(`Profile creation failed: ${insertErr.message}`);
+        }
+
+        // 5. Ensure active session if auto-signin needed
+        if (!activeSession) {
+          const { data: autoSignData } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+          if (autoSignData?.session) {
+            activeSession = autoSignData.session;
+          }
         }
 
         showAlert('Influencer account created successfully! Redirecting...', 'success');
@@ -542,7 +560,7 @@
         const { data: influencer } = await supabase
           .from('influencers')
           .select('id, status')
-          .eq('user_id', userId)
+          .or(`user_id.eq.${userId},email.eq.${email}`)
           .maybeSingle();
 
         if (!influencer) {

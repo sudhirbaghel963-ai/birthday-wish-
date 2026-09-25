@@ -98,6 +98,7 @@ serve(async (req: Request): Promise<Response> => {
     let payload: {
       gift_id?: string;
       id?: string;
+      customer_id?: string;
       razorpay_order_id?: string;
       razorpay_payment_id?: string;
       razorpay_signature?: string;
@@ -147,7 +148,7 @@ serve(async (req: Request): Promise<Response> => {
     // 6. Fetch Existing Gift Row
     const { data: existingGift, error: fetchErr } = await supabase
       .from('gifts')
-      .select('id, owner_id, user_id, status, slug, razorpay_order_id, experience_id, theme_id, revises_gift_id, content, photo_urls, clip_urls, music, coupon_code, discount_percent')
+      .select('id, owner_id, status, slug, razorpay_order_id, experience_id, theme_id, revises_gift_id, content, photo_urls, clip_urls, music, coupon_code, discount_percent, discount_source, price_paid')
       .eq('id', giftId)
       .maybeSingle();
 
@@ -171,7 +172,7 @@ serve(async (req: Request): Promise<Response> => {
       }, 200);
     }
 
-    // 7. Look up dynamic experience base price
+    // 7. Look up dynamic experience base price (ORIGINAL price)
     const expId = existingGift.experience_id || (existingGift.theme_id === 'glass' ? 'birthday-film-glass' : 'birthday-film');
     let basePriceInr = DEFAULT_FALLBACK_PRICE_INR;
 
@@ -188,15 +189,17 @@ serve(async (req: Request): Promise<Response> => {
       }
     }
 
-    // Calculate effective price paid taking coupon into account
+    // Calculate effective price paid taking any applied discount into account
     let pricePaidInr = basePriceInr;
-    if (existingGift.coupon_code && existingGift.discount_percent) {
+    if (existingGift.discount_percent) {
       const discounted = Math.round(basePriceInr * (1 - existingGift.discount_percent / 100));
       pricePaidInr = Math.max(1, discounted);
+    } else if (existingGift.price_paid) {
+      pricePaidInr = existingGift.price_paid;
     }
 
-    // 8. Atomically Increment Coupon Usage on Confirmed Payment (if coupon was used)
-    if (existingGift.coupon_code) {
+    // 8. Atomically Increment Coupon Usage on Confirmed Payment (if a coupon discount was applied)
+    if (existingGift.coupon_code && (existingGift.discount_source === 'coupon' || !existingGift.discount_source)) {
       try {
         const { data: incRes, error: incErr } = await supabase.rpc('increment_coupon_usage', {
           p_code: existingGift.coupon_code
@@ -207,9 +210,8 @@ serve(async (req: Request): Promise<Response> => {
         } else if (incRes && incRes.success) {
           console.log(`[verify-razorpay-payment][${timestamp}] Coupon '${incRes.code}' usage incremented: now ${incRes.times_used}/${incRes.max_uses || '∞'}.`);
 
-          // Edge Case Handling: Coupon exceeded limit while customer was on checkout screen
           if (incRes.max_uses !== null && incRes.times_used > incRes.max_uses) {
-            console.warn(`[verify-razorpay-payment][${timestamp}] [EDGE CASE ALERT] Coupon '${incRes.code}' usage limit (${incRes.max_uses}) was exceeded at final confirmation (now ${incRes.times_used} uses) for gift ${giftId}. Honoring confirmed payment.`);
+            console.warn(`[verify-razorpay-payment][${timestamp}] [EDGE CASE ALERT] Coupon '${incRes.code}' usage limit (${incRes.max_uses}) was exceeded at final confirmation for gift ${giftId}. Honoring confirmed payment.`);
           }
         }
       } catch (couponIncEx) {
@@ -218,8 +220,9 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     // Helper function to process influencer commission on CUSTOMER'S FIRST PAID GIFT ONLY
-    async function processInfluencerCommission(targetGiftId: string, customerUserId: string | null, pricePaid: number) {
-      if (!customerUserId || pricePaid <= 0) return;
+    // NOTE: Commission is ALWAYS calculated on original/base price (basePriceInr), NOT discounted price_paid!
+    async function processInfluencerCommission(targetGiftId: string, customerUserId: string | null, originalBasePrice: number) {
+      if (!customerUserId || originalBasePrice <= 0) return;
       try {
         // 1. Fetch customer profile to check account-level referral attribution and first-purchase status
         const { data: profile, error: profErr } = await supabase
@@ -277,8 +280,8 @@ serve(async (req: Request): Promise<Response> => {
           return;
         }
 
-        // 5. Commission is strictly 20% of price_paid
-        const commissionAmount = Math.round(pricePaid * 0.20 * 100) / 100;
+        // 5. Commission is strictly 20% of the ORIGINAL BASE price (never the discounted price)
+        const commissionAmount = Math.round(originalBasePrice * 0.20 * 100) / 100;
 
         // 6. Velocity check: flag suspicious if >= 3 orders for this influencer in the past 1 hour
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -317,9 +320,9 @@ serve(async (req: Request): Promise<Response> => {
         if (commInsertErr) {
           console.error(`[verify-razorpay-payment][${timestamp}] Error recording commission:`, commInsertErr);
         } else {
-          console.log(`[verify-razorpay-payment][${timestamp}] Commission of ₹${commissionAmount} recorded for influencer ${influencer.id} (gift: ${targetGiftId}, suspicious: ${isSuspicious}).`);
+          console.log(`[verify-razorpay-payment][${timestamp}] Commission of ₹${commissionAmount} (20% of base ₹${originalBasePrice}) recorded for influencer ${influencer.id} (gift: ${targetGiftId}, suspicious: ${isSuspicious}).`);
 
-          // 7. Mark referral_commission_granted = true on the customer's profile so NO future purchases generate commissions
+          // 7. Mark referral_commission_granted = true on the customer's profile so NO future purchases generate discounts or commissions
           const { error: profUpdateErr } = await supabase
             .from('customer_profiles')
             .update({
@@ -371,6 +374,9 @@ serve(async (req: Request): Promise<Response> => {
           theme_id: originalGift.theme_id || null,
           experience_id: originalGift.experience_id || null,
           price_paid: originalGift.price_paid || null,
+          coupon_code: originalGift.coupon_code || null,
+          discount_percent: originalGift.discount_percent || null,
+          discount_source: originalGift.discount_source || null,
           razorpay_payment_id: originalGift.razorpay_payment_id || null,
           razorpay_order_id: originalGift.razorpay_order_id || null,
           published_at: originalGift.updated_at || originalGift.created_at || new Date().toISOString()
@@ -396,11 +402,12 @@ serve(async (req: Request): Promise<Response> => {
           price_paid: pricePaidInr,
           coupon_code: existingGift.coupon_code || null,
           discount_percent: existingGift.discount_percent || null,
+          discount_source: existingGift.discount_source || null,
           version: nextVersion,
           updated_at: new Date().toISOString()
         })
         .eq('id', originalGift.id)
-        .select('id, owner_id, user_id, status, slug, price_paid, version')
+        .select('id, owner_id, status, slug, price_paid, version')
         .single();
 
       if (updateOrigErr || !updatedOriginal) {
@@ -415,11 +422,11 @@ serve(async (req: Request): Promise<Response> => {
         .eq('id', giftId)
         .eq('status', 'draft');
 
-      // d. Record Commission on first paid gift if customer was referred
-      const revisionCustomerUid = existingGift.owner_id || existingGift.user_id || originalGift.owner_id || originalGift.user_id;
-      await processInfluencerCommission(originalGift.id, revisionCustomerUid, pricePaidInr);
+      // d. Record Commission on first paid gift if customer was referred (20% of basePriceInr)
+      const revisionCustomerUid = payload.customer_id || existingGift.owner_id || originalGift.owner_id;
+      await processInfluencerCommission(originalGift.id, revisionCustomerUid, basePriceInr);
 
-      console.log(`[verify-razorpay-payment][${timestamp}] Successfully verified and applied revision for gift ${originalGift.id} (version ${nextVersion})! Live slug: '${updatedOriginal.slug}'.`);
+      console.log(`[verify-razorpay-payment][${timestamp}] Successfully verified and applied revision for gift ${originalGift.id} (version ${nextVersion})! Live slug: '${updatedOriginal.slug}', Paid: ₹${updatedOriginal.price_paid}.`);
 
       return jsonResponse({
         success: true,
@@ -431,7 +438,8 @@ serve(async (req: Request): Promise<Response> => {
         status: 'paid',
         price_paid: updatedOriginal.price_paid,
         coupon_code: existingGift.coupon_code || null,
-        discount_percent: existingGift.discount_percent || null
+        discount_percent: existingGift.discount_percent || null,
+        discount_source: existingGift.discount_source || null
       }, 200);
     }
 
@@ -472,11 +480,12 @@ serve(async (req: Request): Promise<Response> => {
         price_paid: pricePaidInr,
         coupon_code: existingGift.coupon_code || null,
         discount_percent: existingGift.discount_percent || null,
+        discount_source: existingGift.discount_source || null,
         updated_at: new Date().toISOString()
       })
       .eq('id', giftId)
       .eq('status', 'draft') // Concurrency lock
-      .select('id, owner_id, user_id, status, slug, price_paid, version')
+      .select('id, owner_id, status, slug, price_paid, version')
       .single();
 
     if (updateErr) {
@@ -484,11 +493,11 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse({ error: `Failed to update gift status: ${updateErr.message}` }, 500);
     }
 
-    // 11. Record Commission on first paid gift if customer was referred
-    const customerUid = existingGift.owner_id || existingGift.user_id || updatedGift.owner_id || updatedGift.user_id;
-    await processInfluencerCommission(updatedGift.id, customerUid, pricePaidInr);
+    // 11. Record Commission on first paid gift if customer was referred (20% of basePriceInr)
+    const customerUid = payload.customer_id || existingGift.owner_id || updatedGift.owner_id;
+    await processInfluencerCommission(updatedGift.id, customerUid, basePriceInr);
 
-    console.log(`[verify-razorpay-payment][${timestamp}] Gift ${giftId} successfully verified and paid! Slug: '${updatedGift.slug}', Price: ₹${updatedGift.price_paid}`);
+    console.log(`[verify-razorpay-payment][${timestamp}] Gift ${giftId} successfully verified and paid! Slug: '${updatedGift.slug}', Paid: ₹${updatedGift.price_paid} (Base: ₹${basePriceInr})`);
 
     // 12. Return Verified Slug to Client
     return jsonResponse({

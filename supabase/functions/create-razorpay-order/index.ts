@@ -53,7 +53,7 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     // 3. Parse Request Payload
-    let payload: { id?: string; gift_id?: string; coupon_code?: string } = {};
+    let payload: { id?: string; gift_id?: string; coupon_code?: string; customer_id?: string } = {};
     try {
       payload = await req.json();
     } catch {
@@ -75,7 +75,7 @@ serve(async (req: Request): Promise<Response> => {
     // 5. Fetch Draft Gift
     const { data: gift, error: fetchErr } = await supabase
       .from('gifts')
-      .select('id, status, slug, content, experience_id, theme_id, revises_gift_id')
+      .select('id, status, slug, content, experience_id, theme_id, revises_gift_id, owner_id')
       .eq('id', giftId)
       .maybeSingle();
 
@@ -117,10 +117,28 @@ serve(async (req: Request): Promise<Response> => {
       console.warn(`[create-razorpay-order][${timestamp}] Could not lookup experience ${targetExpId}, falling back to default ₹${DEFAULT_FALLBACK_PRICE_INR}:`, expErr.message);
     }
 
-    // 7. Re-validate Coupon Server-Side (if provided)
-    let appliedCouponCode: string | null = null;
-    let appliedDiscountPercent: number | null = null;
-    let finalPriceInInr = basePriceInInr;
+    // 7. Check if Customer is Eligible for Automatic 10% Referral Discount
+    // Re-check freshly from database: referred_by_influencer_id is set AND referral_commission_granted is false
+    const customerUserId = payload.customer_id || gift.owner_id || null;
+    let isReferralEligible = false;
+
+    if (customerUserId) {
+      const { data: customerProfile, error: profErr } = await supabase
+        .from('customer_profiles')
+        .select('id, email, referred_by_influencer_id, referral_commission_granted')
+        .eq('id', customerUserId)
+        .maybeSingle();
+
+      if (!profErr && customerProfile) {
+        if (customerProfile.referred_by_influencer_id && customerProfile.referral_commission_granted === false) {
+          isReferralEligible = true;
+          console.log(`[create-razorpay-order][${timestamp}] Customer ${customerUserId} is eligible for 10% first-purchase referral discount.`);
+        }
+      }
+    }
+
+    // 8. Re-validate Manual Coupon Server-Side (if provided)
+    let validCoupon: { code: string; discount_percent: number } | null = null;
 
     if (rawCouponCode) {
       const { data: coupon, error: couponErr } = await supabase
@@ -148,19 +166,51 @@ serve(async (req: Request): Promise<Response> => {
         return jsonResponse({ error: `Coupon code '${rawCouponCode}' has reached its usage limit.` }, 400);
       }
 
-      appliedCouponCode = coupon.code;
-      appliedDiscountPercent = coupon.discount_percent;
+      validCoupon = {
+        code: coupon.code,
+        discount_percent: coupon.discount_percent
+      };
+    }
 
-      // Calculate discounted price (minimum ₹1)
+    // 9. Interaction between Referral Discount and Manual Coupon — DO NOT STACK
+    // Apply whichever discount is LARGER. Single discount type applies to a purchase.
+    const referralDiscountPercent = isReferralEligible ? 10 : 0;
+    const couponDiscountPercent = validCoupon ? validCoupon.discount_percent : 0;
+
+    let appliedDiscountPercent: number | null = null;
+    let appliedDiscountSource: 'referral' | 'coupon' | null = null;
+    let appliedCouponCode: string | null = null;
+
+    if (couponDiscountPercent > referralDiscountPercent) {
+      // Manual coupon gives a strictly larger discount (e.g. 20% coupon vs 10% referral)
+      appliedDiscountPercent = couponDiscountPercent;
+      appliedDiscountSource = 'coupon';
+      appliedCouponCode = validCoupon!.code;
+    } else if (referralDiscountPercent > 0) {
+      // Referral discount is greater than or equal to coupon (e.g. 10% referral >= 5% coupon or no coupon)
+      appliedDiscountPercent = referralDiscountPercent; // 10
+      appliedDiscountSource = 'referral';
+      appliedCouponCode = null; // Referral discount was used, not coupon
+    } else if (couponDiscountPercent > 0) {
+      // Customer is not referral-eligible, but has valid coupon
+      appliedDiscountPercent = couponDiscountPercent;
+      appliedDiscountSource = 'coupon';
+      appliedCouponCode = validCoupon!.code;
+    }
+
+    // Calculate final price (minimum ₹1)
+    let finalPriceInInr = basePriceInInr;
+    if (appliedDiscountPercent !== null && appliedDiscountPercent > 0) {
       const discounted = Math.round(basePriceInInr * (1 - appliedDiscountPercent / 100));
       finalPriceInInr = Math.max(1, discounted);
-      console.log(`[create-razorpay-order][${timestamp}] Coupon '${appliedCouponCode}' (${appliedDiscountPercent}%) applied. Base: ₹${basePriceInInr} -> Discounted: ₹${finalPriceInInr}`);
     }
+
+    console.log(`[create-razorpay-order][${timestamp}] Price calculation: Base: ₹${basePriceInInr}, ReferralEligible: ${isReferralEligible} (10%), Coupon: ${validCoupon ? `${validCoupon.code} (${validCoupon.discount_percent}%)` : 'none'} -> Applied: ${appliedDiscountSource || 'none'} (${appliedDiscountPercent || 0}%), Final: ₹${finalPriceInInr}`);
 
     const amountInPaise = finalPriceInInr * 100;
     const basicAuth = btoa(`${razorpayKeyId}:${razorpayKeySecret}`);
 
-    // 8. Create Razorpay Order via REST API
+    // 10. Create Razorpay Order via REST API
     const rzpOrderPayload = {
       amount: amountInPaise,
       currency: 'INR',
@@ -172,6 +222,7 @@ serve(async (req: Request): Promise<Response> => {
         experience_name: (expRow && expRow.name) || targetExpId,
         recipient: (gift.content && typeof gift.content === 'object' && gift.content.recipientName) || 'Elena',
         coupon_code: appliedCouponCode || 'NONE',
+        discount_source: appliedDiscountSource || 'NONE',
         discount_percent: appliedDiscountPercent !== null ? `${appliedDiscountPercent}%` : '0%',
         original_price_inr: basePriceInInr,
         final_price_inr: finalPriceInInr,
@@ -199,7 +250,7 @@ serve(async (req: Request): Promise<Response> => {
     const rzpOrder = await rzpResponse.json();
     const orderId = rzpOrder.id;
 
-    // 9. Store razorpay_order_id, coupon_code, and discount_percent on Gift Row
+    // 11. Store razorpay_order_id, coupon_code, discount_percent, discount_source, and price_paid on Gift Row
     const { error: updateErr } = await supabase
       .from('gifts')
       .update({
@@ -207,6 +258,8 @@ serve(async (req: Request): Promise<Response> => {
         experience_id: targetExpId,
         coupon_code: appliedCouponCode,
         discount_percent: appliedDiscountPercent,
+        discount_source: appliedDiscountSource,
+        price_paid: finalPriceInInr,
         updated_at: new Date().toISOString()
       })
       .eq('id', giftId);
@@ -215,9 +268,9 @@ serve(async (req: Request): Promise<Response> => {
       console.warn(`[create-razorpay-order][${timestamp}] Could not record razorpay_order_id on gift row:`, updateErr);
     }
 
-    console.log(`[create-razorpay-order][${timestamp}] Created Razorpay Order ${orderId} for gift ${giftId} [Experience: ${targetExpId}, Base: ₹${basePriceInInr}, Final: ₹${finalPriceInInr} / ${amountInPaise} paise, Coupon: ${appliedCouponCode || 'none'}].`);
+    console.log(`[create-razorpay-order][${timestamp}] Created Razorpay Order ${orderId} for gift ${giftId} [Experience: ${targetExpId}, Base: ₹${basePriceInInr}, Final: ₹${finalPriceInInr} / ${amountInPaise} paise, Source: ${appliedDiscountSource || 'none'}].`);
 
-    // 10. Return Order ID and Config to Client
+    // 12. Return Order ID and Config to Client
     return jsonResponse({
       success: true,
       order_id: orderId,
@@ -226,6 +279,7 @@ serve(async (req: Request): Promise<Response> => {
       base_price_inr: basePriceInInr,
       coupon_code: appliedCouponCode,
       discount_percent: appliedDiscountPercent,
+      discount_source: appliedDiscountSource,
       currency: 'INR',
       key_id: razorpayKeyId
     }, 200);

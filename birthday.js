@@ -1603,6 +1603,7 @@ function enter(){
     if (treeEl) { treeEl.style.display = 'none'; treeEl.setAttribute('aria-hidden', 'true'); }
     const sceneMatrix = $('sceneMatrix');
     if (sceneMatrix) {
+      sceneMatrix.style.display = 'block';
       sceneMatrix.classList.add('is-active');
       sceneMatrix.setAttribute('aria-hidden', 'false');
     }
@@ -1745,6 +1746,7 @@ function resetAll(){
     if (treeEl) { treeEl.style.display = 'none'; treeEl.setAttribute('aria-hidden', 'true'); }
     const sceneMatrix = $('sceneMatrix');
     if (sceneMatrix) {
+      sceneMatrix.style.display = 'block';
       sceneMatrix.classList.add('is-active');
       sceneMatrix.setAttribute('aria-hidden', 'false');
     }
@@ -2020,18 +2022,27 @@ window.addEventListener('resize', () => {
 });
 
 const sceneMatrixEl = $('sceneMatrix');
-if (sceneMatrixEl) {
-  sceneMatrixEl.addEventListener('click', () => {
-    if (isMatrixReadyForNext) {
-      goToScene(2);
-    }
-  });
+const matrixTapHintEl = $('matrixTapHint');
+const matrixFinalWrapEl = $('matrixFinalWrap');
+
+function handleMatrixNext() {
+  if (isMatrixReadyForNext) {
+    goToScene(2);
+  }
 }
+
+if (sceneMatrixEl) sceneMatrixEl.addEventListener('click', handleMatrixNext);
+if (matrixTapHintEl) matrixTapHintEl.addEventListener('click', (e) => {
+  e.stopPropagation();
+  handleMatrixNext();
+});
+if (matrixFinalWrapEl) matrixFinalWrapEl.addEventListener('click', handleMatrixNext);
 
 /* ============================================================
    SCENE 2 — SURPRISE GIFT BOX CONTROLLER
    ============================================================ */
 const scene2        = $('scene2');
+const giftHeader    = $('giftHeader');
 const giftBoxWrap   = $('giftBoxWrap');
 const giftBurst     = $('giftBurst');
 const nextScene2    = $('nextScene2');
@@ -3017,6 +3028,7 @@ function deactivateAllScenesExcept(targetScene){
     if (sceneMatrix) {
       sceneMatrix.classList.remove('is-active');
       sceneMatrix.setAttribute('aria-hidden', 'true');
+      sceneMatrix.style.display = 'none';
     }
     const finalWrap = $('matrixFinalWrap');
     if (finalWrap) finalWrap.classList.remove('is-shown', 'show');

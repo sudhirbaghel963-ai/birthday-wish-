@@ -3080,12 +3080,7 @@ body{
   overflow: hidden;
 }
 
-.scene-matrix.is-active,
-html[data-experience="birthday-film-matrix"] .scene-matrix,
-html[data-experience="matrix-countdown"] .scene-matrix,
-[data-experience="birthday-film-matrix"] .scene-matrix,
-[data-experience="matrix-countdown"] .scene-matrix,
-body.experience-matrix .scene-matrix {
+.scene-matrix.is-active {
   display: block;
 }
 

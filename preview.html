@@ -26,7 +26,7 @@
           exp = last;
         }
       }
-      if (exp === 'birthday-film-glass' || theme === 'glass') {
+      if (exp === 'birthday-film-glass' || exp === 'birthday-film-matrix' || theme === 'glass') {
         document.documentElement.setAttribute('data-theme', 'glass');
       }
     })();
@@ -37,6 +37,19 @@
 </head>
 <body>
   <main class="scene">
+
+    <!-- SCENE 1 (VARIANT): MATRIX RAIN COUNTDOWN (for 'birthday-film-matrix') -->
+    <section class="scene-matrix" id="sceneMatrix" aria-label="Matrix Countdown Experience">
+      <canvas id="matrixRainCanvas"></canvas>
+      <div class="matrix-overlay">
+        <div id="matrixWord"></div>
+        <div id="matrixFinalWrap">
+          <div id="matrixFinalTitle">Happy 20th Birthday, Elena!</div>
+          <div id="matrixFinalSub">wishing you a year as bright as you are ✨</div>
+        </div>
+      </div>
+      <div id="matrixTapHint">tap anywhere to open your gift →</div>
+    </section>
 
     <!-- The tree world (Act 4). One canvas; it stays transparent until the
          intro hands off, then it draws its own warm sky + blossom tree. -->
@@ -1138,6 +1151,10 @@
     // Demo Content Configuration per Experience / Theme
     // Single source of truth for demo gifts. To change or assign a demo gift, update the slug here.
     const DEMO_EXPERIENCE_CONFIG = {
+      'birthday-film-matrix': {
+        themeId: 'glass',
+        demoGiftSlug: 'vsue8h8kx', // Reuses Khushali Glass demo data for scenes 2-11 with matrix Scene 1
+      },
       'birthday-film-glass': {
         themeId: 'glass',
         demoGiftSlug: 'vsue8h8kx', // Official published demo for Velvet & Glass Edition (Khushali - sudhirbaghel963@gmail.com)

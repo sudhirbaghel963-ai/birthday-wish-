@@ -66,6 +66,10 @@ const defaultGiftData = {
       kEyebrow: "make a wish…",
       kSub: "to someone worth celebrating"
     },
+    scene1_matrixCountdown: {
+      age: "",
+      wishLine: "wishing you a year as bright as you are ✨"
+    },
     scene2_giftBox: {
       badge: "Special Delivery",
       eyebrow: "Special Delivery",
@@ -201,13 +205,21 @@ function rebuildKineticChars(line1Str, line2Str){
   kChars = [...line1Chars, ...line2Chars];
 }
 
+function isMatrixExperience() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const exp = urlParams.get('experience') || (window.GIFT_DATA && window.GIFT_DATA.experienceId);
+  return exp === 'birthday-film-matrix' || exp === 'matrix-countdown';
+}
+
 function applyGiftDataTheme(theme, explicitThemeId) {
   const urlParams = new URLSearchParams(window.location.search);
-  const exp = urlParams.get('experience');
+  const exp = urlParams.get('experience') || (window.GIFT_DATA && window.GIFT_DATA.experienceId);
   const urlTheme = urlParams.get('theme');
-  const detectedThemeId = explicitThemeId 
-    || (window.GIFT_DATA && window.GIFT_DATA.themeId) 
-    || (exp === 'birthday-film-glass' || urlTheme === 'glass' ? 'glass' : 'paper');
+  const detectedThemeId = isMatrixExperience()
+    ? 'glass'
+    : (explicitThemeId 
+       || (window.GIFT_DATA && window.GIFT_DATA.themeId) 
+       || (exp === 'birthday-film-glass' || urlTheme === 'glass' ? 'glass' : 'paper'));
 
   const currentThemeId = detectedThemeId === 'glass' ? 'glass' : 'paper';
   if (window.GIFT_DATA) window.GIFT_DATA.themeId = currentThemeId;
@@ -282,6 +294,26 @@ function adjustColorLightness(hex, percent) {
       rgb.b * (1 + factor)
     );
   }
+}
+
+function formatAgeTitle(age, name) {
+  const safeName = name || 'Elena';
+  if (!age && age !== 0) return `Happy Birthday, ${safeName}!`;
+  let ageStr = String(age).trim();
+  if (!ageStr) return `Happy Birthday, ${safeName}!`;
+  if (/^\d+(st|nd|rd|th)$/i.test(ageStr)) {
+    return `Happy ${ageStr} Birthday, ${safeName}!`;
+  }
+  const num = parseInt(ageStr, 10);
+  if (!isNaN(num)) {
+    const j = num % 10, k = num % 100;
+    let suffix = 'th';
+    if (j === 1 && k !== 11) suffix = 'st';
+    else if (j === 2 && k !== 12) suffix = 'nd';
+    else if (j === 3 && k !== 13) suffix = 'rd';
+    return `Happy ${num}${suffix} Birthday, ${safeName}!`;
+  }
+  return `Happy ${ageStr} Birthday, ${safeName}!`;
 }
 
 function updateScene2BoxColor(customHex) {
@@ -434,6 +466,17 @@ function populateStaticContent(data) {
   const elWSub = $('wSub');
   if (elWSub && (s1.closingSubtext !== undefined || s1.wishSub !== undefined)) {
     elWSub.textContent = s1.closingSubtext !== undefined ? s1.closingSubtext : s1.wishSub;
+  }
+
+  // --- Scene 1 (Matrix Variant) ---
+  const s1m = sc.scene1_matrixCountdown || {};
+  const matrixFinalTitleEl = $('matrixFinalTitle');
+  if (matrixFinalTitleEl) {
+    matrixFinalTitleEl.textContent = formatAgeTitle(s1m.age, recName);
+  }
+  const matrixFinalSubEl = $('matrixFinalSub');
+  if (matrixFinalSubEl) {
+    matrixFinalSubEl.textContent = s1m.wishLine || 'wishing you a year as bright as you are ✨';
   }
 
   // --- Scene 2 ---
@@ -1536,6 +1579,20 @@ archery.addEventListener('keydown', (e) => {
 
 /* boot Act 1: reveal the target + bow + hint, then start the beat */
 function enter(){
+  if (isMatrixExperience()) {
+    const heroEl = $('hero');
+    if (heroEl) { heroEl.style.display = 'none'; heroEl.setAttribute('aria-hidden', 'true'); }
+    const treeEl = $('tree');
+    if (treeEl) { treeEl.style.display = 'none'; treeEl.setAttribute('aria-hidden', 'true'); }
+    const sceneMatrix = $('sceneMatrix');
+    if (sceneMatrix) {
+      sceneMatrix.classList.add('is-active');
+      sceneMatrix.setAttribute('aria-hidden', 'false');
+    }
+    runMatrixSequence();
+    return;
+  }
+
   gsap.set(hero, { autoAlpha: 1 });
   refreshRig();
   setDraw(0);
@@ -1664,7 +1721,31 @@ function resetAll(){
     nextScene2.hidden = true;
   }
 
+  if (isMatrixExperience()) {
+    const heroEl = $('hero');
+    if (heroEl) { heroEl.style.display = 'none'; heroEl.setAttribute('aria-hidden', 'true'); }
+    const treeEl = $('tree');
+    if (treeEl) { treeEl.style.display = 'none'; treeEl.setAttribute('aria-hidden', 'true'); }
+    const sceneMatrix = $('sceneMatrix');
+    if (sceneMatrix) {
+      sceneMatrix.classList.add('is-active');
+      sceneMatrix.setAttribute('aria-hidden', 'false');
+    }
+    runMatrixSequence();
+    return;
+  }
+
   // 11. Reset Act 1
+  const sceneMatrix = $('sceneMatrix');
+  if (sceneMatrix) {
+    sceneMatrix.classList.remove('is-active');
+    sceneMatrix.setAttribute('aria-hidden', 'true');
+    stopMatrixRain();
+  }
+  const heroEl = $('hero');
+  if (heroEl) { heroEl.style.display = ''; heroEl.setAttribute('aria-hidden', 'false'); }
+  const treeEl = $('tree');
+  if (treeEl) { treeEl.style.display = ''; treeEl.setAttribute('aria-hidden', 'false'); }
   stopMotes();
   if (!reduceMotion) buildMotes();
   treeStop();
@@ -1735,6 +1816,173 @@ if (isRecord){
     start(){ autoFire(); },
     replay(){ resetAll(); },
   };
+}
+
+/* ============================================================
+   SCENE 1 (VARIANT) — MATRIX RAIN COUNTDOWN CONTROLLER
+   - For 'birthday-film-matrix' Glass Edition
+   - Canvas-based falling characters in Glass wine / gold / rose palette
+   - Sequential word reveal: 3 -> 2 -> 1 -> Happy -> Birthday -> [Recipient Name]
+   - Final card: Frosted glass keepsake with glowing title & subtitle wish
+   - Respects prefers-reduced-motion
+   - Advances to Scene 2 on user tap
+   ============================================================ */
+const matrixCanvas    = $('matrixRainCanvas');
+const matrixCtx       = matrixCanvas ? matrixCanvas.getContext('2d') : null;
+const matrixWordEl    = $('matrixWord');
+const matrixFinalWrap = $('matrixFinalWrap');
+const matrixFinalTitle= $('matrixFinalTitle');
+const matrixFinalSub  = $('matrixFinalSub');
+const matrixTapHint   = $('matrixTapHint');
+
+let matrixCols = 0;
+let matrixDrops = [];
+let matrixRainInterval = null;
+let isMatrixSequenceRunning = false;
+let isMatrixReadyForNext = false;
+let matrixSequenceToken = 0;
+
+function setupMatrixCanvas() {
+  if (!matrixCanvas || !matrixCtx) return;
+  matrixCanvas.width = window.innerWidth || 360;
+  matrixCanvas.height = window.innerHeight || 640;
+  const fontSize = 12;
+  matrixCols = Math.floor(matrixCanvas.width / fontSize);
+  matrixDrops = new Array(matrixCols).fill(0).map(() => Math.random() * -50);
+}
+
+function drawMatrixRain() {
+  if (!matrixCanvas || !matrixCtx) return;
+  // Glass Theme Wine background fade
+  matrixCtx.fillStyle = 'rgba(7, 2, 10, 0.16)';
+  matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+  
+  const fontSize = 12;
+  matrixCtx.font = `${fontSize}px 'JetBrains Mono', 'Courier New', monospace`;
+  
+  const recName = (window.GIFT_DATA && window.GIFT_DATA.recipientName) || 'ELENA';
+  const charPool = 'HAPPYBIRTHDAY' + (recName.toUpperCase().replace(/[^A-Z]/g, '') || 'CELEBRATE') + '✨♥★2026';
+  
+  for (let i = 0; i < matrixCols; i++) {
+    const char = charPool[Math.floor(Math.random() * charPool.length)];
+    const y = matrixDrops[i] * fontSize;
+    
+    // Glowing Bright Amber/Gold leading character
+    matrixCtx.fillStyle = '#fff4d6';
+    matrixCtx.shadowColor = '#f5b838';
+    matrixCtx.shadowBlur = 8;
+    matrixCtx.fillText(char, i * fontSize, y);
+    
+    // Trailing rose/gold shimmer characters
+    matrixCtx.shadowBlur = 0;
+    const isRose = i % 3 === 0;
+    matrixCtx.fillStyle = isRose ? 'rgba(212, 35, 92, 0.75)' : 'rgba(245, 184, 56, 0.7)';
+    matrixCtx.fillText(char, i * fontSize, y - fontSize);
+    
+    if (y > matrixCanvas.height && Math.random() > 0.92) {
+      matrixDrops[i] = 0;
+    }
+    matrixDrops[i]++;
+  }
+}
+
+function startMatrixRain() {
+  if (!matrixCanvas || !matrixCtx) return;
+  if (matrixRainInterval) clearInterval(matrixRainInterval);
+  setupMatrixCanvas();
+  matrixRainInterval = setInterval(drawMatrixRain, 80);
+}
+
+function stopMatrixRain() {
+  if (matrixRainInterval) {
+    clearInterval(matrixRainInterval);
+    matrixRainInterval = null;
+  }
+}
+
+function waitMatrixMs(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function showMatrixWord(text, holdMs, isNumber, currentToken) {
+  if (!matrixWordEl || matrixSequenceToken !== currentToken) return;
+  matrixWordEl.textContent = text;
+  matrixWordEl.classList.remove('show');
+  matrixWordEl.classList.toggle('number', !!isNumber);
+  void matrixWordEl.offsetWidth; // Force reflow
+  matrixWordEl.classList.add('show');
+  await waitMatrixMs(holdMs);
+  if (matrixSequenceToken !== currentToken) return;
+  matrixWordEl.classList.remove('show');
+  await waitMatrixMs(320);
+}
+
+async function runMatrixSequence() {
+  if (!isMatrixExperience()) return;
+  const currentToken = ++matrixSequenceToken;
+  isMatrixSequenceRunning = true;
+  isMatrixReadyForNext = false;
+
+  const gd = window.GIFT_DATA || {};
+  const s1m = (gd.scenes && gd.scenes.scene1_matrixCountdown) || {};
+  const recName = gd.recipientName || 'Elena';
+
+  if (matrixFinalTitle) {
+    matrixFinalTitle.textContent = formatAgeTitle(s1m.age, recName);
+  }
+  if (matrixFinalSub) {
+    matrixFinalSub.textContent = s1m.wishLine || 'wishing you a year as bright as you are ✨';
+  }
+
+  if (matrixFinalWrap) matrixFinalWrap.classList.remove('is-shown');
+  if (matrixTapHint) matrixTapHint.classList.remove('is-shown');
+
+  startMatrixRain();
+
+  if (reduceMotion) {
+    if (matrixWordEl) matrixWordEl.style.display = 'none';
+    if (matrixFinalWrap) matrixFinalWrap.classList.add('is-shown');
+    if (matrixTapHint) matrixTapHint.classList.add('is-shown');
+    isMatrixReadyForNext = true;
+    isMatrixSequenceRunning = false;
+    return;
+  }
+
+  if (matrixWordEl) matrixWordEl.style.display = '';
+
+  // Sequence: 3 -> 2 -> 1 -> Happy -> Birthday -> [Recipient Name]
+  for (let n = 3; n >= 1; n--) {
+    if (matrixSequenceToken !== currentToken) return;
+    await showMatrixWord(String(n), n === 1 ? 800 : 500, true, currentToken);
+  }
+  if (matrixSequenceToken !== currentToken) return;
+  await showMatrixWord('Happy', 1500, false, currentToken);
+  if (matrixSequenceToken !== currentToken) return;
+  await showMatrixWord('Birthday', 1500, false, currentToken);
+  if (matrixSequenceToken !== currentToken) return;
+  await showMatrixWord(recName, 1800, false, currentToken);
+
+  if (matrixSequenceToken !== currentToken) return;
+  if (matrixWordEl) matrixWordEl.style.display = 'none';
+  if (matrixFinalWrap) matrixFinalWrap.classList.add('is-shown');
+  if (matrixTapHint) matrixTapHint.classList.add('is-shown');
+  isMatrixReadyForNext = true;
+  isMatrixSequenceRunning = false;
+}
+
+window.addEventListener('resize', () => {
+  if (isMatrixExperience() && currentSceneNum === 1) {
+    setupMatrixCanvas();
+  }
+});
+
+const sceneMatrixEl = $('sceneMatrix');
+if (sceneMatrixEl) {
+  sceneMatrixEl.addEventListener('click', () => {
+    if (isMatrixReadyForNext) {
+      goToScene(2);
+    }
+  });
 }
 
 /* ============================================================
@@ -2722,6 +2970,12 @@ function deactivateAllScenesExcept(targetScene){
     treeStop();
     showWish(false);
     hideTreeCanvas();
+    const sceneMatrix = $('sceneMatrix');
+    if (sceneMatrix) {
+      sceneMatrix.classList.remove('is-active');
+      sceneMatrix.setAttribute('aria-hidden', 'true');
+    }
+    stopMatrixRain();
     if (replay){
       replay.classList.remove('is-shown', 'has-next');
       replay.hidden = true;
@@ -2947,6 +3201,12 @@ function handleGlobalTap(e){
   if (Date.now() - sceneEntryTime < 400) return;
 
   if (currentSceneNum === 1){
+    if (isMatrixExperience()) {
+      if (isMatrixReadyForNext) {
+        goToScene(2);
+      }
+      return;
+    }
     // Act 1: If tree is blooming / wish shown / replay armed, tap anywhere goes to Scene 2
     if (replayArmed || window.bdayDone || (nextScene1 && nextScene1.classList.contains('is-shown'))){
       goToScene(2);
@@ -3004,6 +3264,12 @@ function handleGlobalTap(e){
 // Global window tap and keydown listeners for "tap anywhere to next"
 window.addEventListener('pointerup', (e) => {
   if (currentSceneNum === 1){
+    if (isMatrixExperience()) {
+      if (isMatrixReadyForNext) {
+        goToScene(2);
+      }
+      return;
+    }
     if (e && e.target && e.target.closest && e.target.closest('#archery')) return;
     if (replayArmed || window.bdayDone || (nextScene1 && nextScene1.classList.contains('is-shown'))){
       goToScene(2);
@@ -5246,3 +5512,8 @@ window.applyGiftDataTheme     = applyGiftDataTheme;
 window.populateStaticContent  = populateStaticContent;
 window.refreshRig             = refreshRig;
 window.resize                 = resize;
+window.runMatrixSequence      = runMatrixSequence;
+window.startMatrixRain        = startMatrixRain;
+window.stopMatrixRain         = stopMatrixRain;
+window.isMatrixExperience     = isMatrixExperience;
+

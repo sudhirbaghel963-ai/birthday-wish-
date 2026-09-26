@@ -307,6 +307,7 @@
               <option value="all">All Editions</option>
               <option value="birthday-film">Warm Paper Edition</option>
               <option value="birthday-film-glass">Glass Edition</option>
+              <option value="birthday-film-matrix">Matrix Glass Edition</option>
             </select>
 
             <!-- Sort Option -->
@@ -973,7 +974,8 @@
           // Fallback defaults only if table query failed
           allExperiences = [
             { id: 'birthday-film', name: 'The Birthday Film (Warm Paper Edition)', category: 'birthday', price: '100', original_price: '199', is_active: true, tagline: 'Signature 11-Scene Interactive Journey' },
-            { id: 'birthday-film-glass', name: 'The Birthday Film (Glass Edition)', category: 'birthday', price: '100', original_price: '199', is_active: true, tagline: 'Luminous Dark Jewel & Frosted Glass' }
+            { id: 'birthday-film-glass', name: 'The Birthday Film (Glass Edition)', category: 'birthday', price: '100', original_price: '199', is_active: true, tagline: 'Luminous Dark Jewel & Frosted Glass' },
+            { id: 'birthday-film-matrix', name: 'The Birthday Film (Matrix Glass Edition)', category: 'birthday', price: '100', original_price: '199', is_active: true, tagline: 'Monospace Rain & Glass Kinetic Countdown' }
           ];
         }
 
@@ -1202,8 +1204,8 @@
       const isPaid = g.status === 'paid';
       const isRefunded = Boolean(g.refunded);
       const isAdminFree = isGiftAdminFree(g);
-      const expName = g.experience_id === 'birthday-film-glass' ? 'Glass Edition' : 'Warm Paper';
-      const themeName = g.theme_id || (g.experience_id === 'birthday-film-glass' ? 'glass' : 'paper');
+      const expName = g.experience_id === 'birthday-film-matrix' ? 'Matrix Edition' : (g.experience_id === 'birthday-film-glass' ? 'Glass Edition' : 'Warm Paper');
+      const themeName = g.theme_id || ((g.experience_id === 'birthday-film-glass' || g.experience_id === 'birthday-film-matrix') ? 'glass' : 'paper');
       const priceVal = isAdminFree ? '₹0.00 (Admin)' : (isPaid ? `₹${parseFloat(g.price_paid || 0).toFixed(2)}` : '—');
       const dateStr = new Date(g.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       const identifier = g.slug ? `<span class="font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">${g.slug}</span>` : `<span class="font-mono text-slate-400">${(g.id || '').substring(0, 8)}...</span>`;
@@ -1253,11 +1255,14 @@
     function buildGiftPayload(gift) {
       if (!gift) return null;
       const giftContent = (typeof gift.content === 'object' && gift.content !== null) ? gift.content : {};
-      const expSlug = gift.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film';
-      const themeId = gift.theme_id || giftContent.themeId || (expSlug === 'birthday-film-glass' ? 'glass' : 'paper');
+      const expSlug = (gift.experience_id === 'birthday-film-matrix' || gift.experience_id === 'matrix-countdown')
+        ? 'birthday-film-matrix'
+        : (gift.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film');
+      const themeId = gift.theme_id || giftContent.themeId || (expSlug === 'birthday-film-paper' || expSlug === 'birthday-film' ? 'paper' : 'glass');
       
       const payload = {
         ...giftContent,
+        experienceId: expSlug,
         themeId: themeId,
         recipientName: giftContent.recipientName || 'Elena',
         photo_urls: gift.photo_urls || giftContent.photo_urls || [],
@@ -1304,8 +1309,10 @@
       const recName = record.content?.recipientName || 'Elena';
       document.getElementById('detailRecipientTitle').textContent = `${recName}'s Birthday Experience ${isArchived ? `(v${versionNumber} Snapshot)` : `(v${record.version || 1})`}`;
       
-      const expSlug = record.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film';
-      const themeId = record.theme_id || record.content?.themeId || (expSlug === 'birthday-film-glass' ? 'glass' : 'paper');
+      const expSlug = (record.experience_id === 'birthday-film-matrix' || record.experience_id === 'matrix-countdown')
+        ? 'birthday-film-matrix'
+        : (record.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film');
+      const themeId = record.theme_id || record.content?.themeId || (expSlug === 'birthday-film-paper' || expSlug === 'birthday-film' ? 'paper' : 'glass');
       document.getElementById('detailExpTheme').textContent = `${expSlug} (${themeId})`;
       
       if (isArchived) {
@@ -1485,8 +1492,10 @@
             const isLive = tabBtn.getAttribute('data-live') === 'true';
             if (isLive) {
               renderModalAssetsAndMeta(gift, false);
-              const expSlug = gift.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film';
-              const themeId = gift.theme_id || gift.content?.themeId || (expSlug === 'birthday-film-glass' ? 'glass' : 'paper');
+              const expSlug = (gift.experience_id === 'birthday-film-matrix' || gift.experience_id === 'matrix-countdown')
+                ? 'birthday-film-matrix'
+                : (gift.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film');
+              const themeId = gift.theme_id || gift.content?.themeId || (expSlug === 'birthday-film-paper' || expSlug === 'birthday-film' ? 'paper' : 'glass');
               const iframe = document.getElementById('adminPreviewIframe');
               if (iframe) {
                 iframe.onload = () => syncPreviewIframe(1, gift);
@@ -1512,8 +1521,10 @@
       }
 
       // Sync Live Preview Iframe with gift's GIFT_DATA
-      const expSlug = gift.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film';
-      const themeId = gift.theme_id || gift.content?.themeId || (expSlug === 'birthday-film-glass' ? 'glass' : 'paper');
+      const expSlug = (gift.experience_id === 'birthday-film-matrix' || gift.experience_id === 'matrix-countdown')
+        ? 'birthday-film-matrix'
+        : (gift.experience_id === 'birthday-film-glass' ? 'birthday-film-glass' : 'birthday-film');
+      const themeId = gift.theme_id || gift.content?.themeId || (expSlug === 'birthday-film-paper' || expSlug === 'birthday-film' ? 'paper' : 'glass');
       const iframe = document.getElementById('adminPreviewIframe');
       if (iframe) {
         iframe.onload = () => {
@@ -1778,7 +1789,7 @@
           const targetExp = allExperiences.find(x => x.id === expId);
           const expName = targetExp?.name || expId;
 
-          const isCoreExperience = expId === 'birthday-film' || expId === 'birthday-film-glass';
+          const isCoreExperience = expId === 'birthday-film' || expId === 'birthday-film-glass' || expId === 'birthday-film-matrix';
           const confirmMsg = isCoreExperience
             ? `⚠️ "${expName}" (${expId}) is a core active theme edition. Are you sure you want to permanently delete it from the catalog?`
             : `Are you sure you want to permanently delete "${expName}" (${expId}) from the catalog?`;

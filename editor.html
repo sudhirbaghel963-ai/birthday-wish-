@@ -555,47 +555,84 @@
 
 
       <!-- ==========================================
-           1. SCENE 1: BOW & ARROW
+           1. SCENE 1: OPENING SCENE (BOW & ARROW / MATRIX COUNTDOWN)
            ========================================== -->
       <div class="accordion-item bg-white rounded-2xl border border-parchment-300/80 shadow-sm overflow-hidden" data-scene="1">
         <button type="button" class="accordion-header w-full px-5 py-4 flex items-center justify-between text-left hover:bg-parchment-50/50 transition-colors focus:outline-none" aria-expanded="false">
           <div class="flex items-center gap-3">
             <span class="w-7 h-7 rounded-full bg-parchment-200 text-ink-800 text-xs font-bold flex items-center justify-center font-serif">1</span>
             <div>
-              <h2 class="font-serif text-base font-bold text-ink-900">Scene 1: Bow &amp; Arrow</h2>
-              <p class="text-[11px] text-ink-500">Opening bow interaction &amp; kinetic reveal</p>
+              <h2 id="s1AccordionTitle" class="font-serif text-base font-bold text-ink-900">Scene 1: Bow &amp; Arrow</h2>
+              <p id="s1AccordionSubtitle" class="text-[11px] text-ink-500">Opening bow interaction &amp; kinetic reveal</p>
             </div>
           </div>
           <span class="accordion-icon text-rose-500 text-xs transition-transform duration-300">▼</span>
         </button>
         <div class="accordion-content hidden px-5 pb-5 pt-1 space-y-3.5">
-          <div>
-            <label class="block text-xs font-semibold text-ink-800 mb-1">Opening Eyebrow</label>
-            <input type="text" id="s1Eyebrow" value="a little something, for you" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+          <!-- Standard Bow & Arrow Fields -->
+          <div id="s1StandardFields" class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-semibold text-ink-800 mb-1">Opening Eyebrow</label>
+              <input type="text" id="s1Eyebrow" value="a little something, for you" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-800 mb-1">Interaction Hint</label>
+              <input type="text" id="s1Hint" value="pull &amp; release" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
+            <div class="pt-2 border-t border-parchment-200">
+              <label class="block text-xs font-semibold text-ink-800 mb-1">Kinetic Headline Reveal</label>
+              <input type="text" id="s1KineticLine1" value="Happy Birthday" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-800 mb-1">Kinetic Subtext</label>
+              <input type="text" id="s1KineticSubtext" value="to someone worth celebrating" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
+            <div class="pt-2 border-t border-parchment-200">
+              <label class="block text-xs font-semibold text-ink-800 mb-1">Closing Wish Eyebrow</label>
+              <input type="text" id="s1ClosingEyebrow" value="and… make it count" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-800 mb-1">Closing Wish Hero Line</label>
+              <input type="text" id="s1ClosingHero" value="Happy Birthday" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-800 mb-1">Closing Wish Subtext</label>
+              <input type="text" id="s1ClosingSubtext" value="here’s to a year that blooms" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-ink-800 mb-1">Interaction Hint</label>
-            <input type="text" id="s1Hint" value="pull &amp; release" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
-          </div>
-          <div class="pt-2 border-t border-parchment-200">
-            <label class="block text-xs font-semibold text-ink-800 mb-1">Kinetic Headline Reveal</label>
-            <input type="text" id="s1KineticLine1" value="Happy Birthday" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-ink-800 mb-1">Kinetic Subtext</label>
-            <input type="text" id="s1KineticSubtext" value="to someone worth celebrating" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
-          </div>
-          <div class="pt-2 border-t border-parchment-200">
-            <label class="block text-xs font-semibold text-ink-800 mb-1">Closing Wish Eyebrow</label>
-            <input type="text" id="s1ClosingEyebrow" value="and… make it count" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-ink-800 mb-1">Closing Wish Hero Line</label>
-            <input type="text" id="s1ClosingHero" value="Happy Birthday" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-ink-800 mb-1">Closing Wish Subtext</label>
-            <input type="text" id="s1ClosingSubtext" value="here’s to a year that blooms" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+
+          <!-- Matrix Countdown Variant Fields -->
+          <div id="s1MatrixFields" class="hidden space-y-3.5">
+            <div class="p-3.5 rounded-xl bg-purple-950/10 border border-purple-900/20 text-xs text-ink-700 space-y-1">
+              <div class="flex items-center gap-1.5 font-bold text-rose-600">
+                <span>✦</span>
+                <span>Matrix Rain &amp; Countdown Reveal</span>
+              </div>
+              <p class="text-[11px] text-ink-600 leading-relaxed">
+                A terminal-style stream of falling amber &amp; rose characters that counts down (3 → 2 → 1 → Happy → Birthday → <strong id="s1MatrixNamePreview" class="text-rose-600">Elena</strong>) and unveils this glowing birthday card.
+              </p>
+            </div>
+
+            <div>
+              <label for="s1MatrixAge" class="block text-xs font-semibold text-ink-800 mb-1">
+                Milestone Age / Number <span class="text-[10px] text-ink-400 font-normal">(optional, e.g. 20, 21, 30)</span>
+              </label>
+              <input type="text" id="s1MatrixAge" placeholder="e.g. 20" value="" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+              <p class="text-[10px] text-ink-400 mt-1">If provided, final card displays &ldquo;Happy 20th Birthday, [Name]!&rdquo;. If empty, displays &ldquo;Happy Birthday, [Name]!&rdquo;.</p>
+            </div>
+
+            <div>
+              <label for="s1MatrixWishLine" class="block text-xs font-semibold text-ink-800 mb-1">
+                Subtitle Wish Line
+              </label>
+              <input type="text" id="s1MatrixWishLine" value="wishing you a year as bright as you are ✨" class="w-full px-3 py-2 rounded-xl border border-parchment-300 bg-parchment-50/50 text-xs text-ink-900 focus:border-rose-500 focus:outline-none" />
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-parchment-100 border border-parchment-200">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-ink-500 block mb-1">Live Card Preview:</span>
+              <div class="font-serif text-sm font-bold text-rose-600" id="s1MatrixFinalTitlePreview">Happy Birthday, Elena!</div>
+              <div class="text-xs text-ink-600 italic mt-0.5" id="s1MatrixFinalSubPreview">wishing you a year as bright as you are ✨</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1632,7 +1669,8 @@ Happy Birthday. I mean it.</textarea>
     const expParam = urlParams.get('experience') || 'birthday-film';
     const themeParam = urlParams.get('theme') || 'paper';
     let revisesGiftId = urlParams.get('revises') || null;
-    const initialThemeId = (expParam === 'birthday-film-glass' || themeParam === 'glass') ? 'glass' : 'paper';
+    const isMatrixParam = expParam === 'birthday-film-matrix' || expParam === 'matrix-countdown';
+    const initialThemeId = (expParam === 'birthday-film-glass' || isMatrixParam || themeParam === 'glass') ? 'glass' : 'paper';
 
     function generateUuid() {
       if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -1718,6 +1756,7 @@ Happy Birthday. I mean it.</textarea>
 
     // 3. Local Editor State (Matches GIFT_DATA schema exactly)
     let editorState = {
+      experienceId: expParam || 'birthday-film',
       recipientName: "Elena",
       themeId: initialThemeId,
       theme: {
@@ -1745,6 +1784,10 @@ Happy Birthday. I mean it.</textarea>
           wishSub: "here’s to a year that blooms",
           kEyebrow: "make a wish…",
           kSub: "to someone worth celebrating"
+        },
+        scene1_matrixCountdown: {
+          age: "",
+          wishLine: "wishing you a year as bright as you are ✨"
         },
         scene2_giftBox: {
           badge: "Special Delivery",
@@ -2014,9 +2057,13 @@ Happy Birthday. I mean it.</textarea>
       if (sc.scene11_finalToast) {
         if (getEl('s11Eyebrow')) getEl('s11Eyebrow').value = sc.scene11_finalToast.eyebrow || '';
         if (getEl('s11HeroLine')) getEl('s11HeroLine').value = sc.scene11_finalToast.heroLine || 'Happy Birthday, {recipientName}';
-        if (getEl('s11Subtext')) getEl('s11Subtext').value = sc.scene11_finalToast.subtext || '';
+      }
+      if (sc.scene1_matrixCountdown) {
+        if (getEl('s1MatrixAge')) getEl('s1MatrixAge').value = sc.scene1_matrixCountdown.age || '';
+        if (getEl('s1MatrixWishLine')) getEl('s1MatrixWishLine').value = sc.scene1_matrixCountdown.wishLine || 'wishing you a year as bright as you are ✨';
       }
 
+      updateExperienceUI();
       updateHeroPreviewToken();
       renderScene6PairedSlots();
       renderScene7PairedSlots();
@@ -2024,7 +2071,66 @@ Happy Birthday. I mean it.</textarea>
       updateValidationAndProgress();
     }
 
-    // 7. Live Substituted Hero Token Preview
+    // 7. Live Substituted Hero & Matrix Previews
+    function formatAgeTitle(age, name) {
+      const safeName = name || 'Elena';
+      if (!age && age !== 0) return `Happy Birthday, ${safeName}!`;
+      let ageStr = String(age).trim();
+      if (!ageStr) return `Happy Birthday, ${safeName}!`;
+      if (/^\d+(st|nd|rd|th)$/i.test(ageStr)) {
+        return `Happy ${ageStr} Birthday, ${safeName}!`;
+      }
+      const num = parseInt(ageStr, 10);
+      if (!isNaN(num)) {
+        const j = num % 10, k = num % 100;
+        let suffix = 'th';
+        if (j === 1 && k !== 11) suffix = 'st';
+        else if (j === 2 && k !== 12) suffix = 'nd';
+        else if (j === 3 && k !== 13) suffix = 'rd';
+        return `Happy ${num}${suffix} Birthday, ${safeName}!`;
+      }
+      return `Happy ${ageStr} Birthday, ${safeName}!`;
+    }
+
+    function updateMatrixPreview() {
+      const s1m = editorState.scenes?.scene1_matrixCountdown || {};
+      const recName = editorState.recipientName || 'Elena';
+      const namePrev = document.getElementById('s1MatrixNamePreview');
+      if (namePrev) namePrev.textContent = recName;
+      const titlePrev = document.getElementById('s1MatrixFinalTitlePreview');
+      if (titlePrev) titlePrev.textContent = formatAgeTitle(s1m.age, recName);
+      const subPrev = document.getElementById('s1MatrixFinalSubPreview');
+      if (subPrev) subPrev.textContent = s1m.wishLine || 'wishing you a year as bright as you are ✨';
+    }
+
+    function updateExperienceUI() {
+      const isMatrix = editorState.experienceId === 'birthday-film-matrix' || expParam === 'birthday-film-matrix' || expParam === 'matrix-countdown';
+      const s1Standard = document.getElementById('s1StandardFields');
+      const s1Matrix = document.getElementById('s1MatrixFields');
+      const s1Title = document.getElementById('s1AccordionTitle');
+      const s1Sub = document.getElementById('s1AccordionSubtitle');
+
+      if (isMatrix) {
+        editorState.themeId = 'glass';
+        if (s1Standard) s1Standard.classList.add('hidden');
+        if (s1Matrix) s1Matrix.classList.remove('hidden');
+        if (s1Title) s1Title.textContent = 'Scene 1: Matrix Countdown';
+        if (s1Sub) s1Sub.textContent = 'Monospace falling rain & word reveal sequence';
+        
+        const jumpBtn1 = document.querySelector('#sceneJumpTabs button[data-scene="1"]');
+        if (jumpBtn1) jumpBtn1.textContent = '1: Matrix';
+      } else {
+        if (s1Standard) s1Standard.classList.remove('hidden');
+        if (s1Matrix) s1Matrix.classList.add('hidden');
+        if (s1Title) s1Title.textContent = 'Scene 1: Bow & Arrow';
+        if (s1Sub) s1Sub.textContent = 'Opening bow interaction & kinetic reveal';
+        
+        const jumpBtn1 = document.querySelector('#sceneJumpTabs button[data-scene="1"]');
+        if (jumpBtn1) jumpBtn1.textContent = '1: Bow';
+      }
+      updateMatrixPreview();
+    }
+
     function updateHeroPreviewToken() {
       const heroLine = document.getElementById('s11HeroLine')?.value || "Happy Birthday, {recipientName}";
       const recName = editorState.recipientName || "Elena";
@@ -2798,8 +2904,23 @@ Happy Birthday. I mean it.</textarea>
       bind('recipientNameInput', (e) => {
         editorState.recipientName = e.target.value.trim() || 'Elena';
         updateHeroPreviewToken();
+        updateMatrixPreview();
         queuePreviewUpdate(11);
         updateValidationAndProgress();
+      });
+
+      // Scene 1: Matrix Countdown
+      bind('s1MatrixAge', (e) => {
+        if (!editorState.scenes.scene1_matrixCountdown) editorState.scenes.scene1_matrixCountdown = {};
+        editorState.scenes.scene1_matrixCountdown.age = e.target.value;
+        updateMatrixPreview();
+        queuePreviewUpdate(1);
+      });
+      bind('s1MatrixWishLine', (e) => {
+        if (!editorState.scenes.scene1_matrixCountdown) editorState.scenes.scene1_matrixCountdown = {};
+        editorState.scenes.scene1_matrixCountdown.wishLine = e.target.value;
+        updateMatrixPreview();
+        queuePreviewUpdate(1);
       });
 
       // Global Colors
@@ -3121,7 +3242,11 @@ Happy Birthday. I mean it.</textarea>
       if (isThemeValid) completedCount++;
       if (editorState.music?.trackType) completedCount++;
       if (isNameValid) completedCount++;
-      if (editorState.scenes?.scene1_act1?.kineticLine1 || editorState.scenes?.scene1_act1?.eyebrow) completedCount++;
+      const isScene1Valid = Boolean(
+        (editorState.scenes?.scene1_act1?.kineticLine1 || editorState.scenes?.scene1_act1?.eyebrow) ||
+        (editorState.scenes?.scene1_matrixCountdown?.wishLine || editorState.scenes?.scene1_matrixCountdown?.age !== undefined)
+      );
+      if (isScene1Valid) completedCount++;
       if (editorState.scenes?.scene2_giftBox?.title) completedCount++;
       if (isPinValid) completedCount++;
       if (editorState.scenes?.scene4_curtain?.badge) completedCount++;
@@ -3201,7 +3326,8 @@ Happy Birthday. I mean it.</textarea>
         if (recEl) recEl.textContent = recName;
 
         // Sync review iframe source
-        const expSlug = editorState.themeId === 'glass' ? 'birthday-film-glass' : 'birthday-film';
+        const isMatrix = editorState.experienceId === 'birthday-film-matrix' || expParam === 'birthday-film-matrix' || expParam === 'matrix-countdown';
+        const expSlug = isMatrix ? 'birthday-film-matrix' : (editorState.themeId === 'glass' ? 'birthday-film-glass' : 'birthday-film');
         if (reviewIframe) {
           reviewIframe.src = `./preview.html?experience=${expSlug}&review=true`;
           
@@ -3241,9 +3367,12 @@ Happy Birthday. I mean it.</textarea>
       if (!orderModal) return;
       triggerAutosave();
 
-      const baseExpName = editorState.themeId === 'glass' 
-        ? 'Signature 11-Scene Film (Glass Edition)' 
-        : 'Signature 11-Scene Film (Warm Paper Edition)';
+      const isMatrix = editorState.experienceId === 'birthday-film-matrix' || expParam === 'birthday-film-matrix' || expParam === 'matrix-countdown';
+      const baseExpName = isMatrix
+        ? 'The Birthday Film (Matrix Glass Edition)'
+        : (editorState.themeId === 'glass' 
+            ? 'Signature 11-Scene Film (Glass Edition)' 
+            : 'Signature 11-Scene Film (Warm Paper Edition)');
 
       const expName = revisesGiftId ? `${baseExpName} · Revision Update` : baseExpName;
 
@@ -4221,10 +4350,11 @@ Happy Birthday. I mean it.</textarea>
       // We show Recipient first (idx 1), then Global Settings (idx 0),
       // then scenes 1-11 (idx 2-12).
       // ------------------------------------------------------------------
+      const isMatrixExp = editorState.experienceId === 'birthday-film-matrix' || expParam === 'birthday-film-matrix' || expParam === 'matrix-countdown';
       const STEPS = [
         { idx: 1,  title: 'Recipient',                 subtitle: 'Who is this magical film for?',          scene: null },
         { idx: 0,  title: 'Theme & Music',             subtitle: 'Colors and background soundtrack',        scene: null },
-        { idx: 2,  title: 'Scene 1: Bow & Arrow',       subtitle: 'Opening bow & kinetic reveal',           scene: 1 },
+        { idx: 2,  title: isMatrixExp ? 'Scene 1: Matrix' : 'Scene 1: Bow & Arrow', subtitle: isMatrixExp ? 'Monospace rain & word reveal' : 'Opening bow & kinetic reveal', scene: 1 },
         { idx: 3,  title: 'Scene 2: Gift Box',         subtitle: 'Opening 3D gift & card text',            scene: 2 },
         { idx: 4,  title: 'Scene 3: Secret PIN',       subtitle: '4-digit code & hint',                    scene: 3 },
         { idx: 5,  title: 'Scene 4: Velvet Curtain',   subtitle: 'Theatrical reveal badge',                 scene: 4 },
@@ -4520,8 +4650,12 @@ Happy Birthday. I mean it.</textarea>
     restoreDraft();
     initFormListeners();
     updateValidationAndProgress();
-    if (previewIframe && editorState.themeId === 'glass') {
-      previewIframe.src = './preview.html?experience=birthday-film-glass';
+    if (previewIframe) {
+      if (editorState.experienceId === 'birthday-film-matrix' || expParam === 'birthday-film-matrix' || expParam === 'matrix-countdown') {
+        previewIframe.src = './preview.html?experience=birthday-film-matrix&theme=glass';
+      } else if (editorState.themeId === 'glass' || expParam === 'birthday-film-glass') {
+        previewIframe.src = './preview.html?experience=birthday-film-glass&theme=glass';
+      }
     }
     setTimeout(pushUpdateToPreview, 800);
   </script>

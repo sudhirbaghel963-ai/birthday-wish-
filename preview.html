@@ -26,8 +26,12 @@
           exp = last;
         }
       }
+      if (!exp) exp = (theme === 'glass' ? 'birthday-film-glass' : 'birthday-film');
       if (exp === 'birthday-film-glass' || exp === 'birthday-film-matrix' || theme === 'glass') {
         document.documentElement.setAttribute('data-theme', 'glass');
+      }
+      if (exp) {
+        document.documentElement.setAttribute('data-experience', exp);
       }
     })();
   </script>
@@ -36,7 +40,14 @@
   <link rel="stylesheet" href="./theme-glass.css" />
 </head>
 <body>
-  <main class="scene">
+  <!-- Neutral Loading Screen (Prevents any flash of unstyled or mismatched scene content) -->
+  <div id="previewLoadingScreen" class="preview-loader-screen" aria-hidden="true">
+    <div class="preview-loader-spinner"></div>
+    <div class="preview-loader-title">Preparing Your Keepsake Film</div>
+    <div class="preview-loader-sub">weaving every sweet moment together ✨</div>
+  </div>
+
+  <main class="scene" id="previewScene">
 
     <!-- SCENE 1 (VARIANT): MATRIX RAIN COUNTDOWN (for 'birthday-film-matrix') -->
     <section class="scene-matrix" id="sceneMatrix" aria-label="Matrix Countdown Experience">
@@ -1212,121 +1223,180 @@
         auth: { persistSession: true }
       });
 
-      // 1. If an explicit gift/version ID was requested (e.g. from dashboard or admin inspector):
-      if (versionId || (giftId && versionNum) || giftId) {
+      const isReview = urlParams.get('review') === 'true';
+      const isEmbedded = window.self !== window.top;
+      const draftId = urlParams.get('draftId') || urlParams.get('draft') || localStorage.getItem('vk_current_draft_id') || localStorage.getItem('gift_draft_id');
+      const isMatrix = exp === 'birthday-film-matrix' || exp === 'matrix-countdown';
+
+      document.documentElement.setAttribute('data-experience', exp);
+      if (isMatrix) {
+        document.body.classList.add('experience-matrix');
+      }
+
+      let dataLoadedFromDraft = false;
+
+      // 0. If in Review mode or embedded editor preview with existing local draft, load immediately in 0ms:
+      if ((isReview || isEmbedded || draftId) && draftId) {
         try {
-          let giftRecord = null;
-
-          if (versionId) {
-            const { data } = await supabase
-              .from('gift_versions')
-              .select('*')
-              .eq('id', versionId)
-              .maybeSingle();
-            giftRecord = data;
-          } else if (giftId && versionNum) {
-            const { data } = await supabase
-              .from('gift_versions')
-              .select('*')
-              .eq('gift_id', giftId)
-              .eq('version_number', parseInt(versionNum, 10))
-              .maybeSingle();
-            giftRecord = data;
-          }
-
-          if (!giftRecord && giftId) {
-            const { data } = await supabase
-              .from('gifts')
-              .select('*')
-              .eq('id', giftId)
-              .maybeSingle();
-            giftRecord = data;
-          }
-
-          if (giftRecord) {
-            const themeId = giftRecord.theme_id || (giftRecord.content && giftRecord.content.themeId) || (giftRecord.experience_id === 'birthday-film-glass' ? 'glass' : 'paper');
+          const draftRaw = localStorage.getItem(`vk_draft_data_${draftId}`);
+          if (draftRaw) {
+            const draft = JSON.parse(draftRaw);
+            const themeId = isMatrix ? 'glass' : (draft.themeId || (exp === 'birthday-film-glass' ? 'glass' : 'paper'));
             document.documentElement.setAttribute('data-theme', themeId);
             document.body.classList.remove('theme-paper', 'theme-glass');
             document.body.classList.add(`theme-${themeId}`);
 
-            const giftContent = (typeof giftRecord.content === 'object' && giftRecord.content !== null) ? giftRecord.content : {};
             window.GIFT_DATA = {
-              ...giftContent,
+              ...draft,
+              experienceId: exp,
               themeId: themeId,
-              recipientName: giftContent.recipientName || 'Elena',
-              photo_urls: giftRecord.photo_urls || giftContent.photo_urls || [],
-              clip_urls: giftRecord.clip_urls || giftContent.clip_urls || [],
-              music: giftRecord.music || giftContent.music || { trackType: 'default', startSeconds: 27 },
+              recipientName: draft.recipientName || 'Elena',
+              photo_urls: draft.photo_urls || (draft.scenes?.scene6_wallOfUs?.photos) || [],
+              clip_urls: draft.clip_urls || (draft.scenes?.scene7_memoryReel?.clips) || [],
+              music: draft.music || { trackType: 'default', startSeconds: 27 },
               scenes: {
-                ...(giftContent.scenes || {})
+                ...(draft.scenes || {})
               }
             };
-
-            if (giftRecord.photo_urls && Array.isArray(giftRecord.photo_urls) && giftRecord.photo_urls.length) {
-              if (!window.GIFT_DATA.scenes.scene6_wallOfUs) window.GIFT_DATA.scenes.scene6_wallOfUs = {};
-              window.GIFT_DATA.scenes.scene6_wallOfUs.photos = giftRecord.photo_urls;
-            }
-            if (giftRecord.clip_urls && Array.isArray(giftRecord.clip_urls) && giftRecord.clip_urls.length) {
-              if (!window.GIFT_DATA.scenes.scene7_memoryReel) window.GIFT_DATA.scenes.scene7_memoryReel = {};
-              window.GIFT_DATA.scenes.scene7_memoryReel.clips = giftRecord.clip_urls;
-            }
+            dataLoadedFromDraft = true;
           }
-        } catch (e) {
-          console.warn('[preview.html] Could not load version/gift data in preview:', e);
+        } catch (draftErr) {
+          console.warn('[preview.html] Could not parse local draft data:', draftErr);
         }
-      } else {
-        // 2. Experience Demo Mode (e.g. previewing Glass or Paper theme demo)
-        const expConfig = DEMO_EXPERIENCE_CONFIG[exp] || (themeParam ? DEMO_EXPERIENCE_CONFIG[themeParam] : null) || DEMO_EXPERIENCE_CONFIG['birthday-film'];
-        const themeId = expConfig.themeId || 'paper';
+      }
 
-        document.documentElement.setAttribute('data-theme', themeId);
-        document.body.classList.remove('theme-paper', 'theme-glass');
-        document.body.classList.add(`theme-${themeId}`);
-
-        if (expConfig.demoGiftSlug) {
+      if (!dataLoadedFromDraft) {
+        // 1. If an explicit gift/version ID was requested (e.g. from dashboard or admin inspector):
+        if (versionId || (giftId && versionNum) || giftId) {
           try {
-            const { data: demoGift, error } = await supabase
-              .from('gifts')
-              .select('*')
-              .eq('slug', expConfig.demoGiftSlug)
-              .eq('status', 'paid')
-              .maybeSingle();
+            let giftRecord = null;
 
-            if (demoGift && !error) {
-              const giftContent = (typeof demoGift.content === 'object' && demoGift.content !== null) ? demoGift.content : {};
+            if (versionId) {
+              const { data } = await supabase
+                .from('gift_versions')
+                .select('*')
+                .eq('id', versionId)
+                .maybeSingle();
+              giftRecord = data;
+            } else if (giftId && versionNum) {
+              const { data } = await supabase
+                .from('gift_versions')
+                .select('*')
+                .eq('gift_id', giftId)
+                .eq('version_number', parseInt(versionNum, 10))
+                .maybeSingle();
+              giftRecord = data;
+            }
+
+            if (!giftRecord && giftId) {
+              const { data } = await supabase
+                .from('gifts')
+                .select('*')
+                .eq('id', giftId)
+                .maybeSingle();
+              giftRecord = data;
+            }
+
+            if (giftRecord) {
+              const themeId = isMatrix ? 'glass' : (giftRecord.theme_id || (giftRecord.content && giftRecord.content.themeId) || (giftRecord.experience_id === 'birthday-film-glass' ? 'glass' : 'paper'));
+              document.documentElement.setAttribute('data-theme', themeId);
+              document.body.classList.remove('theme-paper', 'theme-glass');
+              document.body.classList.add(`theme-${themeId}`);
+
+              const giftContent = (typeof giftRecord.content === 'object' && giftRecord.content !== null) ? giftRecord.content : {};
               window.GIFT_DATA = {
                 ...giftContent,
+                experienceId: exp,
                 themeId: themeId,
                 recipientName: giftContent.recipientName || 'Elena',
-                photo_urls: demoGift.photo_urls || giftContent.photo_urls || [],
-                clip_urls: demoGift.clip_urls || giftContent.clip_urls || [],
-                music: demoGift.music || giftContent.music || { trackType: 'default', startSeconds: 27 },
+                photo_urls: giftRecord.photo_urls || giftContent.photo_urls || [],
+                clip_urls: giftRecord.clip_urls || giftContent.clip_urls || [],
+                music: giftRecord.music || giftContent.music || { trackType: 'default', startSeconds: 27 },
                 scenes: {
                   ...(giftContent.scenes || {})
                 }
               };
 
-              if (demoGift.photo_urls && Array.isArray(demoGift.photo_urls) && demoGift.photo_urls.length) {
+              if (giftRecord.photo_urls && Array.isArray(giftRecord.photo_urls) && giftRecord.photo_urls.length) {
                 if (!window.GIFT_DATA.scenes.scene6_wallOfUs) window.GIFT_DATA.scenes.scene6_wallOfUs = {};
-                window.GIFT_DATA.scenes.scene6_wallOfUs.photos = demoGift.photo_urls;
+                window.GIFT_DATA.scenes.scene6_wallOfUs.photos = giftRecord.photo_urls;
               }
-              if (demoGift.clip_urls && Array.isArray(demoGift.clip_urls) && demoGift.clip_urls.length) {
+              if (giftRecord.clip_urls && Array.isArray(giftRecord.clip_urls) && giftRecord.clip_urls.length) {
                 if (!window.GIFT_DATA.scenes.scene7_memoryReel) window.GIFT_DATA.scenes.scene7_memoryReel = {};
-                window.GIFT_DATA.scenes.scene7_memoryReel.clips = demoGift.clip_urls;
+                window.GIFT_DATA.scenes.scene7_memoryReel.clips = giftRecord.clip_urls;
               }
-            } else {
-              console.warn('[preview.html] Demo gift unavailable or not paid, falling back to default placeholders:', error || 'No paid row');
-              window.GIFT_DATA = { themeId: themeId, theme: themeId };
             }
-          } catch (demoErr) {
-            console.warn('[preview.html] Error fetching demo gift, falling back to default placeholders:', demoErr);
-            window.GIFT_DATA = { themeId: themeId, theme: themeId };
+          } catch (e) {
+            console.warn('[preview.html] Could not load version/gift data in preview:', e);
           }
         } else {
-          // Paper theme / default fallback
-          window.GIFT_DATA = { themeId: themeId, theme: themeId };
+          // 2. Experience Demo Mode (e.g. previewing Glass or Paper theme demo)
+          const expConfig = DEMO_EXPERIENCE_CONFIG[exp] || (themeParam ? DEMO_EXPERIENCE_CONFIG[themeParam] : null) || DEMO_EXPERIENCE_CONFIG['birthday-film'];
+          const themeId = isMatrix ? 'glass' : (expConfig.themeId || 'paper');
+
+          document.documentElement.setAttribute('data-theme', themeId);
+          document.body.classList.remove('theme-paper', 'theme-glass');
+          document.body.classList.add(`theme-${themeId}`);
+
+          if (expConfig.demoGiftSlug) {
+            try {
+              const { data: demoGift, error } = await supabase
+                .from('gifts')
+                .select('*')
+                .eq('slug', expConfig.demoGiftSlug)
+                .eq('status', 'paid')
+                .maybeSingle();
+
+              if (demoGift && !error) {
+                const giftContent = (typeof demoGift.content === 'object' && demoGift.content !== null) ? demoGift.content : {};
+                window.GIFT_DATA = {
+                  ...giftContent,
+                  experienceId: exp,
+                  themeId: themeId,
+                  recipientName: giftContent.recipientName || 'Elena',
+                  photo_urls: demoGift.photo_urls || giftContent.photo_urls || [],
+                  clip_urls: demoGift.clip_urls || giftContent.clip_urls || [],
+                  music: demoGift.music || giftContent.music || { trackType: 'default', startSeconds: 27 },
+                  scenes: {
+                    ...(giftContent.scenes || {})
+                  }
+                };
+
+                if (demoGift.photo_urls && Array.isArray(demoGift.photo_urls) && demoGift.photo_urls.length) {
+                  if (!window.GIFT_DATA.scenes.scene6_wallOfUs) window.GIFT_DATA.scenes.scene6_wallOfUs = {};
+                  window.GIFT_DATA.scenes.scene6_wallOfUs.photos = demoGift.photo_urls;
+                }
+                if (demoGift.clip_urls && Array.isArray(demoGift.clip_urls) && demoGift.clip_urls.length) {
+                  if (!window.GIFT_DATA.scenes.scene7_memoryReel) window.GIFT_DATA.scenes.scene7_memoryReel = {};
+                  window.GIFT_DATA.scenes.scene7_memoryReel.clips = demoGift.clip_urls;
+                }
+              } else {
+                console.warn('[preview.html] Demo gift unavailable or not paid, falling back to default placeholders:', error || 'No paid row');
+                window.GIFT_DATA = { experienceId: exp, themeId: themeId, theme: themeId };
+              }
+            } catch (demoErr) {
+              console.warn('[preview.html] Error fetching demo gift, falling back to default placeholders:', demoErr);
+              window.GIFT_DATA = { experienceId: exp, themeId: themeId, theme: themeId };
+            }
+          } else {
+            // Paper theme / default fallback
+            window.GIFT_DATA = { experienceId: exp, themeId: themeId, theme: themeId };
+          }
         }
       }
+
+      // Smoothly dismiss loader screen
+      const loader = document.getElementById('previewLoadingScreen');
+      if (loader) {
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+        setTimeout(() => {
+          if (loader.parentNode) loader.remove();
+        }, 320);
+      }
+
+      // Double rAF so geometry and computed styles are settled
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
       await import('./birthday.js');
     })();

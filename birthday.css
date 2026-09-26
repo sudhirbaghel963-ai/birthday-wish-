@@ -3080,8 +3080,105 @@ body{
   overflow: hidden;
 }
 
-.scene-matrix.is-active {
+.scene-matrix.is-active,
+html[data-experience="birthday-film-matrix"] .scene-matrix,
+html[data-experience="matrix-countdown"] .scene-matrix,
+[data-experience="birthday-film-matrix"] .scene-matrix,
+[data-experience="matrix-countdown"] .scene-matrix,
+body.experience-matrix .scene-matrix {
   display: block;
+}
+
+/* Instant suppression of Bow & Arrow (#hero / #tree) for Matrix Countdown experience */
+html[data-experience="birthday-film-matrix"] #hero,
+html[data-experience="matrix-countdown"] #hero,
+[data-experience="birthday-film-matrix"] #hero,
+[data-experience="matrix-countdown"] #hero,
+body.experience-matrix #hero,
+body.experience-matrix .hero,
+html[data-experience="birthday-film-matrix"] .hero,
+html[data-experience="matrix-countdown"] .hero {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html[data-experience="birthday-film-matrix"] #tree,
+html[data-experience="matrix-countdown"] #tree,
+[data-experience="birthday-film-matrix"] #tree,
+[data-experience="matrix-countdown"] #tree,
+body.experience-matrix #tree,
+body.experience-matrix .tree,
+html[data-experience="birthday-film-matrix"] .tree,
+html[data-experience="matrix-countdown"] .tree {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Neutral Preview Loading Overlay */
+.preview-loader-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: radial-gradient(circle at 50% 40%, #fff7f2 0%, #f7e7dc 60%, #eed5c5 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+[data-theme="glass"] .preview-loader-screen {
+  background: radial-gradient(circle at 50% 40%, #1e1028 0%, #120919 60%, #0a040e 100%);
+}
+
+.preview-loader-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(212, 35, 92, 0.15);
+  border-top-color: #d4235c;
+  border-radius: 50%;
+  animation: previewSpin 0.9s linear infinite;
+}
+
+[data-theme="glass"] .preview-loader-spinner {
+  border: 3px solid rgba(245, 184, 56, 0.2);
+  border-top-color: #f5b838;
+}
+
+@keyframes previewSpin {
+  to { transform: rotate(360deg); }
+}
+
+.preview-loader-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #2b1118;
+  margin-top: 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="glass"] .preview-loader-title {
+  color: #fff4d6;
+}
+
+.preview-loader-sub {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #a85069;
+  margin-top: 0.35rem;
+}
+
+[data-theme="glass"] .preview-loader-sub {
+  color: #f5b838;
+  opacity: 0.85;
 }
 
 #matrixRainCanvas {

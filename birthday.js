@@ -207,27 +207,44 @@ function rebuildKineticChars(line1Str, line2Str){
 
 function isMatrixExperience() {
   const urlParams = new URLSearchParams(window.location.search);
-  const exp = urlParams.get('experience') || (window.GIFT_DATA && window.GIFT_DATA.experienceId);
-  return exp === 'birthday-film-matrix' || exp === 'matrix-countdown';
+  const exp = urlParams.get('experience') 
+    || (window.GIFT_DATA && window.GIFT_DATA.experienceId)
+    || (typeof document !== 'undefined' && document.documentElement && document.documentElement.getAttribute('data-experience'));
+  const isMatBody = typeof document !== 'undefined' && document.body && document.body.classList.contains('experience-matrix');
+  return isMatBody || exp === 'birthday-film-matrix' || exp === 'matrix-countdown';
 }
 
 function applyGiftDataTheme(theme, explicitThemeId) {
   const urlParams = new URLSearchParams(window.location.search);
-  const exp = urlParams.get('experience') || (window.GIFT_DATA && window.GIFT_DATA.experienceId);
+  const exp = urlParams.get('experience') 
+    || (window.GIFT_DATA && window.GIFT_DATA.experienceId)
+    || (typeof document !== 'undefined' && document.documentElement && document.documentElement.getAttribute('data-experience'));
   const urlTheme = urlParams.get('theme');
-  const detectedThemeId = isMatrixExperience()
+  const isMat = isMatrixExperience() || exp === 'birthday-film-matrix' || exp === 'matrix-countdown';
+  const detectedThemeId = isMat
     ? 'glass'
     : (explicitThemeId 
        || (window.GIFT_DATA && window.GIFT_DATA.themeId) 
        || (exp === 'birthday-film-glass' || urlTheme === 'glass' ? 'glass' : 'paper'));
 
   const currentThemeId = detectedThemeId === 'glass' ? 'glass' : 'paper';
-  if (window.GIFT_DATA) window.GIFT_DATA.themeId = currentThemeId;
+  if (window.GIFT_DATA) {
+    window.GIFT_DATA.themeId = currentThemeId;
+    if (exp) window.GIFT_DATA.experienceId = exp;
+  }
 
-  document.documentElement.setAttribute('data-theme', currentThemeId);
-  if (document.body) {
+  if (typeof document !== 'undefined' && document.documentElement) {
+    document.documentElement.setAttribute('data-theme', currentThemeId);
+    if (exp) document.documentElement.setAttribute('data-experience', exp);
+  }
+  if (typeof document !== 'undefined' && document.body) {
     document.body.classList.remove('theme-paper', 'theme-glass');
     document.body.classList.add('theme-' + currentThemeId);
+    if (isMat) {
+      document.body.classList.add('experience-matrix');
+    } else {
+      document.body.classList.remove('experience-matrix');
+    }
   }
 
   if (typeof syncAmbientParticlesTheme === 'function') {
@@ -1802,8 +1819,10 @@ resize();
 if (reduceMotion){
   drawFinal();
 } else {
-  buildMotes();
-  document.fonts && document.fonts.ready.then(() => { refreshRig(); setDraw(0); });
+  if (!isMatrixExperience()) {
+    buildMotes();
+    document.fonts && document.fonts.ready.then(() => { refreshRig(); setDraw(0); });
+  }
   enter();
   if (replay) replay.addEventListener('click', resetAll);
 }

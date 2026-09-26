@@ -16,6 +16,17 @@
   <!-- Progressive Enhancement flag: immediately active before any DOM painting -->
   <script>
     document.documentElement.classList.add('js');
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let exp = urlParams.get('experience');
+      const theme = urlParams.get('theme');
+      if (exp === 'birthday-film-glass' || exp === 'birthday-film-matrix' || theme === 'glass') {
+        document.documentElement.setAttribute('data-theme', 'glass');
+      }
+      if (exp) {
+        document.documentElement.setAttribute('data-experience', exp);
+      }
+    })();
   </script>
 
   <link rel="stylesheet" href="./birthday.css" />
@@ -1124,16 +1135,23 @@
         }
 
         // 3. Row Found — Strict Deterministic Setup Sequence:
-        // a. Apply Theme on Document & Body BEFORE film scripts run
-        const themeId = gift.theme_id || (gift.content && gift.content.themeId) || 'paper';
+        // a. Apply Theme and Experience on Document & Body BEFORE film scripts run
+        const expId = gift.experience_id || (gift.content && gift.content.experienceId) || (gift.theme_id === 'glass' ? 'birthday-film-glass' : 'birthday-film');
+        const isMatrix = expId === 'birthday-film-matrix' || expId === 'matrix-countdown';
+        const themeId = isMatrix ? 'glass' : (gift.theme_id || (gift.content && gift.content.themeId) || 'paper');
         document.documentElement.setAttribute('data-theme', themeId);
-        document.body.classList.remove('theme-paper', 'theme-glass');
+        document.documentElement.setAttribute('data-experience', expId);
+        document.body.classList.remove('theme-paper', 'theme-glass', 'experience-matrix');
         document.body.classList.add(`theme-${themeId}`);
+        if (isMatrix) {
+          document.body.classList.add('experience-matrix');
+        }
 
         // b. Format & Inject window.GIFT_DATA
         const giftContent = (typeof gift.content === 'object' && gift.content !== null) ? gift.content : {};
         window.GIFT_DATA = {
           ...giftContent,
+          experienceId: expId,
           themeId: themeId,
           recipientName: giftContent.recipientName || 'Elena',
           photo_urls: gift.photo_urls || giftContent.photo_urls || [],

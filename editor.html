@@ -3328,8 +3328,15 @@ Happy Birthday. I mean it.</textarea>
         // Sync review iframe source
         const isMatrix = editorState.experienceId === 'birthday-film-matrix' || expParam === 'birthday-film-matrix' || expParam === 'matrix-countdown';
         const expSlug = isMatrix ? 'birthday-film-matrix' : (editorState.themeId === 'glass' ? 'birthday-film-glass' : 'birthday-film');
+        const themeSlug = isMatrix || editorState.themeId === 'glass' ? 'glass' : 'paper';
+        if (draftId) {
+          try {
+            localStorage.setItem(`vk_draft_data_${draftId}`, JSON.stringify(editorState));
+            localStorage.setItem('vk_current_draft_id', draftId);
+          } catch (e) {}
+        }
         if (reviewIframe) {
-          reviewIframe.src = `./preview.html?experience=${expSlug}&review=true`;
+          reviewIframe.src = `./preview.html?experience=${expSlug}&theme=${themeSlug}&review=true&draftId=${draftId}`;
           
           const onReviewLoad = () => {
             try {

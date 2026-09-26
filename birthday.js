@@ -1846,14 +1846,6 @@ if (isRecord){
    - Respects prefers-reduced-motion
    - Advances to Scene 2 on user tap
    ============================================================ */
-const matrixCanvas    = $('matrixRainCanvas');
-const matrixCtx       = matrixCanvas ? matrixCanvas.getContext('2d') : null;
-const matrixWordEl    = $('matrixWord');
-const matrixFinalWrap = $('matrixFinalWrap');
-const matrixFinalTitle= $('matrixFinalTitle');
-const matrixFinalSub  = $('matrixFinalSub');
-const matrixTapHint   = $('matrixTapHint');
-
 let matrixCols = 0;
 let matrixDrops = [];
 let matrixRainInterval = null;
@@ -1862,22 +1854,32 @@ let isMatrixReadyForNext = false;
 let matrixSequenceToken = 0;
 
 function setupMatrixCanvas() {
-  if (!matrixCanvas || !matrixCtx) return;
-  matrixCanvas.width = window.innerWidth || 360;
-  matrixCanvas.height = window.innerHeight || 640;
+  const canvas = $('matrixRainCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  
+  const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 360;
+  const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight || 640;
+  canvas.width = w;
+  canvas.height = h;
   const fontSize = 12;
-  matrixCols = Math.floor(matrixCanvas.width / fontSize);
-  matrixDrops = new Array(matrixCols).fill(0).map(() => Math.random() * -50);
+  matrixCols = Math.max(1, Math.floor(w / fontSize));
+  matrixDrops = Array.from({ length: matrixCols }, () => Math.floor(Math.random() * (h / fontSize)));
 }
 
 function drawMatrixRain() {
-  if (!matrixCanvas || !matrixCtx) return;
+  const canvas = $('matrixRainCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  
   // Glass Theme Wine background fade
-  matrixCtx.fillStyle = 'rgba(7, 2, 10, 0.16)';
-  matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+  ctx.fillStyle = 'rgba(7, 2, 10, 0.16)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   
   const fontSize = 12;
-  matrixCtx.font = `${fontSize}px 'JetBrains Mono', 'Courier New', monospace`;
+  ctx.font = `${fontSize}px 'JetBrains Mono', 'Courier New', monospace`;
   
   const recName = (window.GIFT_DATA && window.GIFT_DATA.recipientName) || 'ELENA';
   const charPool = 'HAPPYBIRTHDAY' + (recName.toUpperCase().replace(/[^A-Z]/g, '') || 'CELEBRATE') + '✨♥★2026';
@@ -1887,18 +1889,18 @@ function drawMatrixRain() {
     const y = matrixDrops[i] * fontSize;
     
     // Glowing Bright Amber/Gold leading character
-    matrixCtx.fillStyle = '#fff4d6';
-    matrixCtx.shadowColor = '#f5b838';
-    matrixCtx.shadowBlur = 8;
-    matrixCtx.fillText(char, i * fontSize, y);
+    ctx.fillStyle = '#fff4d6';
+    ctx.shadowColor = '#f5b838';
+    ctx.shadowBlur = 8;
+    ctx.fillText(char, i * fontSize, y);
     
     // Trailing rose/gold shimmer characters
-    matrixCtx.shadowBlur = 0;
+    ctx.shadowBlur = 0;
     const isRose = i % 3 === 0;
-    matrixCtx.fillStyle = isRose ? 'rgba(212, 35, 92, 0.75)' : 'rgba(245, 184, 56, 0.7)';
-    matrixCtx.fillText(char, i * fontSize, y - fontSize);
+    ctx.fillStyle = isRose ? 'rgba(212, 35, 92, 0.75)' : 'rgba(245, 184, 56, 0.7)';
+    ctx.fillText(char, i * fontSize, y - fontSize);
     
-    if (y > matrixCanvas.height && Math.random() > 0.92) {
+    if (y > canvas.height && Math.random() > 0.92) {
       matrixDrops[i] = 0;
     }
     matrixDrops[i]++;
@@ -1906,7 +1908,8 @@ function drawMatrixRain() {
 }
 
 function startMatrixRain() {
-  if (!matrixCanvas || !matrixCtx) return;
+  const canvas = $('matrixRainCanvas');
+  if (!canvas) return;
   if (matrixRainInterval) clearInterval(matrixRainInterval);
   setupMatrixCanvas();
   matrixRainInterval = setInterval(drawMatrixRain, 80);
@@ -1924,8 +1927,9 @@ function waitMatrixMs(ms) {
 }
 
 async function showMatrixWord(text, holdMs, isNumber, currentToken) {
-  const wordEl = $('matrixWord') || matrixWordEl;
+  const wordEl = $('matrixWord');
   if (!wordEl || matrixSequenceToken !== currentToken) return;
+  wordEl.style.display = 'block';
   wordEl.textContent = text;
   wordEl.classList.remove('show');
   wordEl.classList.toggle('number', !!isNumber);
@@ -1934,7 +1938,7 @@ async function showMatrixWord(text, holdMs, isNumber, currentToken) {
   await waitMatrixMs(holdMs);
   if (matrixSequenceToken !== currentToken) return;
   wordEl.classList.remove('show');
-  await waitMatrixMs(320);
+  await waitMatrixMs(280);
 }
 
 async function runMatrixSequence() {
@@ -1944,14 +1948,15 @@ async function runMatrixSequence() {
   isMatrixReadyForNext = false;
 
   const gd = window.GIFT_DATA || {};
-  const s1m = (gd.scenes && gd.scenes.scene1_matrixCountdown) || {};
+  const sc = gd.scenes || {};
+  const s1m = sc.scene1_matrixCountdown || {};
   const recName = gd.recipientName || 'Elena';
 
-  const finalWrap = $('matrixFinalWrap') || matrixFinalWrap;
-  const finalTitle = $('matrixFinalTitle') || matrixFinalTitle;
-  const finalSub = $('matrixFinalSub') || matrixFinalSub;
-  const tapHint = $('matrixTapHint') || matrixTapHint;
-  const wordEl = $('matrixWord') || matrixWordEl;
+  const finalWrap = $('matrixFinalWrap');
+  const finalTitle = $('matrixFinalTitle');
+  const finalSub = $('matrixFinalSub');
+  const tapHint = $('matrixTapHint');
+  const wordEl = $('matrixWord');
 
   if (finalTitle) {
     finalTitle.textContent = formatAgeTitle(s1m.age, recName);
@@ -1960,8 +1965,13 @@ async function runMatrixSequence() {
     finalSub.textContent = s1m.wishLine || 'wishing you a year as bright as you are ✨';
   }
 
-  if (finalWrap) finalWrap.classList.remove('is-shown', 'show');
-  if (tapHint) tapHint.classList.remove('is-shown', 'show');
+  if (finalWrap) {
+    finalWrap.classList.remove('is-shown', 'show');
+    finalWrap.style.display = 'none';
+  }
+  if (tapHint) {
+    tapHint.classList.remove('is-shown', 'show');
+  }
 
   startMatrixRain();
 
@@ -1971,6 +1981,7 @@ async function runMatrixSequence() {
       wordEl.style.display = 'none';
     }
     if (finalWrap) {
+      finalWrap.style.display = 'flex';
       void finalWrap.offsetWidth;
       finalWrap.classList.add('is-shown', 'show');
     }
@@ -1983,7 +1994,7 @@ async function runMatrixSequence() {
     return;
   }
 
-  if (wordEl) wordEl.style.display = '';
+  if (wordEl) wordEl.style.display = 'block';
 
   // Sequence: 3 -> 2 -> 1 -> Happy -> Birthday -> [Recipient Name]
   for (let n = 3; n >= 1; n--) {
@@ -1991,11 +2002,11 @@ async function runMatrixSequence() {
     await showMatrixWord(String(n), n === 1 ? 800 : 500, true, currentToken);
   }
   if (matrixSequenceToken !== currentToken) return;
-  await showMatrixWord('Happy', 1400, false, currentToken);
+  await showMatrixWord('Happy', 1300, false, currentToken);
   if (matrixSequenceToken !== currentToken) return;
-  await showMatrixWord('Birthday', 1400, false, currentToken);
+  await showMatrixWord('Birthday', 1300, false, currentToken);
   if (matrixSequenceToken !== currentToken) return;
-  await showMatrixWord(recName, 1700, false, currentToken);
+  await showMatrixWord(recName, 1600, false, currentToken);
 
   if (matrixSequenceToken !== currentToken) return;
   if (wordEl) {
@@ -2003,6 +2014,7 @@ async function runMatrixSequence() {
     wordEl.style.display = 'none';
   }
   if (finalWrap) {
+    finalWrap.style.display = 'flex';
     void finalWrap.offsetWidth;
     finalWrap.classList.add('is-shown', 'show');
   }

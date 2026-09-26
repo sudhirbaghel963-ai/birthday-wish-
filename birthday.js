@@ -1924,15 +1924,16 @@ function waitMatrixMs(ms) {
 }
 
 async function showMatrixWord(text, holdMs, isNumber, currentToken) {
-  if (!matrixWordEl || matrixSequenceToken !== currentToken) return;
-  matrixWordEl.textContent = text;
-  matrixWordEl.classList.remove('show');
-  matrixWordEl.classList.toggle('number', !!isNumber);
-  void matrixWordEl.offsetWidth; // Force reflow
-  matrixWordEl.classList.add('show');
+  const wordEl = $('matrixWord') || matrixWordEl;
+  if (!wordEl || matrixSequenceToken !== currentToken) return;
+  wordEl.textContent = text;
+  wordEl.classList.remove('show');
+  wordEl.classList.toggle('number', !!isNumber);
+  void wordEl.offsetWidth; // Force reflow
+  wordEl.classList.add('show');
   await waitMatrixMs(holdMs);
   if (matrixSequenceToken !== currentToken) return;
-  matrixWordEl.classList.remove('show');
+  wordEl.classList.remove('show');
   await waitMatrixMs(320);
 }
 
@@ -1946,28 +1947,43 @@ async function runMatrixSequence() {
   const s1m = (gd.scenes && gd.scenes.scene1_matrixCountdown) || {};
   const recName = gd.recipientName || 'Elena';
 
-  if (matrixFinalTitle) {
-    matrixFinalTitle.textContent = formatAgeTitle(s1m.age, recName);
+  const finalWrap = $('matrixFinalWrap') || matrixFinalWrap;
+  const finalTitle = $('matrixFinalTitle') || matrixFinalTitle;
+  const finalSub = $('matrixFinalSub') || matrixFinalSub;
+  const tapHint = $('matrixTapHint') || matrixTapHint;
+  const wordEl = $('matrixWord') || matrixWordEl;
+
+  if (finalTitle) {
+    finalTitle.textContent = formatAgeTitle(s1m.age, recName);
   }
-  if (matrixFinalSub) {
-    matrixFinalSub.textContent = s1m.wishLine || 'wishing you a year as bright as you are ✨';
+  if (finalSub) {
+    finalSub.textContent = s1m.wishLine || 'wishing you a year as bright as you are ✨';
   }
 
-  if (matrixFinalWrap) matrixFinalWrap.classList.remove('is-shown');
-  if (matrixTapHint) matrixTapHint.classList.remove('is-shown');
+  if (finalWrap) finalWrap.classList.remove('is-shown', 'show');
+  if (tapHint) tapHint.classList.remove('is-shown', 'show');
 
   startMatrixRain();
 
   if (reduceMotion) {
-    if (matrixWordEl) matrixWordEl.style.display = 'none';
-    if (matrixFinalWrap) matrixFinalWrap.classList.add('is-shown');
-    if (matrixTapHint) matrixTapHint.classList.add('is-shown');
+    if (wordEl) {
+      wordEl.classList.remove('show');
+      wordEl.style.display = 'none';
+    }
+    if (finalWrap) {
+      void finalWrap.offsetWidth;
+      finalWrap.classList.add('is-shown', 'show');
+    }
+    if (tapHint) {
+      void tapHint.offsetWidth;
+      tapHint.classList.add('is-shown', 'show');
+    }
     isMatrixReadyForNext = true;
     isMatrixSequenceRunning = false;
     return;
   }
 
-  if (matrixWordEl) matrixWordEl.style.display = '';
+  if (wordEl) wordEl.style.display = '';
 
   // Sequence: 3 -> 2 -> 1 -> Happy -> Birthday -> [Recipient Name]
   for (let n = 3; n >= 1; n--) {
@@ -1975,16 +1991,25 @@ async function runMatrixSequence() {
     await showMatrixWord(String(n), n === 1 ? 800 : 500, true, currentToken);
   }
   if (matrixSequenceToken !== currentToken) return;
-  await showMatrixWord('Happy', 1500, false, currentToken);
+  await showMatrixWord('Happy', 1400, false, currentToken);
   if (matrixSequenceToken !== currentToken) return;
-  await showMatrixWord('Birthday', 1500, false, currentToken);
+  await showMatrixWord('Birthday', 1400, false, currentToken);
   if (matrixSequenceToken !== currentToken) return;
-  await showMatrixWord(recName, 1800, false, currentToken);
+  await showMatrixWord(recName, 1700, false, currentToken);
 
   if (matrixSequenceToken !== currentToken) return;
-  if (matrixWordEl) matrixWordEl.style.display = 'none';
-  if (matrixFinalWrap) matrixFinalWrap.classList.add('is-shown');
-  if (matrixTapHint) matrixTapHint.classList.add('is-shown');
+  if (wordEl) {
+    wordEl.classList.remove('show');
+    wordEl.style.display = 'none';
+  }
+  if (finalWrap) {
+    void finalWrap.offsetWidth;
+    finalWrap.classList.add('is-shown', 'show');
+  }
+  if (tapHint) {
+    void tapHint.offsetWidth;
+    tapHint.classList.add('is-shown', 'show');
+  }
   isMatrixReadyForNext = true;
   isMatrixSequenceRunning = false;
 }
@@ -2994,6 +3019,10 @@ function deactivateAllScenesExcept(targetScene){
       sceneMatrix.classList.remove('is-active');
       sceneMatrix.setAttribute('aria-hidden', 'true');
     }
+    const finalWrap = $('matrixFinalWrap');
+    if (finalWrap) finalWrap.classList.remove('is-shown', 'show');
+    const tapHint = $('matrixTapHint');
+    if (tapHint) tapHint.classList.remove('is-shown', 'show');
     stopMatrixRain();
     if (replay){
       replay.classList.remove('is-shown', 'has-next');
